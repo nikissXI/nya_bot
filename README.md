@@ -1,4 +1,4 @@
-<div align=center><img width="100%" src="https://raw.githubusercontent.com/nikissXI/nya_bot/main/logo.jpg"/></div>
+<div align=center><img height="200" src="https://raw.githubusercontent.com/nikissXI/nya_bot/main/logo.jpg"/></div>
 
 ![maven](https://img.shields.io/badge/python-3.10%2B-blue)
 ![maven](https://img.shields.io/badge/nonebot-2.0.0-yellow)
