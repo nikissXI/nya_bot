@@ -387,13 +387,6 @@ async def d(request: Request, k=None, t=None):
                     wgnum = gv.r2f[wgnum]
                 # 特殊编号
                 return FileResponse(file, filename=f"{wgnum}.conf")
-            elif t == "png":
-                file = f"tunnel/png/{wgnum_to_ip(wgnum)}.png"
-                # 特殊编号
-                if wgnum in gv.r2f.keys():
-                    wgnum = gv.r2f[wgnum]
-                # 特殊编号
-                return FileResponse(file, filename=f"{wgnum}.png")
             else:
                 return RedirectResponse(url="/")
         else:
