@@ -417,6 +417,7 @@ new_friend = on_notice(rule=bot_1_event)
 
 # 公共命令
 miaofu = on_regex("^喵服$", rule=auto_bot)
+jinyan = on_regex("^禁言\s*\d{1,}$|^禁言$", rule=group_check_special)
 
 # 审查组命令
 pojieliuyan = on_regex("^破解留言$", rule=shencha_group_check)
@@ -431,7 +432,6 @@ tichu = on_regex("^踢出\s*\d+$|^永拒\s*\d+$|^踢出$", rule=shencha_group_ch
 
 # 群聊命令
 yanzheng = on_regex("^验证$", rule=group_check_special)
-jinyan = on_regex("^禁言\s*\d{1,}$|^禁言$", rule=group_check_special)
 link = on_regex(
     "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$", rule=zhanhun_group_check
 )
@@ -1379,7 +1379,7 @@ async def handle_yanzheng(event: GroupMessageEvent):
 @handle_exception("link")
 async def handle_link(event: GroupMessageEvent):
     mess_dict = {
-        "帮助": f"【支持的命令有以下】\n官网|教程|升级|排行\n后台|查房|频道|黑名单",  # 领号|升级|赞助|排行|黑名单\n教程|后台|查绑|查房|找卡比\n签到|喵币|撸猫|扫雷|发红包
+        "帮助": f"【支持的命令有以下】\n官网|教程|升级|排行\n后台|查房|频道|黑名单",
         "官网": f"喵服官网：{gv.site_url}",
         "教程": f"文字教程：{gv.site_url}/config\n视频教程：{gv.video_url}",
         "升级": f"升级编号：{gv.site_url}/get?x",
