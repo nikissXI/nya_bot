@@ -1,0 +1,326 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>战魂铭人联机平台-喵服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ cdn_url }}/cdn/favicon.ico" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/style.css" />
+    <style>
+        button {
+            padding: 2px 4px !important;
+            width: 100% !important;
+            height: 40px !important;
+        }
+
+        input {
+            height: 40px !important;
+        }
+
+        select {
+            height: 40px !important;
+            padding: 0 9px !important;
+            font-size: 16px !important;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="head_bg" style="background-image: url('{{ cdn_url }}/cdn/head_bg.png');"></div>
+    <div class="bg" style="background-image: url('{{ cdn_url }}/cdn/bg.png');"></div>
+    <header class="lyear-header text-center">
+        <div class="lyear-header-container">
+            <div class="lyear-mask"></div>
+            <h1 class="lyear-blogger pt-lg-4 mb-0">服主后台</h1>
+            <nav class="navbar navbar-expand-lg">
+                <!-- 导航栏 -->
+                <a class="navbar-toggler" data-toggle="collapse" data-target="#navigation"
+                    aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="lyear-hamburger">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </a>
+
+                <div id="navigation" class="collapse navbar-collapse flex-column">
+
+                    <ul class="navbar-nav flex-column text-center" style="font-size: 16px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">官网首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/get">编号配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/room">房间列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/bk">玩家后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">服主后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">关于喵服</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+    <div class="lyear-wrapper">
+        <section class="mt-5 pb-5">
+            <div class="container" style="margin-top:0px !important;">
+                <div class="row">
+
+                    <!-- 内容 start -->
+                    <div class="col-xl-8">
+                        <article class="lyear-arc">
+                            <div class="main" id="content_body">
+
+                                <h4 style="text-align:center;color: #8de5ff;">这是服主用的后台<br />不是你们操作的
+                                </h4>
+
+                                <form id="form_data" style="width: 225px;">
+                                    <input type="text" id="num" name="num" value=""
+                                        placeholder="填Q号" />
+                                    <br />
+                                    <select id="op_type" name="op_type" class="beauty-select">
+                                        <option value="绑定">绑定</option>
+                                        <option value="查绑">查绑</option>
+                                        <option value="赞助">赞助</option>
+                                        <option value="解绑">解绑</option>
+                                        <option value="修罗榜">修罗榜</option>
+                                        <option value="状态">运行状态</option>
+                                        <option value="功能开关">功能开关</option>
+                                        <option value="文章管理">文章管理</option>
+                                        <option value="绑定记录">绑定记录</option>
+                                        <option value="游戏记录">游戏记录</option>
+                                        <option value="IP记录">IP记录</option>
+                                        <option value="扩容/缩容">扩容/缩容</option>
+                                        <option value="黑名单管理">黑名单管理</option>
+                                    </select>
+                                    <br />
+                                    <div id="input_form">
+                                        <input type="text" name="value" value=""
+                                            placeholder="填编号或留空" />
+                                    </div>
+                                    <input type="text" name="key" value=""
+                                        placeholder="只有服主才知道的key" />
+                                    <button type="button" onclick="submit_data()">提交</button>
+                                </form>
+                                <div id="result" style="text-align:center;"></div>
+                                <br />
+                                <button id="display_button" type="button" style="max-width: 225px;"
+                                    onclick="display_bd_data()">显示绑定数据表</button>
+                                <div style="display:none;max-width: 225px;width: 100%;"
+                                    id="bd_table">
+                                    <select id="num_type" class="beauty-select"
+                                        style="width: 100% !important;">
+                                        <option value="">所有</option>
+                                        <option value="体验">体验</option>
+                                        <option value="普通">普通</option>
+                                        <option value="赞助">赞助</option>
+                                    </select>
+                                    <table style="border: 1px;" id="bd_data">
+
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
+
+
+                    </div>
+                    <!-- 内容 end -->
+
+
+                    <!-- 侧边栏 -->
+                    <div class="col-xl-4">
+                        <div class="lyear-sidebar" style="text-align:center;">
+                            <div id="get_wgnum_count" contenteditable="true"></div>
+                            <br />
+                            <div id="player_count" contenteditable="true"></div>
+                            <br />
+                            <div id="wbd" contenteditable="true"></div>
+                            <br />
+                            <div id="fzz" contenteditable="true"></div>
+                        </div>
+                    </div>
+                    <!-- 侧边栏 end -->
+
+
+                </div>
+
+            </div>
+            <!-- end container -->
+        </section>
+    </div>
+
+
+    <script src="{{ cdn_url }}/cdn/js/jquery.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/bootstrap.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        var clipboard = new ClipboardJS('.cp');
+
+        clipboard.on('success', function () {
+            $('.cp').html('复制成功！')
+        })
+
+        $(document).on("change", "#op_type", function () {
+            $("#input_form").empty();
+            selected = $("#op_type option:selected").val()
+            switch (selected) {
+                case '绑定':
+                    $('#input_form').append('<input type="text" name="value" placeholder="填编号或留空" value="" />');
+                    $("#num").attr('placeholder', '填Q号');
+                    break;
+                case '赞助':
+                    $('#input_form').append('<input type="text" name="value" placeholder="填赞助金额,支持+-,填0删除" value="" />');
+                    $("#num").attr('placeholder', '填编号');
+                    break;
+                case '修罗榜':
+                    $('#input_form').append('<input type="text" name="value" placeholder="填修罗数值,填0删除" value="" />');
+                    $("#num").attr('placeholder', '填编号');
+                    break;
+                case '扩容/缩容':
+                    $("#num").attr('placeholder', '填最大编号');
+                    break;
+                case '状态':
+                    $("#num").attr('placeholder', '什么都不用填');
+                    break;
+                case '功能开关':
+                    $('#input_form').append('<select id="sub_op_type" name="sub_op_type" class="beauty-select"><option value="安全模式">安全模式</option><option value="喵币系统">喵币系统</option>');
+                    $('#input_form').append('<select id="sub_value" name="value" class="beauty-select"><option value="打开">打开</option><option value="关闭">关闭</option>');
+                    $("#num").attr('placeholder', '什么都不用填');
+                    break;
+                case '游戏记录':
+                    $('#input_form').append('<input type="text" name="value" placeholder="填编号" value="" />');
+                    $("#num").attr('placeholder', '填时间 年-月-日');
+                    break;
+                case '绑定记录':
+                    $('#input_form').append('<input type="text" name="value" placeholder="填QQ号" value="" />');
+                    $("#num").attr('placeholder', '填时间 年-月');
+                    break;
+                case 'IP记录':
+                    $('#input_form').append('<input type="text" name="value" placeholder="填QQ号" value="" />');
+                    $("#num").attr('placeholder', '填时间 年-月');
+                    break;
+                case '查绑':
+                    $("#num").attr('placeholder', '填Q号或编号');
+                    break;
+                case '解绑':
+                    $("#num").attr('placeholder', '填Q号或编号');
+                    break;
+                case '文章管理':
+                    $("#num").attr('placeholder', '填[类型] [标题]');
+                    $('#input_form').append('<select id="sub_op_type" name="sub_op_type" class="beauty-select"><option value="增加">增加</option><option value="删除">删除</option></select><input id="sub_value" type="text" name="value" placeholder="填[作者] [链接]" value="" />');
+                    break;
+                case '黑名单管理':
+                    $('#input_form').append('<select id="sub_op_type" name="sub_op_type" class="beauty-select"><option value="删除记录">删除记录</option><option value="列出账号">列出账号</option><option value="增加账号">增加账号</option><option value="删除账号">删除账号</option></select>');
+                    $("#num").attr('placeholder', '填Q号');
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        $(document).on("change", "#sub_op_type", function () {
+            selected = $("#sub_op_type option:selected").val()
+            switch (selected) {
+                case '增加账号':
+                    $('#input_form').append('<input id="sub_value" type="text" name="value" placeholder="填昵称" value="" />');
+                    break;
+                case '列出账号':
+                    $("#num").attr('placeholder', '什么都不用填');
+                    $('#sub_value').remove()
+                    break;
+                case '增加':
+                    $("#num").attr('placeholder', '填[类型] [标题]');
+                    $('#input_form').append('<input id="sub_value" type="text" name="value" placeholder="填[作者] [链接]" value="" />');
+                    break;
+                case '删除':
+                    $("#num").attr('placeholder', '填文章id');
+                    $('#sub_value').remove()
+                    break;
+                case '安全模式':
+                    $('#sub_value').remove()
+                    $('#input_form').append('<select id="sub_value" name="value" class="beauty-select"><option value="打开">打开</option><option value="关闭">关闭</option>')
+                    break;
+                case '喵币系统':
+                    $('#sub_value').remove()
+                    $('#input_form').append('<select id="sub_value" name="value" class="beauty-select"><option value="打开">打开</option><option value="关闭">关闭</option>')
+                    break;
+                default:
+                    $('#sub_value').remove()
+                    break;
+            }
+        });
+
+        $(document).ready(
+            function () {
+                get_wgnum()
+            }
+        );
+
+        function get_bd_data(type) {
+            var data = { numtype: type }
+            $.get("/bd_data", data, function (r) {
+                $("#bd_data").append("<tr><td width='40'>编号</td><td width='100'>QQ</td><td width='40'>TTL</td><td width='40'>类型</td></tr>")
+                $.each(r.data, function (x, row) {
+                    $("#bd_data").append('<tr><td>' + row[0] + '</td><td>' + row[1] + '</td><td>' + row[2] + '</td><td>' + row[3] + '</td></tr>');
+                });
+            }, 'json');
+        }
+
+        function display_bd_data() {
+            if ($('#display_button').text() == '显示绑定数据表') {
+                $("#bd_table").css("display", "")
+                $('#display_button').text('隐藏绑定数据表')
+                get_bd_data()
+            } else {
+                $('#display_button').text('显示绑定数据表')
+                $("#bd_table").css("display", "none")
+                $("#bd_data").empty();
+            }
+        }
+
+        $(document).on("change", "#num_type", function () {
+            $("#bd_data").empty();
+            get_bd_data($("#num_type option:selected").val())
+        });
+
+        function get_wgnum() {
+            $.get("/get_num", function (r) {
+                $('#get_wgnum_count').html(r.get_wgnum_count)
+                $('#player_count').html(r.player_count)
+                $('#wbd').html(r.wbd)
+                $('#fzz').html(r.fzz)
+            }, 'json');
+        }
+
+        function submit_data() {
+            $('#result').html("请稍后......")
+            var data = $("#form_data").serializeArray();
+            $.get("/admin_api", data, function (r) {
+                get_wgnum()
+                $('#result').html(r.msg)
+                if ($("#op_type option:selected").val() == '查绑')
+                    if (r.key != "") {
+                        p1 = "<div>配置文件下载链接，请复制到浏览器里打开<br />不要在QQ内打开，联机教程也在里面<div id='wg_link'>"
+                        p2 = "</div></div><button class='cp' data-clipboard-target='#wg_link' style='width: auto !important;height: 30px !important;padding: 2px 4px !important;'>点击复制链接</button>"
+                        $('#result').append('<br />' + p1 + r.key + p2);
+                    }
+            }, 'json');
+        }
+
+    </script>
+</body>
+
+</html>

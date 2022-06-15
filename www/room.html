@@ -1,0 +1,268 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>战魂铭人联机平台-喵服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ cdn_url }}/cdn/favicon.ico" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/style.css" />
+    <style>
+        button {
+            padding: 2px 4px !important;
+            width: 100% !important;
+            height: 30px !important;
+        }
+
+        input {
+            height: 30px !important;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="head_bg" style="background-image: url('{{ cdn_url }}/cdn/head_bg.png');"></div>
+    <div class="bg" style="background-image: url('{{ cdn_url }}/cdn/bg.png');"></div>
+    <header class="lyear-header text-center">
+        <div class="lyear-header-container">
+            <div class="lyear-mask"></div>
+            <h1 class="lyear-blogger pt-lg-4 mb-0">房间列表</h1>
+            <nav class="navbar navbar-expand-lg">
+                <!-- 导航栏 -->
+                <a class="navbar-toggler" data-toggle="collapse" data-target="#navigation"
+                    aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="lyear-hamburger">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </a>
+
+                <div id="navigation" class="collapse navbar-collapse flex-column">
+
+                    <ul class="navbar-nav flex-column text-center" style="font-size: 16px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">官网首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/get">编号配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/room">房间列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/bk">玩家后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">服主后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">关于喵服</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+    <div class="lyear-wrapper">
+        <section class="mt-5 pb-5">
+            <div class="container" style="margin-top:0px !important;">
+
+                <div class="row">
+
+                    <!-- 内容 start -->
+                    <div class="col-xl-8">
+                        <article class="lyear-arc">
+                            <div class="main" id="content_body">
+
+                                <div style="width:230px;text-align: center;">
+                                    <div style="white-space: nowrap;">
+                                        <input type="text" id="wgnum" value=""
+                                            placeholder="填目标编号,检测是否连上服务器" style="width:120" />
+                                        <!-- <span class="refreshBtn1">
+                                            <i class="iconfont icon-refresh"></i>
+                                        </span> -->
+                                    </div>
+                                    <button type="button" onclick="ms_check()"
+                                        id="check_ms_button">检测</button>
+                                    <div id="ms_check_msg" style="margin-bottom: 1em;">
+                                    </div>
+
+                                    <br />
+
+                                    <div style="white-space: nowrap;">
+                                        <input type="text" id="hostnum" value=""
+                                            placeholder="填房主编号,检测成员网络延迟" style="width:120;" />
+                                        <!-- <span class="refreshBtn2">
+                                            <i class="iconfont icon-refresh"></i>
+                                        </span> -->
+                                    </div>
+                                    <button type="button" onclick="room_ms_check()"
+                                        id="room_ms_button">找卡比</button>
+                                    <div id="room_check_msg" style="margin-bottom: 1em;">
+                                    </div>
+
+                                    <br />
+
+                                    <div style="white-space: nowrap;">
+                                        <input type="text" id="ipnum" value=""
+                                            placeholder="填目标编号,查询其IP地址" style="width:120;" />
+                                        <!-- <span class="refreshBtn3">
+                                            <i class="iconfont icon-refresh"></i>
+                                        </span> -->
+                                    </div>
+                                    <button type="button" onclick="ip_transfer()">查询</button>
+                                    <div id="ip_transfer_msg" style="margin-bottom: 1em;">
+                                    </div>
+
+                                </div>
+                                <button id="room_button" onclick="flushroom()"
+                                    style="height: 30px;width: 100px !important;">刷新房间列表</button>
+
+                            </div>
+                        </article>
+                    </div>
+                    <!-- 内容 end -->
+
+
+                    <!-- 侧边栏 -->
+                    <div class="col-xl-4">
+                        <a onclick="javascript:flushroom()">
+                            <img id="roomlist" src="static/roomlist.gif" alt="房间列表"
+                                style="width: 100%;" /></a>
+                    </div>
+                    <!-- 侧边栏 end -->
+
+
+                </div>
+
+            </div>
+            <!-- end container -->
+        </section>
+    </div>
+
+
+    <script src="{{ cdn_url }}/cdn/js/jquery.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        function flushroom() {
+            $("#room_button").attr('disabled', 'disabled')
+            $("#roomlist").attr('src', "static/roomlist.gif" + "?t=" + Math.random());
+            setTimeout("$('#room_button').removeAttr('disabled')", 3000)
+        }
+
+        function ms_check() {
+            if ($("#wgnum").val() == "")
+                return
+            $("#check_ms_button").attr('disabled', 'disabled')
+            // startLoading(".refreshBtn1")
+            $("#ms_check_msg").html("查询中，请稍后...")
+            $.ajax({
+                type: "GET",
+                url: "/ms_check",
+                timeout: 2000,
+                data: { lx: 1, wgnum: $("#wgnum").val() },
+                dataType: "json",
+                error: function () {
+                    // stopLoading(".refreshBtn1")
+                    $("#ms_check_msg").html("连接服务器失败")
+                },
+                success: function (r) {
+                    if (r.msg == "请填纯数字") {
+                        $("#ms_check_msg").html("请填纯数字")
+                    }
+                    else if (r.msg.indexOf("未连接") != -1) {
+                        $("#ms_check_msg").html("目标未连接或不能被检测<br />如果检测自己请到玩家后台<br /><a href='/bk'>点击跳转到玩家后台</a>")
+                        $("#check_ms_button").removeAttr('disabled')
+                        // stopLoading(".refreshBtn1")
+                    }
+                    else {
+                        $("#ms_check_msg").html("目标已连接服务器<br />10秒后返回结果...")
+                        $.ajax({
+                            type: "GET",
+                            url: "/ms_check",
+                            timeout: 20000,
+                            data: { lx: 2, wgnum: $("#wgnum").val() },
+                            dataType: "json",
+                            error: function () {
+                                $("#ms_check_msg").html("连接服务器失败")
+                            },
+                            success: function (r) {
+                                $("#ms_check_msg").html(r.msg)
+                            },
+                            complete: function () {
+                                $("#check_ms_button").removeAttr('disabled')
+                                // stopLoading(".refreshBtn1")
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        function room_ms_check() {
+            if ($("#hostnum").val() == "")
+                return
+
+            $("#room_check_msg").html("查询中，请稍后...")
+            // startLoading(".refreshBtn2")
+            $("#room_ms_button").attr('disabled', 'disabled')
+            $.ajax({
+                type: "GET",
+                url: "/ms_check",
+                timeout: 20000,
+                data: { lx: 3, wgnum: $("#hostnum").val() },
+                dataType: "json",
+                error: function () {
+                    $("#room_check_msg").html("连接服务器失败")
+                },
+                success: function (r) {
+                    $("#room_check_msg").html(r.msg)
+                },
+                complete: function () {
+                    // stopLoading(".refreshBtn2")
+                    $('#room_ms_button').removeAttr('disabled')
+                }
+            });
+        }
+
+        function ip_transfer() {
+            var wgnum = $("#ipnum").val()
+            if (wgnum == "")
+                return
+            $("#ip_transfer_msg").html("查询中，请稍后...")
+            // startLoading(".refreshBtn3")
+            $.ajax({
+                type: "GET",
+                url: "/get_ip",
+                timeout: 20000,
+                data: { wgnum: wgnum },
+                dataType: "json",
+                error: function () {
+                    $("#ip_transfer_msg").html("连接服务器失败")
+                },
+                success: function (r) {
+                    $("#ip_transfer_msg").html(wgnum + "号的IP地址为: " + r.msg)
+                },
+                complete: function () {
+                    // stopLoading(".refreshBtn3")
+                }
+            });
+        }
+
+        // function startLoading(type) {
+        //     const load = document.querySelector(type);
+        //     load?.classList.add("rotate");
+        // }
+        // function stopLoading(type) {
+        //     const load = document.querySelector(type);
+        //     load?.classList.remove("rotate");
+        // }
+    </script>
+</body>
+
+</html>

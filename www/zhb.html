@@ -1,0 +1,361 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>战魂铭人联机平台-喵服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ cdn_url }}/cdn/favicon.ico" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/style.css" />
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        table td,
+        table th {
+            border: 1px solid #cad9ea;
+            color: rgb(255, 255, 255);
+            height: 30px;
+        }
+
+        table thead th {
+            background-color: #000;
+        }
+
+        table tr:nth-child(odd) {
+            background: rgb(169, 28, 28);
+        }
+
+        table tr:nth-child(even) {
+            background: #450404;
+        }
+
+        button {
+            padding: 0px 3px;
+        }
+
+        a {
+            color: #a8ebff;
+        }
+
+        textarea {
+            border: 1px solid #d9d9d9;
+            padding: 0 12px;
+            width: 100%;
+            height: 80px;
+            border-radius: 4px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="head_bg" style="background-image: url('{{ cdn_url }}/cdn/head_bg.png');"></div>
+    <div class="bg" style="background-image: url('{{ cdn_url }}/cdn/bg.png');"></div>
+    <header class="lyear-header text-center">
+        <div class="lyear-header-container">
+            <div class="lyear-mask"></div>
+            <h1 class="lyear-blogger pt-lg-4 mb-0">黑名单</h1>
+            <nav class="navbar navbar-expand-lg">
+                <!-- 导航栏 -->
+                <a class="navbar-toggler" data-toggle="collapse" data-target="#navigation"
+                    aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="lyear-hamburger">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </a>
+
+                <div id="navigation" class="collapse navbar-collapse flex-column">
+
+                    <ul class="navbar-nav flex-column text-center" style="font-size: 16px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">官网首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/get">编号配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/room">房间列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/bk">玩家后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">服主后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">关于喵服</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="lyear-wrapper">
+        <section class="mt-5 pb-5">
+            <div class="container" style="margin-top:0px !important;">
+                <div class="row">
+
+                    <!-- 内容 start -->
+                    <div class="col-xl-8">
+
+                        <article class="lyear-arc" style="text-align: center;">
+                            <div class="main">
+
+                                <h4 style="text-align:center;color: #8de5ff;">黑名单</h4>
+
+                                <div style="white-space: nowrap;">
+                                    <input id="filter_qqnum" style="width: 150px;" type="text"
+                                        placeholder="筛选QQ号" />
+                                    <button onclick="filtter()">筛选</button>
+                                    <button onclick="reset()">取消筛选</button>
+                                    <button id="btn" onclick="show()"
+                                        style="background-color: rgb(163, 0, 0);">上榜</button>
+                                </div>
+                                <div id="add_zhb" style="display: none;max-width: 300px;">
+
+                                    <input type="text" id="key" placeholder="填写发布key">
+                                    <input type="text" id="qqnum" name="qq" placeholder="填写黑名单QQ号">
+                                    <textarea id="why"
+                                        placeholder="填写上黑原因，理由要充分，如果对方拒绝审查要注明"></textarea>
+
+                                    <input type="number" id="count" value="1" hidden="true" />
+                                    上传证据图片
+                                    <div id="upload_img"></div>
+                                    <button id="addButton" type="button"
+                                        onclick="addPic()">添加图片</button>
+
+                                    <button id="submit" onclick='upload()'
+                                        style="margin-top: 10px;background-color: rgb(163, 0, 0);">发布黑名单</button>
+
+                                </div>
+
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th width="100">日期</th>
+                                            <th width="100">QQ</th>
+                                            <th width="40"> </th>
+                                            <th width="60">发布者</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="zhb">
+                                    </tbody>
+                                </table>
+
+                                <br />
+                                <p style="text-align:center;">
+                                    <button onclick="window.location.href='/'">点击返回首页</button>
+                                </p>
+
+                            </div>
+
+                        </article>
+                    </div>
+
+                    <!-- 内容 end -->
+
+                    <!-- 侧边栏 -->
+                    <div class="col-xl-4" style="margin:0px auto;max-width:260px;">
+                        <div class="lyear-sidebar">
+                            <h5 style="color:#ff8ecc;">相关QQ群推荐</h5>
+                        </div>
+                        <p>
+                            恶果之地联机群：604857477<br />
+                            战魂蒲公英联机群：772814424<br />
+                            我的世界服务器群：837790101
+                        </p>
+
+                        <div class="lyear-sidebar">
+                            <h5 style="color:#ff8ecc;">游戏下载</h5>
+                        </div>
+                        <p>
+                            全渠道战魂铭人下载 <a
+                                href="http://www.chillyroom.com/zh/zhan_hun/pre-order"><strong>点击跳转</strong></a>
+                        </p>
+                    </div>
+                    <!-- 侧边栏 end -->
+
+                </div>
+
+            </div>
+            <!-- end container -->
+        </section>
+    </div>
+
+
+    <script src="{{ cdn_url }}/cdn/js/jquery.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(
+            reset()
+        );
+
+        function reset() {
+            $("#filter_qqnum").val("")
+            $.get("/zhb_data", function (r) {
+                $("#zhb").empty()
+                $.each(r.data, function (x, row) {
+                    $("#zhb").append('<tr><td>' + row[0] + '</td><td>' + row[1] + '</td><td><a href="/why?qq=' + row[1] + '">原因</a></td><td>' + row[2] + '</td></tr>');
+                });
+            }, 'json');
+        }
+
+        function filtter() {
+            var data = { qqnum: $("#filter_qqnum").val() }
+            $.get("/zhb_data", data, function (r) {
+                $("#zhb").empty()
+                $.each(r.data, function (x, row) {
+                    $("#zhb").append('<tr><td>' + row[0] + '</td><td>' + row[1] + '</td><td><a href="/why?qq=' + row[1] + '">原因</a></td><td>' + row[2] + '</td></tr>');
+                });
+            }, 'json');
+        }
+
+        $(document).on("blur", "#qqnum", function () {
+            qqnum = $('#qqnum').val();
+            if (qqnum != "") {
+                var data = { qqnum: $('#qqnum').val() };
+                $.get("/zhb_check", data, function (data) {
+                    if (data.code == 1)
+                        alert("该QQ号已有记录!");
+                }, "json");
+            }
+        });
+
+        function show() {
+            if ($("#btn").text() == "上榜") {
+                $("#add_zhb").css("display", "");
+                $("#btn").text("关闭")
+            }
+            else {
+                $("#add_zhb").css("display", "none");
+                $("#btn").text("上榜")
+            }
+        }
+
+        function upload() {
+
+            var key = $("#key").val()
+            var qqnum = $("#qqnum").val()
+            var why = $("#why").val()
+            if (key == "") {
+                alert("key未填写！")
+                return
+            }
+            if (qqnum == "") {
+                alert("Q号未填写！")
+                return
+            }
+            if (why == "") {
+                alert("原因未填写！")
+                return
+            }
+
+            if (confirm("确认信息无误吗") == false)
+                return
+
+            $("#submit").html('上传中...')
+            $("#submit").attr('disabled', 'disabled')
+
+            var paths = '[]'
+            if ($('form').length != 0) {
+                forms = $('form')
+                paths = '[';
+                for (var i = 0; i < forms.length; i++) {
+                    $.ajax({
+                        url: 'https://www.imgurl.org/api/v2/upload',
+                        type: 'POST',
+                        cache: false,
+                        data: new FormData(document.getElementById(forms[i].id)),
+                        processData: false,
+                        contentType: false,
+                        async: false,
+                        dataType: 'json',
+                        success: function (r) {
+                            if (r.code == 200) {
+                                if (i != 0)
+                                    paths += ','
+
+                                paths += '"' + r.data.url + '"'
+                            }
+                            else {
+                                alert(r.msg)
+                                return
+                            }
+                        }
+                    })
+                }
+                paths += ']'
+            }
+
+            var data = { "key": key, "qqnum": qqnum, "why": why, "paths": paths };
+            $.get("/zhb_add", data, function (r) {
+                if (r.code == 0) {
+                    // alert(1)
+                    window.location.href = '/why?qq=' + qqnum
+                }
+                else {
+                    alert(r.msg)
+                    $("#submit").text('发布黑名单')
+                }
+            }, 'json');
+        }
+
+        function addPic() {
+            var addButton = document.getElementById('addButton');
+            addButton.value = '继续添加图片';
+
+            var count = document.getElementById('count');
+
+            var form = document.createElement("form");
+            form.id = count.value
+            form.enctype = "multipart/form-data"
+
+            var input = document.createElement("input");
+            input.type = 'file';
+            input.name = 'file';
+            input.style = 'width: 80%;';
+            input.accept = ".jpg,.jpeg,.png,.gif"
+
+            var uid = document.createElement("input");
+            uid.type = 'text';
+            uid.name = 'uid';
+            uid.hidden = true;
+            uid.value = 'f3025e303ee5d33d85c34ddf3a724b63';
+
+            var token = document.createElement("input");
+            token.type = 'text';
+            token.name = 'token';
+            token.hidden = true;
+            token.value = 'c0af15c7ac79a3eb69274e7d5b241eaf';
+
+            var button = document.createElement("button");
+            button.onclick = Function('delPic("' + count.value + '");');
+            button.innerHTML = '删除';
+
+            form.appendChild(input);
+            form.appendChild(button);
+            form.appendChild(uid);
+            form.appendChild(token);
+
+            var upload_img = document.getElementById('upload_img');
+            upload_img.appendChild(form);
+            count.value = parseInt(count.value) + 1;
+        }
+
+        function delPic(count) {
+            var upload_img = document.getElementById('upload_img');
+            var form = document.getElementById(count);
+            upload_img.removeChild(form);
+        }
+    </script>
+</body>
+
+</html>

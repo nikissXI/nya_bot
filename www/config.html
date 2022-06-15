@@ -1,0 +1,363 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>战魂铭人联机平台-喵服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ cdn_url }}/cdn/favicon.ico" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/style.css" />
+    <style>
+        button {
+            padding: 0px 3px !important;
+            font-size: 13px;
+        }
+
+        table td {
+            border: 1px solid;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="head_bg" style="background-image: url('{{ cdn_url }}/cdn/head_bg.png');"></div>
+    <div class="bg" style="background-image: url('{{ cdn_url }}/cdn/bg.png');"></div>
+    <header class="lyear-header text-center">
+        <div class="lyear-header-container">
+            <div class="lyear-mask"></div>
+            <h1 class="lyear-blogger pt-lg-4 mb-0">联机教程/配置下载</h1>
+            <nav class="navbar navbar-expand-lg">
+                <!-- 导航栏 -->
+                <a class="navbar-toggler" data-toggle="collapse" data-target="#navigation"
+                    aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="lyear-hamburger">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </a>
+
+                <div id="navigation" class="collapse navbar-collapse flex-column">
+
+                    <ul class="navbar-nav flex-column text-center" style="font-size: 16px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">官网首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/get">编号配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/room">房间列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/bk">玩家后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">服主后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">关于喵服</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="lyear-wrapper">
+        <section class="mt-5 pb-5">
+            <div class="container" style="margin-top:0px !important;">
+                <div class="row">
+
+                    <!-- 内容 start -->
+                    <div class="col-xl-8">
+                        <article class="lyear-arc">
+                            <div class="main" id="content_body">
+
+
+
+                                <div id="choose" style="text-align:center;">
+                                    <h5>{{bdmsg}}</h5>
+                                    <h5>{{wgnum}}</h5>
+                                    <h5>{{qqnum}}</h5>
+
+                                    <button
+                                        style="font-size: 20px;background-color: rgb(255, 93, 155);"
+                                        type="button"
+                                        onclick="window.location.href='{{ video_url }}'">阅读有障碍的可以<br />点击我看视频教程</button>
+                                    <h3 style="color: #8de5ff;">请选择系统类型</h3>
+
+                                    <div>
+                                        <button onclick="get_android()"
+                                            style="font-size: 50px; width: 180px; background-color: rgb(36 162 36);">安卓</button>
+                                    </div>
+                                    <br />
+                                    <div>
+                                        <button onclick="get_ios()"
+                                            style="font-size: 50px; width: 180px; background-color: rgb(48 126 198);">苹果</button>
+                                    </div>
+                                    <br />
+                                    <div>
+                                        <button onclick="get_steam()"
+                                            style="font-size: 50px; width: 180px; background-color: rgb(136, 145, 152);">Steam</button>
+                                    </div>
+                                </div>
+
+
+
+                                <div id="qq_notice" style="display: none;width: 90%;">
+                                    <h4 style="color: #5fffac;">请到浏览器查看该页面</h4>
+                                    <h5 style="color: #ff00ad;margin-bottom: 0;">
+                                        QQ的话点击右上角的三个点，如下图使用浏览器打开</h5>
+                                    <div style="white-space: nowrap;">
+                                        <strong
+                                            style="color: rgb(36 162 36);font-size: 20px;">安卓</strong>
+                                        <img src="{{ cdn_url }}/cdn/config/icon_android.jpg"
+                                            alt="icon" style="height: 100px;" />
+                                    </div>
+                                    <div style="white-space: nowrap;">
+                                        <strong
+                                            style="color: rgb(48 126 198);font-size: 20px;">苹果</strong>
+                                        <img src="{{ cdn_url }}/cdn/config/icon_ios.jpg" alt="icon"
+                                            style="height: 100px;" />
+                                    </div>
+
+                                    <div contenteditable="true" id="wg_link" style="opacity: 0;">
+                                    </div>
+
+                                    <h5 style="color: #ff00ad;margin-bottom: 0;">
+                                        或复制链接到浏览器粘贴打开</h5>
+                                    <button class='cp' data-clipboard-target='#wg_link'
+                                        style='width: auto !important;padding: 2px 4px 2px 4px !important; font-size: 18px; background-color:#ff6060;'>点击复制链接</button>
+                                </div>
+
+
+
+                                <div id="android" style="display: none;">
+
+                                    <h4 style="color:#8de5ff;">★首次联机准备★</h4>
+                                    1、下载 WG喵服专版
+                                    <button
+                                        onclick="window.location.href='{{ cdn_url }}/cdn/miaofu.apk'">点击下载喵服</button>
+                                    <br />
+                                    2、安装WG后，点右下角加号，选填QQ获取，跟着提示操作即可
+                                    <br />
+
+                                    <strong
+                                        style="font-size: 16px;color:#ff853a;">小米手机看这个，不是就忽略</strong>
+                                    <button onclick="miui()">点击查看</button>
+                                    <div id="miui_help" style="display: none;">
+                                        找到系统的游戏加速，打开加速设置->性能增强->性能增强->把“WLAN网络优化”关闭，如下图 <br />
+                                        这个东西默认是开启的，需要关掉，否则会导致无法联机，关掉后最好再重启一下手机 <br />
+                                        <img src="{{ cdn_url }}/cdn/config/xiaomi.jpg" alt="图片"
+                                            style="width:100%;" />
+                                    </div>
+                                    <br />
+                                    3、打开WG的开关，连上服务器，如下图
+                                    <br />
+                                    <img src="{{ cdn_url }}/cdn/config/android_switch.jpg" alt="图片"
+                                        style="width:100%;" />
+                                    <br />
+                                    4、完事了，去玩家后台看看吧 <button
+                                        onclick="window.location.href='/bk'">点击跳转</button>
+                                </div>
+
+
+
+                                <div id="ios" style="display:none;">
+
+                                    <h4 style="color:#8de5ff;">★首次联机准备★</h4>
+                                    1、下载WG，需要外区的Apple ID才能下载，如果没有就搞一个外区ID（推荐小白直接付5元找服主借）。
+                                    <br />
+                                    外区ID获取方法有4种 <button onclick="apple_id()">点击查看</button>
+                                    <div id="apple_id_help"
+                                        style="display: none;margin-bottom: 10px;">
+                                        1、淘宝或拼多多自己买一个外区ID(不会买别问服主) <br />
+                                        2、自己注册一个，注册方法自行百度(不会注册别问服主) <br />
+                                        3、付5元借服主的用(赠送普通号)，点击选择支付方式 <br />
+                                        <div style="white-space: nowrap;">
+                                            <button onclick="display_pay(1)"
+                                                style="background-color: #3da05b;">微信</button>
+                                            <button onclick="display_pay(2)">支付宝</button>
+                                            <button onclick="display_pay(3)"
+                                                style="background-color: #8f473d;">QQ钱包</button>
+                                        </div>
+                                        <img id="pay_img" src="{{ cdn_url }}/cdn/pay/wx.gif"
+                                            alt="付款方式" style="display: none;" />
+                                        <div id="pay_tips" style="display: none;">
+                                            <strong
+                                                style="color:#5fffac;">付款后私聊服主将付款截图发过去，留言要外区ID，看到就会给你</strong>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    搞到外区ID后，按照下图操作更换App Store账号，下完WG就可以换回去自己的了 <br />
+                                    <img src="{{ cdn_url }}/cdn/config/ios.jpg" alt="图片"
+                                        style="width:100%;" />
+
+                                    2、下载配置文件 <button id="conf_download"></button>
+                                    如果下载不了文件，换Safari浏览器
+                                    <br />
+                                    3、运行WG，添加隧道点导入配置，在最近项目里选刚下载的conf文件
+                                    <br />
+                                    4、打开WG的开关，连上服务器，如下图
+                                    <br />
+                                    <img src="{{ cdn_url }}/cdn/config/ios_switch.jpg" alt="图片"
+                                        style="width:100%;" />
+                                    <br />
+                                    5、完事了，去玩家后台看看吧 <button
+                                        onclick="window.location.href='/bk'">点击跳转</button>
+                                </div>
+
+
+                                <div id="steam" style="display: none;">
+
+                                    <h4 style="color:#8de5ff;">★首次联机准备★</h4>
+                                    1、下载两个东西
+                                    <button
+                                        onclick="window.location.href='{{ cdn_url }}/cdn/wireguard-amd64-0.5.3.msi'">点击下载WG</button>
+                                    &emsp;
+                                    <button id="conf_download"></button>
+                                    <br />
+                                    2、安装WG后运行，在左下角点新建隧道，然后选下载的conf文件
+                                    <br />
+                                    3、点连接，连上服务器，如下图 <br />
+                                    <img src="{{ cdn_url }}/cdn/config/steam_switch.jpg" alt="图片"
+                                        style="width:100%;" />
+                                    <br />
+                                    4、下载这个bat，然后双击运行然后关闭就行，开放战魂铭人游戏端口，如下图
+                                    <button
+                                        onclick="window.location.href='{{ cdn_url }}/cdn/config/%E5%8F%8C%E5%87%BB%E8%BF%90%E8%A1%8C%E5%B0%B1%E8%A1%8C.bat'">点击下载bat</button>
+                                    <br />
+                                    <img src="{{ cdn_url }}/cdn/config/bat.jpg" alt="图片"
+                                        style="width:100%;" />
+                                    <br />
+                                    5、完事了，去玩家后台看看吧 <button
+                                        onclick="window.location.href='/bk'">点击跳转</button>
+                                </div>
+
+                                <button onclick="back()"
+                                    style="display:none;font-size: 26px;padding: 0px 5px 0px 5px !important;background-color: rgb(161, 55, 29);margin-top:30px;"
+                                    id="back">返回选择系统</button>
+
+                            </div>
+                        </article>
+
+                    </div>
+                    <!-- 内容 end -->
+
+                    <!-- 侧边栏 -->
+                    <div class=" col-xl-4">
+                        <div class="lyear-sidebar">
+                            <h5 style="color:#ff8ecc;">常见问题</h5>
+                            <div style="text-align: left;">
+                                <p>
+                                    <strong>问：编号是什么</strong> <br />
+                                    <strong>答：</strong>在领号后，你会获得一个联机编号，同时群昵称也会改成该编号，是喵服的身份标识，群昵称的编号后面可以写其他东西，但编号一定要写在最前面，可以参考其他人的群昵称，在编号回收后群昵称会恢复默认
+                                </p>
+                                <p>
+                                    <strong>问：导入新的配置文件提示重名无法导入</strong> <br />
+                                    <strong>答：</strong>那就把旧的删了啊，长按删除
+                                </p>
+                                <p>
+                                    <strong>问：我的问题这里没写</strong> <br />
+                                    <strong>答：</strong>那就图文并茂地私聊服主
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 侧边栏 end -->
+
+                </div>
+            </div>
+            <!-- end container -->
+        </section>
+    </div>
+
+
+    <script src="{{ cdn_url }}/cdn/js/jquery.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/bootstrap.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        var clipboard = new ClipboardJS('.cp');
+        clipboard.on('success', function () {
+            $('.cp').html('复制成功！请手动打开浏览器粘贴')
+        })
+
+        $(document).ready(
+            function () {
+                var url = location.search;
+                if (url.indexOf("?") != -1) {
+
+                    var agent = window.navigator.userAgent.toLowerCase()
+                    // alert(agent)
+                    if (agent.match(/appid/) == 'appid' || agent.match(/biliapp/) == 'biliapp') {
+                        $("#choose").css("display", "none");
+                        $("#qq_notice").css("display", "");
+                        $("#wg_link").html(window.location.href);
+                    }
+
+                    var str = url.substr(1);
+                    var strs = str.split("&");
+                    if (strs[0].split("=")[0] == 'k') {
+                        $("#png_download").text('点击下载二维码')
+                        $("#conf_download*").text('点击下载conf')
+                        $("#png_download").attr("onclick", "window.location.href='/d?k=" + unescape(strs[0].split("=")[1]) + "&t=png&r=" + Math.random() + "'")
+                        $("#conf_download*").attr("onclick", "window.location.href='/d?k=" + unescape(strs[0].split("=")[1]) + "&t=conf&r=" + Math.random() + "'")
+                    }
+                } else {
+                    $("#png_download").text('点我领号')
+                    $("#conf_download*").text('点我领号')
+                    $("#png_download").attr("onclick", "window.location.href='/get'")
+                    $("#conf_download*").attr("onclick", "window.location.href='/get'")
+                }
+            }
+        );
+
+        function miui() {
+            $("#miui_help").css("display", "");
+        }
+        function apple_id() {
+            $("#apple_id_help").css("display", "");
+        }
+
+
+        function get_android() {
+            $("#choose").css("display", "none");
+            $("#android").css("display", "");
+            $("#back").css("display", "");
+        }
+        function get_ios() {
+            $("#choose").css("display", "none");
+            $("#ios").css("display", "");
+            $("#back").css("display", "");
+        }
+        function get_steam() {
+            $("#choose").css("display", "none");
+            $("#steam").css("display", "");
+            $("#back").css("display", "");
+        }
+        function back() {
+            $("#pay_img").css("display", "none");
+            $("#pay_tips").css("display", "none");
+            $("#choose").css("display", "");
+            $("#android").css("display", "none");
+            $("#ios").css("display", "none");
+            $("#steam").css("display", "none");
+            $("#back").css("display", "none");
+        }
+        function display_pay(way) {
+            $("#pay_img").css("display", "");
+            $("#pay_tips").css("display", "");
+            if (way == 1)
+                $("#pay_img").attr('src', "{{ cdn_url }}/cdn/pay/wx.gif");
+            else if (way == 2)
+                $("#pay_img").attr('src', "{{ cdn_url }}/cdn/pay/zfb.gif");
+            else if (way == 3)
+                $("#pay_img").attr('src', "{{ cdn_url }}/cdn/pay/qq.gif");
+        }
+    </script>
+</body>
+
+</html>

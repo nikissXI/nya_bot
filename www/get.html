@@ -1,0 +1,513 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>战魂铭人联机平台-喵服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ cdn_url }}/cdn/favicon.ico" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/style.css" />
+    <style>
+        .button1 {
+            padding: 2px 4px;
+            width: 100%;
+            height: 30px;
+        }
+
+        .button2 {
+            padding: 0px 4px 0px 4px;
+        }
+
+        input {
+            height: 30px;
+        }
+
+        h4 {
+            color: #8de5ff;
+            margin-bottom: 0;
+        }
+
+        h6 {
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+
+        table td {
+            border: 2px solid;
+        }
+
+        p {
+            margin-bottom: 0;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="head_bg" style="background-image: url('{{ cdn_url }}/cdn/head_bg.png');"></div>
+    <div class="bg" style="background-image: url('{{ cdn_url }}/cdn/bg.png');"></div>
+    <header class="lyear-header text-center">
+        <div class="lyear-header-container">
+            <div class="lyear-mask"></div>
+            <h1 class="lyear-blogger pt-lg-4 mb-0">编号配置</h1>
+            <nav class="navbar navbar-expand-lg">
+                <!-- 导航栏 -->
+                <a class="navbar-toggler" data-toggle="collapse" data-target="#navigation"
+                    aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="lyear-hamburger">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </a>
+
+                <div id="navigation" class="collapse navbar-collapse flex-column">
+
+                    <ul class="navbar-nav flex-column text-center" style="font-size: 16px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">官网首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/get">编号配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/room">房间列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/bk">玩家后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">服主后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">关于喵服</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <div class="lyear-wrapper">
+        <section class="mt-5 pb-5">
+            <div class="container" style="margin-top:0px !important;">
+                <div class="row">
+
+                    <!-- 内容 start -->
+                    <div class="col-xl-8" id="get">
+
+                        <!-- 领号或拿配置 -->
+                        <article class="lyear-arc" style="text-align: center;">
+                            <h4>领取编号/下载配置</h4>
+                            <div id="content">
+                                <div style="width:230px;margin:auto;">
+                                    <div id="msg">
+                                        体验号<strong style="color:#ff6060;">不限次免费领取</strong>使用 <br />
+                                        <strong style="color:#68ff60;">安卓可直接下载喵服APP</strong> <button
+                                            class="button2" style="background-color:#1d9a18;"
+                                            onclick="window.location.href='{{ cdn_url }}/cdn/miaofu.apk'">点击下载</button>
+                                        <br />
+                                    </div>
+                                    <input type="text" id="qq" name="qq" value=""
+                                        placeholder="填你QQ号然后点下一步" />
+                                    <br />
+                                    <button id="submit" onclick="next()"
+                                        class="button1">下一步</button>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- 购买、赞助 -->
+                        <article class="lyear-arc" style="text-align: center;">
+                            <h4>升级编号(赞助)</h4>
+                            付费渠道和特权都在这 <br />
+                            升级编号体验完整功能
+                            <div style="width:230px;margin:auto;">
+                                <button onclick="update_wgnum(2)" class="button1">点击升级</button>
+                            </div>
+                        </article>
+
+                        <!-- 查绑 -->
+                        <article class="lyear-arc" style="text-align: center;">
+                            <h4>编号绑定状态查询</h4>
+                            <div style="width:230px;margin:auto;">
+                                <input type="text" id="num" value="" placeholder="填Q号或编号" />
+                                <button onclick="check()" class="button1">查询绑定信息</button>
+                            </div>
+                            <div id="wgnum_info"></div>
+                        </article>
+
+                    </div>
+
+
+                    <div class="col-xl-8" id="buy" style="display:none;">
+                        <article class="lyear-arc">
+                            <div class="main" id="content_body" style="text-align:center;">
+
+                                <div style="max-width: 320px;">
+
+                                    <div style="text-align: left;">
+                                        <h6 style="color:#ff3838;">体验号 ~ 免费领取，臭不要脸可以一直白嫖</h6>
+                                        <h6 style="color:#00ef3c;">普通号 ~ 5元，如果不够钱赞助那就买普通号</h6>
+                                        <h6 style="color:#cc85ff;">赞助号 ~ 单次付费满30元，金额后续可累加</h6>
+                                    </div>
+
+                                    <div style="white-space: nowrap;margin-top: 5px;">
+                                        <div style="font-size: 16px;">点击选择支付方式</div>
+                                        <button onclick="display_pay(1)"
+                                            style="background-color: #3da05b;"
+                                            class="button2">微信</button>
+                                        <button onclick="display_pay(2)"
+                                            class="button2">支付宝</button>
+                                        <button onclick="display_pay(3)"
+                                            style="background-color: #8f473d;"
+                                            class="button2">QQ钱包</button>
+                                    </div>
+
+                                    <div id="pay_msg"
+                                        style="display: none;text-align: center; margin-bottom: 1rem;">
+                                        <img id="pay_img" src="{{ cdn_url }}/cdn/pay/wx.gif"
+                                            alt="付款方式" /> <br />
+                                        <strong
+                                            style="color:#5fffac;">付款后私聊服主将付款截图发过去，如果自选编号把编号也发过去，看到就会处理</strong>
+                                    </div>
+
+                                    <button onclick="pay_notice()" id="pay_notice_button"
+                                        style="background-color: #189ba9; margin-top: 8px;"
+                                        class="button2">点击查看
+                                    </button>
+                                    <strong style="color:#ff38fc;font-size: 15px;">付款须知</strong>
+
+                                    &emsp;
+
+                                    <strong style="color:#13c2d9;font-size: 15px;">自选编号</strong>
+                                    <button onclick="num_notice()" id="num_notice_button"
+                                        style="background-color: #189ba9; margin-top: 8px;"
+                                        class="button2">点击查看
+                                    </button>
+
+                                    <br />
+
+                                    <button onclick="bk_notice()" id="bk_notice_button"
+                                        style="background-color: #189ba9; margin-top: 8px;"
+                                        class="button2">点击查看
+                                    </button>
+                                    <strong style="color:#f29e4d;font-size: 15px;">后台功能</strong>
+
+                                    &emsp;
+
+                                    <strong style="color:#cc85ff;font-size: 15px;">赞助特权</strong>
+                                    <button onclick="vip_notice()" id="vip_notice_button"
+                                        style="background-color: #189ba9; margin-top: 8px;"
+                                        class="button2">点击查看
+                                    </button>
+
+                                    <p id="pay_notice_content"
+                                        style="display: none; text-align: left;">
+                                        ▶ 付款后恕不退款（特别告知破解玩家，破解的定义看群公告） <br />
+                                        ▶ 单笔付款满30元算赞助且可累计，已经是赞助号的后续赞助也可累计 <br />
+                                        ▶ 购买普通号的费用不算入赞助且不累计 <br />
+                                        ▶ 付款后可以借服主的iOS外区ID用于下载WG
+                                    </p>
+
+                                    <p id="num_notice_content"
+                                        style="display: none; text-align: left;">
+                                        ▶ 购买普通号<u>当天</u>可以选择一次任意未绑定编号(1~9例外) <br />
+                                        ▶ 赞助满30元<u>当天</u>可以选择一次任意非赞助编号(1~9例外) <br />
+                                        ▶ 赞助满100元<u>当天</u>可以选择一次任意除了赞助一样满100元的号 <br />
+                                        ▶ 赞助满200元可永久固定编号，被回收后重新领号可绑定上次的编号 <br />
+                                        ▶ 赞助满300元可定制编号，具体私聊服主 <br />
+                                        <strong>要选哪个告诉服主，不选也行，换号后重新导入新编号的配置即可</strong> <br />
+                                        <button onclick="weibangding()" id="pay_notice_button"
+                                            style="background-color: #1aa918; margin-top: 8px;"
+                                            class="button2">点击查看未绑定编号
+                                        </button>
+                                        <button onclick="feizanzhu()" id="pay_notice_button"
+                                            style="background-color: #8718a9; margin-top: 8px;"
+                                            class="button2">点击查看非赞助编号
+                                        </button>
+                                    </p>
+
+                                    <p id="bk_notice_content"
+                                        style="display: none; text-align: left;">
+                                        ▶ 普通号和赞助号有玩家后台权限，有以下功能 <br />
+                                        &emsp;自定义房名 <br />
+                                        &emsp;黑名单 <br />
+                                        &emsp;私有房 <br />
+                                        &emsp;跨版本联机 <br />
+                                        &emsp;自定义人数上限 <br />
+                                        ▶ 玩家后台链接
+                                        <a style="color:#39ffbc; font-weight:bold;" href="/bk">
+                                            点击跳转</a>
+                                    </p>
+
+                                    <p id="vip_notice_content"
+                                        style="display: none; text-align: left;">
+                                        ▶ 专属群头衔(不超过6个字符)，要的话跟服主说
+                                        <br />
+                                        ▶ 有编号的状态下可添加机器人莜喵苪(1356090004)为好友，解锁专属快捷命令
+                                        <!--  <br />
+                                        ▶ 开放“转账”命令权限，用途是给喵币其他人 -->
+                                    </p>
+
+                                    <br />
+
+                                    <button class="button2" onclick="update_wgnum(1)"
+                                        style="font-size: 16px; margin-top: 8px;">点击返回</button>
+
+                                </div>
+
+                            </div>
+                        </article>
+
+                    </div>
+                    <!-- 内容 end -->
+
+
+                    <!-- 侧边栏 -->
+                    <div class="col-xl-4">
+                        <div class="lyear-sidebar" style="text-align:center;">
+                            <h4>三种联机编号的简要区别</h4>
+                            <div style="text-align: left; max-width: 320px;">
+                                <div style="margin-bottom: 6px;">
+                                    <h6 style="color:#ff3838;margin-bottom: 0px;">体验号</h6>
+                                    <p>连续7天不联机回收，不限次免费领取，玩家后台功能部分受限</p>
+                                </div>
+                                <div style="margin-bottom: 6px;">
+                                    <h6 style="color:#00ef3c;margin-bottom: 0px;">普通号</h6>
+                                    <p>连续30天不联机回收，解锁玩家后台功能，被回收后重新领号就降回体验号</p>
+                                </div>
+                                <div>
+                                    <h6 style="color:#cc85ff;margin-bottom: 0px;">赞助号</h6>
+                                    <p>连续60天不联机回收（赞助满200元永久），被回收后重新领号和退群加回来依旧是赞助号，解锁所有功能并有特权
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 侧边栏 end -->
+
+                </div>
+            </div>
+            <!-- end container -->
+        </section>
+    </div>
+
+    <script src="{{ cdn_url }}/cdn/js/jquery.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+        function pay_notice() {
+            var aa = $("#pay_notice_content").css("display");
+            if (aa == "none") {
+                $("#pay_notice_content").css("display", "");
+                $("#pay_notice_button").text("点击关闭");
+                $("#pay_notice_button").css("background-color", "#ff4545");
+
+                $("#num_notice_content").css("display", "none");
+                $("#num_notice_button").text("点击查看");
+                $("#num_notice_button").css("background-color", "#189ba9");
+
+                $("#bk_notice_content").css("display", "none");
+                $("#bk_notice_button").text("点击查看");
+                $("#bk_notice_button").css("background-color", "#189ba9");
+
+                $("#vip_notice_content").css("display", "none");
+                $("#vip_notice_button").text("点击查看");
+                $("#vip_notice_button").css("background-color", "#189ba9");
+            }
+            else {
+                $("#pay_notice_content").css("display", "none");
+                $("#pay_notice_button").text("点击查看");
+                $("#pay_notice_button").css("background-color", "#189ba9");
+            }
+        }
+
+        function num_notice() {
+            var aa = $("#num_notice_content").css("display");
+            if (aa == "none") {
+                $("#pay_notice_content").css("display", "none");
+                $("#pay_notice_button").text("点击查看");
+                $("#pay_notice_button").css("background-color", "#189ba9");
+
+                $("#num_notice_content").css("display", "");
+                $("#num_notice_button").text("点击关闭");
+                $("#num_notice_button").css("background-color", "#ff4545");
+
+                $("#bk_notice_content").css("display", "none");
+                $("#bk_notice_button").text("点击查看");
+                $("#bk_notice_button").css("background-color", "#189ba9");
+
+                $("#vip_notice_content").css("display", "none");
+                $("#vip_notice_button").text("点击查看");
+                $("#vip_notice_button").css("background-color", "#189ba9");
+            }
+            else {
+                $("#num_notice_content").css("display", "none");
+                $("#num_notice_button").text("点击查看");
+                $("#num_notice_button").css("background-color", "#189ba9");
+            }
+        }
+
+        function bk_notice() {
+            var aa = $("#bk_notice_content").css("display");
+            if (aa == "none") {
+                $("#pay_notice_content").css("display", "none");
+                $("#pay_notice_button").text("点击查看");
+                $("#pay_notice_button").css("background-color", "#189ba9");
+
+                $("#num_notice_content").css("display", "none");
+                $("#num_notice_button").text("点击查看");
+                $("#num_notice_button").css("background-color", "#189ba9");
+
+                $("#bk_notice_content").css("display", "");
+                $("#bk_notice_button").text("点击关闭");
+                $("#bk_notice_button").css("background-color", "#ff4545");
+
+                $("#vip_notice_content").css("display", "none");
+                $("#vip_notice_button").text("点击查看");
+                $("#vip_notice_button").css("background-color", "#189ba9");
+            }
+            else {
+                $("#bk_notice_content").css("display", "none");
+                $("#bk_notice_button").text("点击查看");
+                $("#bk_notice_button").css("background-color", "#189ba9");
+            }
+        }
+
+        function vip_notice() {
+            var aa = $("#vip_notice_content").css("display");
+            if (aa == "none") {
+                $("#pay_notice_content").css("display", "none");
+                $("#pay_notice_button").text("点击查看");
+                $("#pay_notice_button").css("background-color", "#189ba9");
+
+                $("#num_notice_content").css("display", "none");
+                $("#num_notice_button").text("点击查看");
+                $("#num_notice_button").css("background-color", "#189ba9");
+
+                $("#bk_notice_content").css("display", "none");
+                $("#bk_notice_button").text("点击查看");
+                $("#bk_notice_button").css("background-color", "#189ba9");
+
+                $("#vip_notice_content").css("display", "");
+                $("#vip_notice_button").text("点击关闭");
+                $("#vip_notice_button").css("background-color", "#ff4545");
+            }
+            else {
+                $("#vip_notice_content").css("display", "none");
+                $("#vip_notice_button").text("点击查看");
+                $("#vip_notice_button").css("background-color", "#189ba9");
+            }
+        }
+
+        function update_wgnum(where) {
+            if (where == 2) {
+                $("#buy").css("display", "");
+                $("#get").css("display", "none");
+            } else if (where == 1) {
+                $("#get").css("display", "");
+                $("#buy").css("display", "none");
+                $("#pay_msg").css("display", "none");
+            }
+        }
+
+        function get_wgnum(t) {
+            $.get("/get_num", function (r) {
+                if (t == "wbd") {
+                    alert(r.wbd.replace("<br />", "\n"))
+                }
+                if (t == "fzz") {
+                    alert(r.fzz.replace("<br />", "\n"))
+                }
+            }, 'json');
+        }
+
+        function weibangding() {
+            get_wgnum('wbd');
+        }
+
+        function feizanzhu() {
+            get_wgnum('fzz');
+        }
+
+        $(document).ready(
+            function () {
+                if (location.search.indexOf("?") == 0) {
+                    update_wgnum(2);
+                }
+            }
+        );
+
+        function check() {
+            var data = { num: $("#num").val() }
+            $.get("/num_check", data, function (r) {
+                $('#wgnum_info').html(r.msg)
+            }, 'json');
+        }
+
+        function next() {
+            if ($("#qq").val() == "")
+                $('#submit').html("请先填写Q号！")
+            else {
+                $('#submit').html("下一步")
+                var data = { qq: $("#qq").val() }
+                $.get("/submit_qq", data, function (r) {
+                    p1 = " <br /><strong style='font-size: 15px; color:#ff6060;'>点击按钮复制链接到浏览器粘贴打开 <br />然后认真跟着教程做就行了</strong><div id='wg_link'>"
+                    p2 = "</div><button class='cp' data-clipboard-target='#wg_link' style='width: auto !important;height: 30px !important;padding: 2px 4px !important; font-size: 16px; background-color:#ff6060;'>点击复制链接</button>"
+                    tips = '到群里发 “验证” 两字 <br />然后回来点下一步 <br />'
+                    selected = r.code
+                    switch (selected) {
+                        case 0:
+                            alert("请正确填写QQ号")
+                            break;
+                        case 1:
+                            window.location.href = r.link;
+                            break;
+                        case 4:
+                            $('#msg').html(tips)
+                            break;
+                        case 5:
+                            $('#msg').html('<div style="white-space: nowrap;">请先加入喵服联机群 <button class="button1" style="width:auto !important;font-size:12px;" onclick="window.location.href=\'{{ join_group_url }}\'">点击加群</button> <br /><img style="width: 200px;" src="{{ cdn_url }}/cdn/join_group.jpg" alt="QQ群二维码" /> <br />是在群里的QQ号，别填错</div>')
+                            break;
+                        case 6:
+                            $('#msg').html(tips + "获取配置文件下载链接")
+                            break;
+                        case 7:
+                            $('#msg').html(tips + "领取一个赞助号")
+                            break;
+                        case 8:
+                            $('#msg').html(tips + "领取一个体验号")
+                            break;
+                        case -1:
+                            $('#msg').html("黑名单中有你份，禁止领号！ <br />有异议私聊服主")
+                            break;
+                        case -2:
+                            $('#msg').html("你被禁止免费使用喵服 <br />请购买普通号或赞助号")
+                            break;
+                        case -3:
+                            $('#msg').html("QQ等级过低，禁止领体验号 <br />请到升级编号处付5元购买普通号")
+                            break;
+                        case -4:
+                            $('#msg').html("服务器异常，请联系服主处理")
+                            break;
+                        default:
+                            break;
+                    }
+                }, 'json');
+            }
+        }
+
+        function display_pay(way) {
+            $("#pay_msg").css("display", "");
+            if (way == 1)
+                $("#pay_img").attr('src', "{{ cdn_url }}/cdn/pay/wx.gif");
+            else if (way == 2)
+                $("#pay_img").attr('src', "{{ cdn_url }}/cdn/pay/zfb.gif");
+            else if (way == 3)
+                $("#pay_img").attr('src', "{{ cdn_url }}/cdn/pay/qq.gif");
+        }
+    </script>
+</body>
+
+</html>

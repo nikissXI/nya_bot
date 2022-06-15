@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>战魂铭人联机平台-喵服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ cdn_url }}/cdn/favicon.ico" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/style.css" />
+    <style>
+
+    </style>
+
+</head>
+
+<body>
+    <div class="head_bg" style="background-image: url('{{ cdn_url }}/cdn/head_bg.png');"></div>
+    <div class="bg" style="background-image: url('{{ cdn_url }}/cdn/bg.png');"></div>
+    <header class="lyear-header text-center">
+        <div class="lyear-header-container">
+            <div class="lyear-mask"></div>
+            <h1 class="lyear-blogger pt-lg-4 mb-0">关于喵服</h1>
+            <nav class="navbar navbar-expand-lg">
+                <!-- 导航栏 -->
+                <a class="navbar-toggler" data-toggle="collapse" data-target="#navigation"
+                    aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="lyear-hamburger">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </a>
+
+                <div id="navigation" class="collapse navbar-collapse flex-column">
+
+                    <ul class="navbar-nav flex-column text-center" style="font-size: 16px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">官网首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/get">编号配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/room">房间列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/bk">玩家后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">服主后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">关于喵服</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="lyear-wrapper">
+        <section class="mt-5 pb-5">
+            <div class="container" style="margin-top:0px !important;">
+                <div class="row">
+
+                    <!-- 内容 start -->
+                    <div class="col-xl-8">
+
+                        <article class="lyear-arc">
+                            <div class="main">
+                                <h4 style="color:#8de5ff;">
+                                    关于喵服</h4>
+                                <p style="text-align: left;">
+                                    &emsp;&emsp;喵服由服主我（也就是群主）一个人开发、搭建、运营，服务器的租金也是我自己出的，其中没有官方参与，与大家熟知的蒲公英联机平台类似，但蒲公英是企业，我是个人。在此先感谢支持喵服的玩家，尤其感谢给予了赞助的玩家，有钱才有开发的动力是吧！（虽然加起来也没多少，总比没有好）<br />
+                                    &emsp;&emsp;喵服一开始叫WG（其实就是WireGuard缩写），然后老被说是外挂，于是改了个名字叫喵服，至于为什么是喵服，我喜欢猫猫（嘿嘿）。<br />
+                                    &emsp;&emsp;喵服以前也做过元气骑士的远程联机，因其稳定性也是得到了许多元气玩家的支持。后来官方的远程联机出来了，喵服渐渐没人用了，后来就关闭了。在2021年1月20日，与元气的群友聊天时得知战魂铭人也有局域网联机了，哦哟，喵服又能搞事了。于是经过了007后，于2021年1月25日全网首发了战魂铭人远程联机的教程，曾经的老伙计甜橙在第二天也发布了联机教程，不过甜橙现在关服了。蒲公英联机平台是在下一个月才出来的。当时抢了个全网首发挺兴奋的。<br />
+                                    &emsp;&emsp;一开始喵服的战魂铭人远程联机，是比较简陋的，不像现在有机器人提供这么多功能。当时联机不仅要安装WG还要安装Python
+                                    IDE来运行联机脚本，总之比现在麻烦挺多，现在有个UP在小天的还在传播一开始那个联机教程视频，一直联系不上他本人导致无法更新。<br />
+                                    &emsp;&emsp;在2021年7月，要准备毕业设计了，在愁做什么的时候，把目光看向了喵服。在询问导师得知题目允许后，就决定把喵服当作自己毕业设计吧。但一开始喵服太**简陋了，于是把目光看向了QQ机器人，在了解了一波后，决定使用Nonebot2+go-cqhttp作为QQ机器人开发框架。于是一直折腾至今，不断完善功能，才有现在这个喵服。这个过程太艰辛了，在此过程非常感谢我老婆的理解与支持。<br />
+                                    &emsp;&emsp;关于WG这个软件，以前首次配置是非常蛋疼、劝退新人的，iOS的除了换个外区ID没什么麻烦的，安卓的非常麻烦，因为不像iOS可以点击conf直接通过WG打开导入，只能相机扫描二维码或从文件管理导入conf，导致中间会有很多问题。因此在2021年国庆节，我花了一周时间去折腾WG的源码，我本人是不懂APP开发的，只能靠经验去瞎折腾。在左问右问以及自己不断吃瘪后，终于给WG加上了从相册导入二维码的功能，才把首次配置变得容易起来。其中的心酸只有我自己能理解。<br />
+                                    &emsp;&emsp;在2022年3月6日前，喵服是半收费使用的，因为不想被白嫖我的劳动成果。也因此有些傻逼会对喵服恶意评价甚至对我人身攻击，但除了愤怒剩下的就是无奈。在斟酌一番后，决定开放免费使用，但给了更多权限给愿意付费的用户，对玩家后台功能进行了权限分层，但免费的也能正常联机，只是限制了拓展功能。非常感激那些在喵服受到恶意评价时挺身而出的玩家，为喵服打抱不平。<br />
+                                    &emsp;&emsp;在官方的远程联机未出来前（至少目前看是遥遥无期）喵服会持续提供战魂铭人玩家远程联机服务，并且与各大战魂群一起打击破解修改玩家。<br />
+                                    &emsp;&emsp;最后，祝喵服的各位玩家联机愉快、交流愉快。感谢玩家与爱人对我的理解与支持。愿战魂铭人玩家社区及喵服共同发展。<br />
+                                    <br />
+                                    ——2022年3月8日<br />
+                                    顺祝老婆节日快乐！
+                                </p>
+
+                                <p id="test">
+
+                                </p>
+
+                            </div>
+
+                        </article>
+                    </div>
+                    <!-- 内容 end -->
+
+                    <!-- 侧边栏 -->
+                    <div class="col-xl-4" style="margin:0px auto;max-width:260px;">
+                        <div class="lyear-sidebar">
+                            <h5 style="color:#ff8ecc;">喵服用到的技术</h5>
+                        </div>
+                        <p>
+                            ▶ WireGuard<br />
+                            ▶ Python及其第三方库<br />
+                            ▶ Nonebot2<br />
+                            ▶ go-cqhttp<br />
+                            ▶ HTML、CSS、JS
+                        </p>
+                    </div>
+                    <!-- 侧边栏 end -->
+
+                </div>
+
+            </div>
+            <!-- end container -->
+        </section>
+    </div>
+
+    <script src="{{ cdn_url }}/cdn/js/jquery.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+    </script>
+</body>
+
+</html>

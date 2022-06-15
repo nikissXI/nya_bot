@@ -1,0 +1,227 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>战魂铭人联机平台-喵服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ cdn_url }}/cdn/favicon.ico" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/style.css" />
+    <style>
+        button {
+            padding: 0px 3px;
+        }
+
+        a {
+            color: #8de5ff;
+        }
+
+        textarea {
+            border: 1px solid #d9d9d9;
+            padding: 0 12px;
+            width: 100%;
+            height: 80px;
+            border-radius: 4px;
+        }
+
+        /* ////////////// */
+        .content .head {
+            width: 100%;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+        }
+
+        .list ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .list ul li {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            height: 40px;
+            padding: 0 5px;
+            border-bottom: dashed 1px #aaa;
+            transition: all .3s;
+        }
+
+        .list ul li:nth-child(1) {
+            border-top: dashed 1px #aaa;
+        }
+
+        .list ul li:hover {
+            background-color: #eee;
+        }
+
+        .list ul li a {
+            text-decoration: none;
+            padding: 0 5px;
+            color: #fff;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        .list ul li a .article-info {
+            flex: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            display: flex;
+            margin-right: 10px;
+        }
+
+        .list ul li a .article-info .cate {
+            background-color: #9225da;
+            color: #fff;
+            padding: 2px 3px;
+            margin-right: 4px;
+            font-size: 15px;
+            border-radius: 3px;
+        }
+
+        .a_title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .list ul li a .article-info .a_title {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .list ul li a .post-info {
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list ul li a .post-info .date {
+            color: #aaa;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="head_bg" style="background-image: url('{{ cdn_url }}/cdn/head_bg.png');"></div>
+    <div class="bg" style="background-image: url('{{ cdn_url }}/cdn/bg.png');"></div>
+    <header class="lyear-header text-center">
+        <div class="lyear-header-container">
+            <div class="lyear-mask"></div>
+            <h1 class="lyear-blogger pt-lg-4 mb-0">文章列表</h1>
+            <nav class="navbar navbar-expand-lg">
+                <!-- 导航栏 -->
+                <a class="navbar-toggler" data-toggle="collapse" data-target="#navigation"
+                    aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="lyear-hamburger">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </a>
+
+                <div id="navigation" class="collapse navbar-collapse flex-column">
+
+                    <ul class="navbar-nav flex-column text-center" style="font-size: 16px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">官网首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/get">编号配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/room">房间列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/bk">玩家后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">服主后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">关于喵服</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="lyear-wrapper" style="padding: 20px 0px !important;">
+        <section class="mt-5 pb-5">
+            <div class="container" style="padding: 0px !important;">
+                <div class="row">
+
+                    <!-- 内容 start -->
+                    <div class="col-xl-8">
+
+                        <article class="lyear-arc" style="text-align: center;">
+                            <div class="main">
+
+                                <h4 style="text-align:center;color: #8de5ff;">文章列表</h4>
+
+                                <div class="list" style="width: 100%;">
+
+                                    <ul id="guide">
+                                    </ul>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+                    </div>
+                    <!-- 内容 end -->
+
+
+                    <!-- 侧边栏 -->
+                    <div class="col-xl-4" style="margin:0px auto;max-width:260px;">
+                        <div class="lyear-sidebar">
+                            <h5 style="color:#ff8ecc;">投稿方式</h5>
+                        </div>
+
+                        <p style="text-align:left;">
+                            去其他网站（如TapTap、B站）发布文章或视频后，把类别、标题、作者、链接，四样东西私聊发给服主
+                        </p>
+
+                    </div>
+                    <!-- 侧边栏 end -->
+
+                </div>
+
+            </div>
+            <!-- end container -->
+        </section>
+    </div>
+
+
+    <script src="{{ cdn_url }}/cdn/js/jquery.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(
+            function () {
+                $.get("/guide_data", function (r) {
+                    $("#guide").empty()
+                    $.each(r.data, function (x, row) {
+                        $("#guide").append('<li><a target="_blank" href="' + row[5] + '"><div class="article-info"><span class="cate">' + row[1] + '</span><span class="a_title">' + row[2] + '</span></div><div class="post-info"><span class="author">' + row[3] + '</span><span class="date">' + row[4] + '</span></div><div style="display: none;">' + row[0] + '</div></a></li>')
+                    });
+                }, 'json');
+            }
+        );
+
+    </script>
+</body>
+
+</html>

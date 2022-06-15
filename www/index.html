@@ -1,0 +1,233 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keyword" content="战魂铭人, 战魂铭人远程联机, 喵服">
+    <meta name="description" content="战魂铭人远程联机平台，支持安卓、苹果、Steam">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="baidu-site-verification" content="code-2bQHGfLuCi" />
+    <title>战魂铭人联机平台-喵服</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ cdn_url }}/cdn/favicon.ico" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/style.css" />
+    <style>
+        button {
+            padding: 1px 6px;
+            font-size: 16px;
+            background-color: rgb(255, 93, 155);
+        }
+
+        p {
+            text-align: left;
+            margin-bottom: 0px;
+        }
+
+        h6 {
+            margin-bottom: 0px;
+        }
+
+        .jieshao {
+            max-width: 200px;
+            display: block;
+            margin: 8px;
+            float: left;
+            width: 50%;
+        }
+
+        .data {
+            display: block;
+            text-align: left;
+            width: 50%;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="head_bg" style="background-image: url('{{ cdn_url }}/cdn/head_bg.png');"></div>
+    <div class="bg" style="background-image: url('{{ cdn_url }}/cdn/bg.png');"></div>
+    <header class="lyear-header text-center">
+        <div class="lyear-header-container">
+            <div class="lyear-mask"></div>
+            <h1 class="lyear-blogger pt-lg-4 mb-0">官网首页</h1>
+            <nav class="navbar navbar-expand-lg">
+                <!-- 导航栏 -->
+                <a class="navbar-toggler" data-toggle="collapse" data-target="#navigation"
+                    aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="lyear-hamburger">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </a>
+
+                <div id="navigation" class="collapse navbar-collapse flex-column">
+
+                    <ul class="navbar-nav flex-column text-center" style="font-size: 16px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">官网首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/get">编号配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/room">房间列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/bk">玩家后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">服主后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">关于喵服</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="lyear-wrapper">
+        <section class="mt-5 pb-5">
+            <div class="container" style="padding: 0px !important;">
+                <div class="row">
+
+                    <!-- 内容 start -->
+                    <div class="col-xl-8">
+
+                        <article class="lyear-arc" style="text-align: center;">
+                            <div class="main">
+
+                                <div style="display: flex;min-width: 330px;">
+                                    <div class="data">网站访问人次: {{ vistor_count }}</div>
+                                    &emsp;
+                                    <div class="data">当日联机人次: {{ today_play_count }}</div>
+                                </div>
+
+                                <div style="display: flex;min-width: 330px;">
+                                    <div class="data">昨日联机人次: {{ yestoday_play_count }}</div>
+                                    &emsp;
+                                    <div class="data">实时联机人数: {{ online_count }}</div>
+                                </div>
+
+                                <img src="{{ cdn_url }}/cdn/logo.png"
+                                    style="max-height: 150px;" />
+
+                                <div style="display: flex;">
+                                    <div class="jieshao">
+                                        <h6 style="color:#00ef3c;">免费使用</h6>
+                                        <p>不限期免费体验使用，5元即可解锁完整功能</p>
+                                    </div>
+
+                                    <div class="jieshao">
+                                        <h6 style="color:#b2a8ff;">全平台</h6>
+                                        <p>全网独家支持安卓、iOS、Steam互联</p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex;">
+                                    <div class="jieshao">
+                                        <h6 style="color:#ff5151;">专业</h6>
+                                        <p>支持玩家角色显示、自定义房名、自定义人数上限等功能</p>
+                                    </div>
+
+                                    <div class="jieshao">
+                                        <h6 style="color:#13c2d9;">稳定</h6>
+                                        <p>性能强劲，保证联机时不会因为服务器的问题导致联机不愉快</p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex;">
+                                    <div class="jieshao">
+                                        <h6 style="color:#ffce87;">方便易用</h6>
+                                        <p>首次配置完成后，一键连接开始联机</p>
+                                    </div>
+
+                                    <div class="jieshao">
+                                        <h6 style="color:#ff8724;">氛围好</h6>
+                                        <p>玩家联机活跃，交流友好，破解零容忍</p>
+                                    </div>
+                                </div>
+
+                                <button
+                                    style="background-color: rgb(0 161 252 / 83%);font-size: 20px !important;margin-top: 10px;border-radius: 50px;color: rgb(255 255 0);"
+                                    type="button" onclick="window.location.href='/get'">
+                                    >>>点我开始联机<<< </button>
+
+                                        <h5
+                                            style="color:#8de5ff;margin-top:30px;font-weight: bold;">
+                                            喵服相关链接</h5>
+                                        <div style="white-space: nowrap;text-align: center;">
+                                            <div style="margin-bottom:10px;">
+                                                <button type="button"
+                                                    onclick="window.location.href='{{ video_url }}'">视频教程</button>
+                                                &emsp;
+                                                <button
+                                                    onclick="window.location.href='https://jq.qq.com/?_wv=1027&k=bK7UjxJV'">加群</button>
+                                                &emsp;
+                                                <button type="button"
+                                                    onclick="window.location.href='/guide'">文章列表</button>
+                                            </div>
+                                            <div>
+                                                <button type="button"
+                                                    onclick="window.location.href='/xl'">修罗榜</button>
+                                                &emsp;
+                                                <button type="button"
+                                                    onclick="window.location.href='/sponsor'">赞助榜</button>
+                                                &emsp;
+                                                <button type="button"
+                                                    onclick="window.location.href='/zhb'">黑名单</button>
+                                            </div>
+                                        </div>
+
+                            </div>
+
+                        </article>
+                    </div>
+                    <!-- 内容 end -->
+
+                    <!-- 侧边栏 -->
+                    <div class="col-xl-4" style="margin:0px auto;max-width:260px;">
+                        <div class="lyear-sidebar">
+                            <h5 style="color:#f1ff46;">相关QQ群推荐</h5>
+                        </div>
+                        <p>
+                            恶果之地联机群：604857477<br />
+                            战魂蒲公英联机群：772814424<br />
+                            我的世界服务器群：837790101
+                        </p>
+                        <br />
+                        <div class="lyear-sidebar">
+                            <h5 style="color:#f1ff46;">游戏下载</h5>
+                        </div>
+                        <p>
+                            全渠道战魂铭人下载 <a
+                                href="http://www.chillyroom.com/zh/zhan_hun/pre-order"><strong>点击跳转</strong></a>
+                        </p>
+                    </div>
+                    <!-- 侧边栏 end -->
+
+                </div>
+
+            </div>
+            <!-- end container -->
+        </section>
+    </div>
+
+    <script src="{{ cdn_url }}/cdn/js/jquery.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        function check() {
+            var data = { num: $("#num").val() }
+            $.get("/check_num", data, function (r) {
+                alert(r.msg);
+            }, 'json');
+        }
+    </script>
+</body>
+
+</html>

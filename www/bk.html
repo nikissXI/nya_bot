@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>战魂铭人联机平台-喵服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ cdn_url }}/cdn/favicon.ico" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/style.css" />
+    <style>
+        button {
+            padding: 4px 8px 4px 8px !important;
+        }
+
+        input {
+            height: 30px !important;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="head_bg" style="background-image: url('{{ cdn_url }}/cdn/head_bg.png');"></div>
+    <div class="bg" style="background-image: url('{{ cdn_url }}/cdn/bg.png');"></div>
+    <header class="lyear-header text-center">
+        <div class="lyear-header-container">
+            <div class="lyear-mask"></div>
+            <h1 class="lyear-blogger pt-lg-4 mb-0">玩家后台</h1>
+            <nav class="navbar navbar-expand-lg">
+                <!-- 导航栏 -->
+                <a class="navbar-toggler" data-toggle="collapse" data-target="#navigation"
+                    aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="lyear-hamburger">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </a>
+
+                <div id="navigation" class="collapse navbar-collapse flex-column">
+
+                    <ul class="navbar-nav flex-column text-center" style="font-size: 16px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">官网首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/get">编号配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/room">房间列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/bk">玩家后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">服主后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">关于喵服</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+    <div class="lyear-wrapper">
+        <section class="mt-5 pb-5">
+            <div class="container" style="margin-top:0px !important;">
+
+                <div class="row">
+
+                    <!-- 内容 start -->
+                    <div class="col-xl-8">
+                        <article class="lyear-arc">
+
+                            <!-- 打开时显示尝试连接中 -->
+                            <div class="main" id="wait_body">
+                                <div style="text-align: center;">
+                                    <p style="font-size:20px;">
+                                        连接后台中，请稍后...
+                                    </p>
+                                </div>
+                            </div>
+
+
+                            <!-- 没连上服务器内容 -->
+                            <div class="main" style="display: none;" id="error_body">
+                                <div style="text-align: center;">
+
+                                    <p style="font-size:20px;">
+                                        访问喵服服务器失败<br />
+                                        请检查WG是否打开<br />
+                                        或者编号是否有效<br />
+                                        <button onclick="window.location.href='/get'"
+                                            style="font-size:16px;margin-bottom: 10px;">点击获取/查询编号</button>
+                                        <br />
+                                        <button onclick="window.location.href='/bk'"
+                                            style="font-size:16px;">点击刷新重试</button>
+                                        <br />
+                                        如果检查过都没问题<br />
+                                        试试删掉现配置重新下载导入
+                                    </p>
+
+                                </div>
+                            </div>
+
+
+                            <!-- 连上服务器的内容 -->
+                            <div class="main" style="display: none; max-width: 450px;"
+                                id="content_body">
+
+                                <div class="header">
+                                    <div class="delay item">
+                                        <div class="content">
+                                            <span class="name"
+                                                style="font-size: 14px; font-weight: bold;">编号</span>
+                                            <span
+                                                style="font-size: 24px;font-weight: bold;color: #b4d7ff;">
+                                                <span class="value" id="wgnum"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="info item" style="min-width:120px;">
+                                        <div class="content">
+                                            <div class="type">
+                                                <span class="name">编号类型:</span>
+                                                <span class="value" id="wgnum_type"></span>
+                                            </div>
+                                            <div class="remain-days">
+                                                <span class="name">剩余天数:</span>
+                                                <span class="value" id="ttl"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="delay item">
+                                        <div class="content">
+                                            <span class="name" id="ms_name"
+                                                style="font-size: 14px; font-weight: bold;"></span>
+                                            <span class="value-wrap fast">
+                                                <span class="value" id="ms"
+                                                    style="font-weight: normal;"></span>
+                                                <span class="unit"
+                                                    style="font-weight: normal;">ms</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <form id="room_data" style="width: 80%;">
+                                    <div id="tips"
+                                        style="color: #5fffac;font-size: 16px;text-align: center;">
+                                        进游戏创建或加入房间就行<br />联机后次日会刷新剩余天数</div>
+                                    <div class="form-wrap">
+                                        <div class="form-item">
+                                            <label for="ms">
+                                                <div class="title">网络延迟</div>
+                                                <div style="white-space: nowrap;"
+                                                    onclick="ms_check()">
+                                                    <input id="ms_detail" name="ms_detail" value=""
+                                                        type="text" placeholder="点击获取详细延迟数据"
+                                                        readonly="readonly" />
+                                                    <!-- <span class="refreshBtn">
+                                                        <i class="iconfont icon-refresh"></i>
+                                                    </span> -->
+                                                </div>
+                                            </label>
+                                            <div id="ping_tip" style="display: none;">
+                                                因你的系统不支持ping检测，故使用http检测代替，检测精确度会稍差些</div>
+                                        </div>
+                                        <div class="form-item">
+                                            <label for="fm">
+                                                <div class="title">房间名称</div>
+                                                <input id="fm" name="fm" value="" type="text"
+                                                    placeholder="自定义房间名称,留空不设置" />
+                                            </label>
+                                        </div>
+                                        <div class="form-item">
+                                            <label for="sy">
+                                                <div class="title">私有成员</div>
+                                                <input id="sy" name="sy" value="" type="text"
+                                                    placeholder="允许谁加入,多个用空格分割,留空不设置" />
+                                            </label>
+                                        </div>
+                                        <div class="form-item">
+                                            <label for="lh">
+                                                <div class="title">黑名单列表</div>
+                                                <input id="lh" name="lh" value="" type="text"
+                                                    placeholder="禁止谁加入,多个用空格分割,留空不设置" />
+                                            </label>
+                                        </div>
+                                        <div class="form-item">
+                                            <label for="rs">
+                                                <div class="title">人数上限</div>
+                                                <input id="rs" name="rs" value="" type="text"
+                                                    placeholder="房间人数上线,可填2或3,留空不设置" />
+                                            </label>
+                                        </div>
+                                        <div class="form-item">
+                                            <label for="bb">
+                                                <div class="title">跨版本进房</div>
+                                                <input id="bb" name="bb" value="" type="text"
+                                                    placeholder="填你的游戏版本号,如1.11.1,留空不设置" />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <div id="no_free"
+                                    style="display: none;font-size: 16px; color: #ebf85f">
+                                    体验号没有后台权限，但不影响联机</div>
+
+                                <div class="commit">
+                                    <button id="update_button" onclick="bk_update()"
+                                        style="margin-right: 16px;">更新房间设置</button>
+                                    <button id="room_button" onclick="flushroom()"
+                                        style="margin-left: 16px;">刷新房间列表</button>
+                                </div>
+
+                            </div>
+                        </article>
+
+                    </div>
+                    <!-- 内容 end -->
+
+                    <!-- 侧边栏 -->
+                    <div class="col-xl-4">
+                        <a onclick="javascript:flushroom()"><img id="roomlist"
+                                src="static/roomlist.gif" alt="房间列表" style="width: 100%;" /></a>
+                    </div>
+                    <!-- 侧边栏 end -->
+
+
+                </div>
+
+            </div>
+            <!-- end container -->
+        </section>
+    </div>
+
+
+    <script src="{{ cdn_url }}/cdn/js/jquery.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/bootstrap.min.js"></script>
+
+    <script>
+        ping = 1
+
+        function flushroom() {
+            $("#room_button").attr('disabled', 'disabled')
+            $("#roomlist").attr('src', "static/roomlist.gif" + "?t=" + Math.random());
+            setTimeout("$('#room_button').removeAttr('disabled')", 3000)
+        }
+
+        $(document).ready(
+            function () {
+                get_data();
+            }
+        );
+
+        function get_data() {
+            $.ajax({
+                type: "GET",
+                url: "http://{{ gateway }}:{{ port }}/bk_data",
+                timeout: 2000,
+                dataType: "json",
+                error: function (xmlhttprequest, textstatus, message) {
+                    if (textstatus === "timeout") {
+                        $("#error_body").css("display", "");
+                    } else {
+                        window.location.href = 'http://{{ gateway }}:{{ port }}/bk'
+                    }
+                },
+                success: function (r) {
+                    // 判断是否为体验号
+                    if (r.refuse == 1) {
+                        $("#fm").attr('readonly', 'readonly')
+                        $("#sy").attr('readonly', 'readonly')
+                        $("#lh").attr('readonly', 'readonly')
+                        $("#rs").attr('readonly', 'readonly')
+                        $("#bb").attr('readonly', 'readonly')
+                        $("#update_button").html("点击升级编号")
+                        $("#update_button").attr("onclick", "window.location.href='/get?x'")
+                        $("#no_free").css("display", "")
+                    }
+
+                    $("#content_body").css("display", "");
+                    $("#wgnum").text(r.wgnum)
+                    $("#wgnum_type").text(r.wgnum_type)
+                    $("#ttl").text(r.ttl + "天")
+                    $("#ms_name").text("瞬时延迟")
+                    $("#fm").val(r.fm)
+                    $("#sy").val(r.sy)
+                    $("#lh").val(r.lh)
+                    $("#rs").val(r.rs)
+                    $("#bb").val(r.bb)
+
+                    if (r.ms == 0) {
+                        ping = 0
+                        $("#ping_tip").css("display", "");
+                        var start = new Date().getTime();
+                        var delay = 0
+                        $.ajax({
+                            type: "GET",
+                            url: "http://{{ gateway }}:{{ port }}/http_ping",
+                            timeout: 1000,
+                            dataType: "json",
+                            success: function (r) {
+                                var stop = new Date().getTime();
+                                delay = stop - start - 8
+                            },
+                            complete: function () {
+                                $("#ms").text(delay)
+                            }
+                        });
+                    } else {
+                        $("#ms").text(r.ms)
+                    }
+
+                },
+                complete: function () {
+                    $("#wait_body").css("display", "none");
+                }
+            });
+        }
+
+        function ms_check() {
+            if (ping === 1)
+                ms_check_1();
+            else
+                ms_check_2();
+        }
+
+        function ms_check_1() {
+            $("#ms_detail").val('10秒后返回结果...')
+            $.ajax({
+                type: "GET",
+                url: "http://{{ gateway }}:{{ port }}/ms_check",
+                timeout: 20000,
+                data: { lx: 0 },
+                dataType: "json",
+                error: function () {
+                    $("#ms_detail").val("检测失败")
+                },
+                success: function (r) {
+                    $("#ms_detail").val(r.detail_ms)
+                    $("#ms_name").text("平均延迟")
+                    $("#ms").text(r.ave_ms)
+                },
+                complete: function () {
+                }
+            });
+        }
+
+        function ms_check_2() {
+            var start = 0
+            var delay = 0
+            var stop = 0
+            var lost = 0
+            var sum_delay = 0
+            var max_delay = 0
+            var min_delay = 0
+            $("#ms_detail").val('10秒后返回结果...')
+            for (var i = 0; i < 10; i++) {
+                (function (i) {
+                    setTimeout(function () {
+                        start = new Date().getTime();
+                        delay = 0
+                        $.ajax({
+                            type: "GET",
+                            url: "http://{{ gateway }}:{{ port }}/http_ping",
+                            timeout: 900,
+                            dataType: "json",
+                            success: function (r) {
+                                stop = new Date().getTime();
+                                delay = stop - start - 8
+                            },
+                            error: function () {
+                                lost += 1
+                            },
+                            complete: function () {
+                                if (i == 0) {
+                                    min_delay = delay
+                                }
+                                console.log(i + " " + delay + "ms")
+                                if (delay > max_delay) {
+                                    max_delay = delay
+                                }
+                                if (delay < min_delay) {
+                                    min_delay = delay
+                                }
+                                sum_delay += delay
+                                if (i == 9) {
+                                    $("#ms_detail").val("最低" + min_delay + "ms,最高" + max_delay + "ms,丢包" + (lost / 10 * 100) + "%")
+                                    $("#ms_name").text("平均延迟")
+                                    var ave_delay = Math.round(sum_delay / (10 - lost))
+                                    $("#ms").text(ave_delay)
+                                }
+                            }
+                        });
+                    }, (i + 1) * 1000);
+                })(i)
+            }
+        }
+
+        function bk_update() {
+            var data = $("#room_data").serializeArray();
+            $.get("http://{{ gateway }}:{{ port }}/bk_update", data, function (r) {
+                alert(r.msg);
+            }, 'json');
+        }
+
+    </script>
+</body>
+
+</html>
+
+

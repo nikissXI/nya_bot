@@ -1,0 +1,467 @@
+/**
+ * 模板来源
+ * yinqi<3331653644@qq.com>
+ */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #ffffff;
+}
+
+a {
+    text-decoration: none;
+    color: #39ffbc;
+}
+
+i[class*='mdi'] {
+    vertical-align: middle;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    line-height: 1.7;
+}
+
+.bg {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: -100;
+}
+
+.head_bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -50;
+    background-repeat: repeat-x;
+    background-position-y: -35px;
+}
+
+.lyear-header {
+    position: fixed;
+    height: 100vh;
+    width: 360px;
+    color: #fff
+}
+
+.lyear-header-container {
+    height: 100%;
+}
+
+.lyear-header .navbar {
+    padding: 2rem 1rem;
+    z-index: 12;
+}
+
+/* 遮罩 */
+.lyear-mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    bottom: 0px;
+    z-index: 10;
+}
+
+/* 栏目标题 */
+.lyear-blogger {
+    position: relative;
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: #00fff3;
+    z-index: 11;
+}
+
+.lyear-blogger a {
+    color: #fff
+}
+
+/* 导航切换 */
+.lyear-header .navbar-toggler {
+    position: relative;
+    -webkit-opacity: .8;
+    -moz-opacity: .8;
+    opacity: .8;
+    border: none;
+    padding: 0 .5rem
+}
+
+.lyear-hamburger {
+    padding: 15px;
+    display: inline-block;
+    cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    margin: 0;
+}
+
+.lyear-hamburger .hamburger-inner,
+.lyear-hamburger .hamburger-inner::before,
+.lyear-hamburger .hamburger-inner::after {
+    width: 22px;
+    height: 2px;
+    background-color: #fff;
+    position: absolute;
+    transition-property: -webkit-transform;
+    transition-property: transform;
+    transition-property: transform, -webkit-transform;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+}
+
+.lyear-hamburger .hamburger-inner::before,
+.lyear-hamburger .hamburger-inner::after {
+    content: "";
+    display: block;
+}
+
+.lyear-hamburger .hamburger-inner {
+    top: 8px;
+    left: 12px;
+    transition-duration: 0.4s;
+    transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.lyear-hamburger .hamburger-inner::before {
+    top: 7px;
+    transition: opacity 0.15s 0.4s ease;
+}
+
+.lyear-hamburger .hamburger-inner::after {
+    top: 14px;
+    transition: -webkit-transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), -webkit-transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.lyear-hamburger.is-active .hamburger-inner {
+    transform: translate3d(0, 8px, 0) rotate(135deg);
+}
+
+.lyear-hamburger.is-active .hamburger-inner::before {
+    transition-delay: 0s;
+    opacity: 0;
+}
+
+.lyear-hamburger.is-active .hamburger-inner::after {
+    transform: translate3d(0, -15px, 0) rotate(-270deg);
+}
+
+/* 栏目说明 */
+.profile-section {
+    max-width: 328px;
+}
+
+.lyear-sentence {
+    line-height: 2;
+}
+
+/* 导航栏目 */
+.lyear-header .nav-link {
+    color: rgba(255, 255, 255, 1);
+}
+
+.lyear-header .nav-link:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+/* --------------------------------- *
+ * 右侧
+ * --------------------------------- */
+.lyear-wrapper {
+    margin-left: 360px;
+    padding: 1.5rem 1rem 0;
+    height: 100%;
+}
+
+/* 文章列表 */
+.lyear-arc {
+    margin: 0 0 25px;
+}
+
+.arc-preview {
+    -webkit-transition: all .3s ease-out;
+    transition: all .3s ease-out;
+    margin: 0 0 25px;
+}
+
+.arc-preview:hover {
+    opacity: .7;
+}
+
+/* 侧边栏 */
+.lyear-sidebar {
+    padding-left: 30px;
+}
+
+/* --------------------------------- *
+ * 响应式处理
+ * --------------------------------- */
+@media only screen and (max-width: 1200px) {
+    .lyear-sidebar {
+        padding-left: 0px;
+        margin-top: 1.5rem;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    .lyear-header {
+        position: relative;
+        width: inherit;
+        height: auto;
+    }
+
+    .lyear-header .navbar {
+        padding: 1rem;
+        flex-direction: row-reverse;
+    }
+
+    .lyear-wrapper {
+        margin-left: 0px;
+    }
+
+    .profile-section {
+        max-width: 100%;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+
+    .lyear-header .lyear-blogger {
+        width: 100%;
+        position: absolute;
+        left: 0;
+        top: 1.2rem;
+    }
+
+    .flex-column {
+        margin-top: 10px;
+    }
+}
+
+
+/**
+ * 模板来源
+ * zunzun<lionely9826@qq.com>
+ */
+
+@font-face {
+    font-family: "iconfont";
+    /* Project id 3048836 */
+    src: url('//at.alicdn.com/t/font_3048836_k9hmn6b7rns.woff2?t=1640165885534') format('woff2'),
+        url('//at.alicdn.com/t/font_3048836_k9hmn6b7rns.woff?t=1640165885534') format('woff'),
+        url('//at.alicdn.com/t/font_3048836_k9hmn6b7rns.ttf?t=1640165885534') format('truetype');
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    border: none;
+    background-color: #409eff;
+    color: #fff;
+    display: inline-block;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all .2;
+}
+
+button:active {
+    background-color: #ff6294;
+}
+
+input {
+    outline: none;
+    border: none;
+    height: 28px;
+    border: 1px solid #d9d9d9;
+    color: #000;
+    padding: 0 12px;
+    width: 100%;
+    font-size: inherit;
+    border-radius: 4px;
+    transition: all .3s;
+    display: inline-block;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+input:focus {
+    color: #595959;
+    box-shadow: 0 0 0 2px #e2f0ff;
+    border-color: #ff6294;
+}
+
+input::placeholder {
+    color: #b7b7b7;
+    font-size: 12px;
+}
+
+label {
+    display: block;
+    /* color: #b7b7b7; */
+}
+
+label:focus-within {
+    color: #ff6294;
+}
+
+.iconfont {
+    font-family: "iconfont" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-refresh:before {
+    content: "\ec08";
+}
+
+.beauty-select {
+    background: #fafdfe;
+    height: 28px;
+    width: 100%;
+    line-height: 28px;
+    border: 1px solid #9bc0dd;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 4px;
+}
+
+.iconfont {
+    margin-left: 2px;
+}
+
+
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.header {
+    display: flex;
+    width: 100%;
+    height: 10vh;
+}
+
+.header .item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.No {
+    font-size: 14px;
+    font-weight: 300;
+    color: #595959;
+}
+
+.No .content {
+    display: flex;
+    align-items: baseline;
+}
+
+.No .content .num {
+    font-size: 24px;
+    color: #409eff;
+}
+
+.info {
+    flex-direction: column;
+    background-color: #409eff;
+    border-radius: 20px;
+    padding: 6px;
+}
+
+.info .content {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    flex-direction: column;
+    color: #fff;
+    font-size: 14px;
+}
+
+.delay .content {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    /* color: #595959; */
+    font-weight: 300;
+}
+
+.delay .content .value-wrap {
+    display: flex;
+    align-items: baseline;
+}
+
+.delay .content .value-wrap .value {
+    font-size: 24px;
+}
+
+.form-wrap {
+    margin-top: 20px;
+}
+
+.form-item {
+    margin-bottom: 10px;
+}
+
+.form-item label .input-wrap {
+    white-space: nowrap;
+}
+
+.form-item label .input-wrap .iconfont {
+    margin-left: 2px;
+    font-size: 20px;
+}
+
+.title {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.commit {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-refresh:before {
+    content: "\ec08";
+}
+
+.rotate {
+    display: inline-block;
+    animation: rotate 2s infinite linear;
+}
+
+.fast {
+    color: rgb(0, 184, 0);
+}
+
+.medium {
+    color: orange;
+}
+
+.slow {
+    color: #ff2d99;
+}

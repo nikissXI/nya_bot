@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>战魂铭人联机平台-喵服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ cdn_url }}/cdn/favicon.ico" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ cdn_url }}/cdn/css/style.css" />
+    <style>
+        table td {
+            border: 1px solid;
+        }
+
+        button {
+            padding: 2px 5px;
+        }
+
+        a {
+            color: #8de5ff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="head_bg" style="background-image: url('{{ cdn_url }}/cdn/head_bg.png');"></div>
+    <div class="bg" style="background-image: url('{{ cdn_url }}/cdn/bg.png');"></div>
+    <header class="lyear-header text-center">
+        <div class="lyear-header-container">
+            <div class="lyear-mask"></div>
+            <h1 class="lyear-blogger pt-lg-4 mb-0">黑名单</h1>
+            <nav class="navbar navbar-expand-lg">
+                <!-- 导航栏 -->
+                <a class="navbar-toggler" data-toggle="collapse" data-target="#navigation"
+                    aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="lyear-hamburger">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </a>
+
+                <div id="navigation" class="collapse navbar-collapse flex-column">
+
+                    <ul class="navbar-nav flex-column text-center" style="font-size: 16px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">官网首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/get">编号配置</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/room">房间列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/bk">玩家后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">服主后台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">关于喵服</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="lyear-wrapper">
+
+        <section class="mt-5 pb-5">
+            <div class="container" style="margin-top:0px !important;">
+                <div class="row">
+
+                    <!-- 内容 start -->
+                    <div class="col-xl-8">
+
+                        <article class="lyear-arc" style="text-align: center;">
+                            <div class="main">
+
+                                <h4 style="text-align:center;color: #8de5ff;">上榜原因</h4>
+
+                                <button onclick="window.location.href='/zhb'">点击返回</button>
+                                <br />
+
+                                <h5 id="time" style="text-align:center;color: #5fffac;">时间: </h5>
+                                <h5 id="qqnum" style="text-align:center;color: #5fffac;">QQ: </h5>
+                                <h5 style="text-align:center;color: #5fffac;">原因如下</h5>
+                                <div id="why"></div>
+                                <br />
+
+                                <h5 style="text-align:center;color: #5fffac;">证据图片</h5>
+                                <div id="path"></div>
+
+                            </div>
+                        </article>
+                    </div>
+                    <!-- 内容 end -->
+
+                    <!-- 侧边栏 -->
+                    <div class="col-xl-4" style="margin:0px auto;max-width:260px;">
+                        <div class="lyear-sidebar">
+                            <h5 style="color:#ff8ecc;">相关QQ群推荐</h5>
+                        </div>
+                        <p>
+                            恶果之地联机群：604857477<br />
+                            战魂蒲公英联机群：772814424<br />
+                            我的世界服务器群：837790101
+                        </p>
+
+                        <div class="lyear-sidebar">
+                            <h5 style="color:#ff8ecc;">游戏下载</h5>
+                        </div>
+                        <p>
+                            全渠道战魂铭人下载 <a
+                                href="http://www.chillyroom.com/zh/zhan_hun/pre-order"><strong>点击跳转</strong></a>
+                        </p>
+                    </div>
+                    <!-- 侧边栏 end -->
+
+                </div>
+
+            </div>
+            <!-- end container -->
+        </section>
+    </div>
+
+
+    <script src="{{ cdn_url }}/cdn/js/jquery.min.js"></script>
+    <script src="{{ cdn_url }}/cdn/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(
+            function () {
+                var url = location.search;
+                var str = location.search.substr(1).split("&");
+                var data = { qqnum: unescape(str[0].split("=")[1]) };
+                $.get("/why_data", data, function (r) {
+                    $("#time").append(r.time)
+                    $("#qqnum").append(r.qqnum)
+                    $("#why").append(r.why)
+                    if (r.qqnum == 0) {
+                        window.location.href = "/zhb";
+                    }
+                    else if (r.path.length != 0)
+                        $.each(r.path, function (x, row) {
+                            $("#path").append("<img alt='" + r.qqnum + "' src='" + row + "' style='width:400px' /><br />");
+                        });
+                    else
+                        $("#path").append("人跑太快，没留下证据");
+
+                }, 'json');
+            }
+        );
+
+    </script>
+
+    </script>
+</body>
+
+</html>
