@@ -367,37 +367,39 @@ async def guild_check(event: GuildMessageEvent, bot: Bot) -> bool:
 
 # 管理员命令
 test = on_regex("^test", rule=auto_bot_superuser)
-juesegaiming = on_regex("^角色改名", rule=auto_bot_superuser)
-touxian = on_regex("^头衔\s*\d+\s+", rule=auto_bot_superuser)
 fasong = on_regex("^发送", rule=auto_bot_superuser)
-zhongyiying = on_regex("^中译英", rule=auto_bot_superuser)
-yingyizhong = on_regex("^英译中", rule=auto_bot_superuser)
-baipiao = on_regex("^白嫖\s*-?\d+$|^白嫖$", rule=auto_bot_superuser)
+sousuo = on_regex("^搜索\s*\d+$", rule=auto_bot_superuser)
+touxian = on_regex("^头衔\s*\d+\s+", rule=auto_bot_superuser)
+gonggaoliebiao = on_regex("^公告列表$", rule=auto_bot_superuser)
+zengjiagonggao = on_regex("^增加公告", rule=auto_bot_superuser)
+shanchugonggao = on_regex("^删除公告\s*\d{1,}$", rule=auto_bot_superuser)
+
+zhuangtai = on_regex("^状态$", rule=auto_bot_superuser)
+wangluo = on_regex("^网络$", rule=auto_bot_superuser)
 miaobixitong = on_regex("^喵币系统打开$|^喵币系统关闭$", rule=auto_bot_superuser)
 anquanmoshi = on_regex("^安全模式打开$|^安全模式关闭$", rule=auto_bot_superuser)
-sousuo = on_regex("^搜索\s*\d+$", rule=auto_bot_superuser)
+zhongyiying = on_regex("^中译英", rule=auto_bot_superuser)
+yingyizhong = on_regex("^英译中", rule=auto_bot_superuser)
+
+juesegaiming = on_regex("^角色改名", rule=auto_bot_superuser)
 weibangding = on_regex("^未绑定$", rule=auto_bot_superuser)
-teshubianhao = on_regex("^特殊编号$", rule=auto_bot_superuser)
 feizanzhu = on_regex("^非赞助$", rule=auto_bot_superuser)
+teshubianhao = on_regex("^特殊编号$", rule=auto_bot_superuser)
 bangding = on_regex("^\d+\s*绑定$|^\d+\s+\d+\s*特绑$", rule=auto_bot_superuser)
-zanzhu = on_regex("^赞助\s*\d+\s+[\+\-]?\d+$", rule=auto_bot_superuser)
 jiebang = on_regex("^解绑\s*\d+$", rule=auto_bot_superuser)
+zanzhu = on_regex("^赞助\s*\d+\s+[\+\-]?\d+$", rule=auto_bot_superuser)
 xiuluo = on_regex("^修罗\s*\d+\s+\d+$", rule=auto_bot_superuser)
 kuorong = on_regex("^扩容\s*\d+$|^缩容\s*\d+$", rule=auto_bot_superuser)
 chongzai = on_regex("^重载\s*\d+$", rule=auto_bot_superuser)
-wangluo = on_regex("^网络$", rule=auto_bot_superuser)
-zhuangtai = on_regex("^状态$", rule=auto_bot_superuser)
-haoyouqingli = on_regex("^好友清理$", rule=auto_bot_superuser)
+baipiao = on_regex("^白嫖\s*-?\d+$|^白嫖$", rule=auto_bot_superuser)
 zanzhuzonge = on_regex("^赞助总额$", rule=auto_bot_superuser)
-gonggaoliebiao = on_regex("^公告列表$", rule=auto_bot_superuser)
-shanchugonggao = on_regex("^删除公告\s*\d{1,}$", rule=auto_bot_superuser)
-zengjiagonggao = on_regex("^增加公告", rule=auto_bot_superuser)
+
 miaobizonge = on_regex("^喵币总额$", rule=auto_bot_superuser)
 miaobimochu = on_regex("^喵币抹除\s*\d+$|^喵币抹除$", rule=auto_bot_superuser)
 shezhimiaobi = on_regex("^设置喵币\s*\d+\s+\d+$|^设置喵币$", rule=auto_bot_superuser)
 zengjiamiaobi = on_regex("^增加喵币\s*\d+\s+\d+$|^增加喵币$", rule=auto_bot_superuser)
 
-# 喵服群聊闪照和审查目标活跃监听
+# 审查目标活跃监听
 # listen_all = on_message(rule=bot_1_event)
 # 闪照检测
 anti_flash = on_message(rule=auto_bot)
@@ -427,13 +429,6 @@ shencha = on_regex("^审查\s*\d{1,}$|^审查$", rule=shencha_group_check)
 jiejin = on_regex("^解禁\s*\d{1,}$", rule=shencha_group_check)
 tichu = on_regex("^踢出\s*\d+$|^永拒\s*\d+$|^踢出$", rule=shencha_group_check)
 
-# 频道命令
-cchafang = on_regex("^查房$", rule=guild_check)
-clink = on_regex("^帮助$|^官网$|^后台$|^排行$|^赞助$|^黑名单$|^教程$|^文章$|^升级$|^领号$", rule=guild_check)
-cjiance = on_regex("^检测\s*\d+$|^检测$", rule=guild_check)
-czhaokabi = on_regex("^找卡比\s*\d+$|^找卡比$", rule=guild_check)
-cchabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=guild_check)
-
 # 群聊命令
 yanzheng = on_regex("^验证$", rule=group_check_special)
 jinyan = on_regex("^禁言\s*\d{1,}$|^禁言$", rule=group_check_special)
@@ -441,6 +436,13 @@ link = on_regex(
     "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$", rule=zhanhun_group_check
 )
 chafang = on_regex("^查房$", rule=auto_bot)
+
+# 频道命令
+cchafang = on_regex("^查房$", rule=guild_check)
+clink = on_regex("^帮助$|^官网$|^后台$|^排行$|^赞助$|^黑名单$|^教程$|^文章$|^升级$|^领号$", rule=guild_check)
+cjiance = on_regex("^检测\s*\d+$|^检测$", rule=guild_check)
+czhaokabi = on_regex("^找卡比\s*\d+$|^找卡比$", rule=guild_check)
+cchabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=guild_check)
 
 # 私聊命令
 pbangzhu = on_regex("^帮助$", rule=bot_1_event)
