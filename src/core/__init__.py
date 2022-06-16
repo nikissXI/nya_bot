@@ -20,16 +20,16 @@ from nonebot.adapters.onebot.v11.event import (
 )
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from nonebot.log import logger
-from src.modules._gold import Gold
-from src.modules._large_data import Large_data
-from src.modules._little_data import Little_data
-from src.modules._nofree import Nofree
-from src.modules._shencha import Shencha
-from src.modules._sponsor import Sponsor
-from src.modules._tips import Tips
-from src.modules._wg import Wg
-from src.modules._zhb_list import Zhb_list
-from src.modules._zhb_user import Zhb_user
+from src.models._gold import Gold
+from src.models._large_data import Large_data
+from src.models._little_data import Little_data
+from src.models._nofree import Nofree
+from src.models._shencha import Shencha
+from src.models._sponsor import Sponsor
+from src.models._tips import Tips
+from src.models._wg import Wg
+from src.models._zhb_list import Zhb_list
+from src.models._zhb_user import Zhb_user
 from tortoise import Tortoise
 from ujson import loads
 
@@ -108,19 +108,19 @@ async def do_startup():
 
     # 连接sqlite3数据库
     models = [
-        "src.modules._gold",
-        "src.modules._sponsor",
-        "src.modules._tips",
-        "src.modules._visit",
-        "src.modules._wg",
-        "src.modules._xl",
-        "src.modules._zhb_list",
-        "src.modules._zhb_user",
-        "src.modules._guide",
-        "src.modules._nofree",
-        "src.modules._large_data",
-        "src.modules._little_data",
-        "src.modules._shencha",
+        "src.models._gold",
+        "src.models._sponsor",
+        "src.models._tips",
+        "src.models._visit",
+        "src.models._wg",
+        "src.models._xl",
+        "src.models._zhb_list",
+        "src.models._zhb_user",
+        "src.models._guide",
+        "src.models._nofree",
+        "src.models._large_data",
+        "src.models._little_data",
+        "src.models._shencha",
     ]
     await Tortoise.init(
         db_url=f"sqlite://data/data.db",

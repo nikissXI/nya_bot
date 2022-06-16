@@ -2,7 +2,7 @@ from socket import AF_PACKET, SOCK_RAW, socket
 
 from httpx import AsyncClient
 from nonebot.log import logger
-from src.modules._large_data import Large_data
+from src.models._large_data import Large_data
 from ujson import dumps, loads
 
 

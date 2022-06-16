@@ -7,8 +7,8 @@ from time import time
 from traceback import format_exc
 
 from nonebot.log import logger
-from src.modules._little_data import Little_data
-from src.modules._wg import Wg
+from src.models._little_data import Little_data
+from src.models._wg import Wg
 from ujson import loads
 
 from .global_var import gv

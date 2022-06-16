@@ -2,9 +2,9 @@ from random import randint
 
 from nonebot.log import logger
 from PIL import Image
-from src.modules._sponsor import Sponsor
-from src.modules._wg import Wg
-from src.modules._xl import XLboard
+from src.models._sponsor import Sponsor
+from src.models._wg import Wg
+from src.models._xl import XLboard
 
 from .global_var import gv
 from .utils import check_in_group, exec_shell, set_group_card, wgnum_to_ip, write_bd_log

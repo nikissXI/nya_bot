@@ -9,13 +9,13 @@ from traceback import format_exc
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from nonebot.log import logger
 from PIL import Image, ImageDraw, ImageFont
-from src.modules._gold import Gold
-from src.modules._little_data import Little_data
-from src.modules._shencha import Shencha
-from src.modules._sponsor import Sponsor
-from src.modules._tips import Tips
-from src.modules._visit import Visit
-from src.modules._wg import Wg
+from src.models._gold import Gold
+from src.models._little_data import Little_data
+from src.models._shencha import Shencha
+from src.models._sponsor import Sponsor
+from src.models._tips import Tips
+from src.models._visit import Visit
+from src.models._wg import Wg
 from ujson import loads
 
 from .global_var import gv

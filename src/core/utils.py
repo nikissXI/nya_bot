@@ -11,8 +11,8 @@ from nonebot.adapters.onebot.v11.message import MessageSegment
 from nonebot.exception import FinishedException
 from nonebot.log import logger
 from psutil import cpu_percent, virtual_memory
-from src.modules._little_data import Little_data
-from src.modules._zhb_list import Zhb_list
+from src.models._little_data import Little_data
+from src.models._zhb_list import Zhb_list
 
 from .global_var import gv
 
@@ -316,7 +316,6 @@ async def server_status() -> str:
     )
     download, upload = await get_net_io()
     out_mess.append(f"▼: {download}KB/秒  ▲: {upload}KB/秒")
-    out_mess.append(f"实时联机人数: {gv.online}")
     # 获取第二次包数量
     pc2 = gv.p_count
     # 如果第二次比第一次少，说明重置了，需要把两次的差值加起来，否则直接求差
@@ -325,6 +324,7 @@ async def server_status() -> str:
     else:
         pc = pc2 - pc1
     out_mess.append(f"数据包流量: {pc}个/秒")
+    out_mess.append(f"联机人数: {gv.online}")
     out_mess.append(f"喵币系统: {gv.miaobi_system}")
     out_mess.append(f"安全模式: {gv.safe_mode}")
     out_mess.append(f"机器人在线列表")

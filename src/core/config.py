@@ -1,11 +1,11 @@
 from re import search
 
-from src.modules._guide import Guide
-from src.modules._sponsor import Sponsor
-from src.modules._wg import Wg
-from src.modules._xl import XLboard
-from src.modules._zhb_list import Zhb_list
-from src.modules._zhb_user import Zhb_user
+from src.models._guide import Guide
+from src.models._sponsor import Sponsor
+from src.models._wg import Wg
+from src.models._xl import XLboard
+from src.models._zhb_list import Zhb_list
+from src.models._zhb_user import Zhb_user
 
 from .global_var import gv
 from .utils import check_in_group, ip_to_wgnum, wgnum_to_ip
