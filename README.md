@@ -1,8 +1,10 @@
-<div align=center><img height="200" src="https://raw.githubusercontent.com/nikissXI/nya_bot/main/logo.jpg"/></div>
+<div align=center><img height="200" src="https://raw.githubusercontent.com/nikissXI/nya_bot/main/logo.jpg"/>
 
 ![maven](https://img.shields.io/badge/python-3.10%2B-blue)
 ![maven](https://img.shields.io/badge/nonebot-2.0.0-yellow)
 ![maven](https://img.shields.io/badge/go--cqhttp-1.0.0-red)
+
+</div>
 
 # nya_bot（喵服）
 ****
@@ -23,9 +25,13 @@ logo的图片来自 [ **[nya!](https://www.pixiv.net/artworks/74701713)** ]
 此项目仅用于学习交流，请勿用于非法用途
 
 # Nonebot2
+<div align=center>
+
 <img style="height: 200px;width: 200px;" src="https://camo.githubusercontent.com/0ef71e86056da694c540790aa4a4e314396884d6c4fdb95362a7538b27a1b034/68747470733a2f2f76322e6e6f6e65626f742e6465762f6c6f676f2e706e67">
 
 非常 [ **[NICE](https://github.com/nonebot/nonebot2)** ] 的OneBot框架
+
+</div>
 
 ## 命令列表/功能列表
 
