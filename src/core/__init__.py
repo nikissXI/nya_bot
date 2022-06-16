@@ -362,43 +362,8 @@ async def guild_check(event: GuildMessageEvent, bot: Bot) -> bool:
 
 
 #################################
-# 信息触发
+# 事件处理
 #################################
-
-# 管理员命令
-test = on_regex("^test", rule=auto_bot_superuser)
-fasong = on_regex("^发送", rule=auto_bot_superuser)
-sousuo = on_regex("^搜索\s*\d+$", rule=auto_bot_superuser)
-touxian = on_regex("^头衔\s*\d+\s+", rule=auto_bot_superuser)
-gonggaoliebiao = on_regex("^公告列表$", rule=auto_bot_superuser)
-zengjiagonggao = on_regex("^增加公告", rule=auto_bot_superuser)
-shanchugonggao = on_regex("^删除公告\s*\d{1,}$", rule=auto_bot_superuser)
-
-zhuangtai = on_regex("^状态$", rule=auto_bot_superuser)
-wangluo = on_regex("^网络$", rule=auto_bot_superuser)
-miaobixitong = on_regex("^喵币系统打开$|^喵币系统关闭$", rule=auto_bot_superuser)
-anquanmoshi = on_regex("^安全模式打开$|^安全模式关闭$", rule=auto_bot_superuser)
-zhongyiying = on_regex("^中译英", rule=auto_bot_superuser)
-yingyizhong = on_regex("^英译中", rule=auto_bot_superuser)
-
-juesegaiming = on_regex("^角色改名", rule=auto_bot_superuser)
-weibangding = on_regex("^未绑定$", rule=auto_bot_superuser)
-feizanzhu = on_regex("^非赞助$", rule=auto_bot_superuser)
-teshubianhao = on_regex("^特殊编号$", rule=auto_bot_superuser)
-bangding = on_regex("^\d+\s*绑定$|^\d+\s+\d+\s*特绑$", rule=auto_bot_superuser)
-jiebang = on_regex("^解绑\s*\d+$", rule=auto_bot_superuser)
-zanzhu = on_regex("^赞助\s*\d+\s+[\+\-]?\d+$", rule=auto_bot_superuser)
-xiuluo = on_regex("^修罗\s*\d+\s+\d+$", rule=auto_bot_superuser)
-kuorong = on_regex("^扩容\s*\d+$|^缩容\s*\d+$", rule=auto_bot_superuser)
-chongzai = on_regex("^重载\s*\d+$", rule=auto_bot_superuser)
-baipiao = on_regex("^白嫖\s*-?\d+$|^白嫖$", rule=auto_bot_superuser)
-zanzhuzonge = on_regex("^赞助总额$", rule=auto_bot_superuser)
-
-miaobizonge = on_regex("^喵币总额$", rule=auto_bot_superuser)
-miaobimochu = on_regex("^喵币抹除\s*\d+$|^喵币抹除$", rule=auto_bot_superuser)
-shezhimiaobi = on_regex("^设置喵币\s*\d+\s+\d+$|^设置喵币$", rule=auto_bot_superuser)
-zengjiamiaobi = on_regex("^增加喵币\s*\d+\s+\d+$|^增加喵币$", rule=auto_bot_superuser)
-
 # 审查目标活跃监听
 # listen_all = on_message(rule=bot_1_event)
 # 闪照检测
@@ -409,42 +374,80 @@ recall_notice = on_notice(rule=bot_1_event)
 group_notice = on_notice(rule=auto_bot)
 # 加群请求
 group_req = on_request(rule=auto_bot)
-
 # 加好友请求
 friend_req = on_request(rule=bot_1_event)
 # 好友增加处理
 new_friend = on_notice(rule=bot_1_event)
 
-# 公共命令
+#################################
+# 管理员命令
+#################################
+# 测试命令
+test = on_regex("^test", rule=auto_bot_superuser)
+fasong = on_regex("^发送", rule=auto_bot_superuser)
+
+# bot系统命令
+zhuangtai = on_regex("^状态$", rule=auto_bot_superuser)
+wangluo = on_regex("^网络$", rule=auto_bot_superuser)
+miaobixitong = on_regex("^喵币系统打开$|^喵币系统关闭$", rule=auto_bot_superuser)
+anquanmoshi = on_regex("^安全模式打开$|^安全模式关闭$", rule=auto_bot_superuser)
+zhongyiying = on_regex("^中译英", rule=auto_bot_superuser)
+yingyizhong = on_regex("^英译中", rule=auto_bot_superuser)
+
+#################################
+# 群管命令
+#################################
+# 所有用户
 miaofu = on_regex("^喵服$", rule=auto_bot)
 jinyan = on_regex("^禁言\s*\d{1,}$|^禁言$", rule=group_check_special)
 
-# 审查组命令
-pojieliuyan = on_regex("^破解留言$", rule=shencha_group_check)
-gaoxiuliuyan = on_regex("^高修留言$", rule=shencha_group_check)
-liuchengtu = on_regex("^流程图$", rule=shencha_group_check)
-daishencha = on_regex("^待审查$", rule=shencha_group_check)
-chabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=shencha_group_check)
-saomiao = on_regex("^扫描$", rule=shencha_group_check)
-shencha = on_regex("^审查\s*\d{1,}$|^审查$", rule=shencha_group_check)
-jiejin = on_regex("^解禁\s*\d{1,}$", rule=shencha_group_check)
-tichu = on_regex("^踢出\s*\d+$|^永拒\s*\d+$|^踢出$", rule=shencha_group_check)
+# 管理员
+sousuo = on_regex("^搜索\s*\d+$", rule=auto_bot_superuser)
+touxian = on_regex("^头衔\s*\d+\s+", rule=auto_bot_superuser)
+gonggaoliebiao = on_regex("^公告列表$", rule=auto_bot_superuser)
+zengjiagonggao = on_regex("^增加公告", rule=auto_bot_superuser)
+shanchugonggao = on_regex("^删除公告\s*\d{1,}$", rule=auto_bot_superuser)
 
-# 群聊命令
+#################################
+# 喵币系统命令
+#################################
+# 所有用户
+qiandao = on_regex("^签到$", rule=miaobi_check_qiandao)
+miaobi = on_regex("^喵币$", rule=miaobi_check)
+zhuanzhang = on_regex("^转账\s*\d+\s+\d+$|^转账$", rule=miaobi_check)
+fahongbao = on_regex("^发红包\s*\d+$|^发红包$", rule=miaobi_check)
+qiangjinbi = on_regex("^抢喵币$", rule=miaobi_check)
+miaobipaihang = on_regex("^喵币排行$", rule=miaobi_check)
+lumao = on_regex("^撸猫$", rule=miaobi_check)
+gailv = on_regex("^概率$", rule=miaobi_check)
+saolei_h = on_regex("^扫雷$", rule=miaobi_check)
+saolei = on_regex("^扫雷\s*[0-9]{1,3}$", rule=miaobi_check)
+saoleikasi = on_regex("^扫雷卡死$", rule=miaobi_check)
+
+# 管理员
+miaobizonge = on_regex("^喵币总额$", rule=auto_bot_superuser)
+miaobimochu = on_regex("^喵币抹除\s*\d+$|^喵币抹除$", rule=auto_bot_superuser)
+shezhimiaobi = on_regex("^设置喵币\s*\d+\s+\d+$|^设置喵币$", rule=auto_bot_superuser)
+zengjiamiaobi = on_regex("^增加喵币\s*\d+\s+\d+$|^增加喵币$", rule=auto_bot_superuser)
+
+#################################
+# 联机服务器命令
+#################################
+# 所有用户（群聊）
 yanzheng = on_regex("^验证$", rule=group_check_special)
 link = on_regex(
     "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$", rule=zhanhun_group_check
 )
 chafang = on_regex("^查房$", rule=auto_bot)
 
-# 频道命令
+# 所有用户（频道）
 cchafang = on_regex("^查房$", rule=guild_check)
 clink = on_regex("^帮助$|^官网$|^后台$|^排行$|^赞助$|^黑名单$|^教程$|^文章$|^升级$|^领号$", rule=guild_check)
 cjiance = on_regex("^检测\s*\d+$|^检测$", rule=guild_check)
 czhaokabi = on_regex("^找卡比\s*\d+$|^找卡比$", rule=guild_check)
 cchabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=guild_check)
 
-# 私聊命令
+# 所有用户（好友私聊）
 pbangzhu = on_regex("^帮助$", rule=bot_1_event)
 pchafang = on_regex("^查房$", rule=bot_1_event)
 plink = on_regex("^官网$|^后台$|^排行$|^赞助$|^黑名单$|^教程$|^文章$|^升级$|^领号$", rule=bot_1_event)
@@ -458,23 +461,38 @@ lahei = on_regex("^拉黑", rule=bot_1_event)
 renshu = on_regex("^人数", rule=bot_1_event)
 banben = on_regex("^版本", rule=bot_1_event)
 
-# 喵币命令
-qiandao = on_regex("^签到$", rule=miaobi_check_qiandao)
-miaobi = on_regex("^喵币$", rule=miaobi_check)
-miaobipaihang = on_regex("^喵币排行$", rule=miaobi_check)
-zhuanzhang = on_regex("^转账\s*\d+\s+\d+$|^转账$", rule=miaobi_check)
-fahongbao = on_regex("^发红包\s*\d+$|^发红包$", rule=miaobi_check)
-qiangjinbi = on_regex("^抢喵币$", rule=miaobi_check)
-gailv = on_regex("^概率$", rule=miaobi_check)
-lumao = on_regex("^撸猫$", rule=miaobi_check)
-saolei_h = on_regex("^扫雷$", rule=miaobi_check)
-saolei = on_regex("^扫雷\s*[0-9]{1,3}$", rule=miaobi_check)
-saoleikasi = on_regex("^扫雷卡死$", rule=miaobi_check)
+# 管理员
+juesegaiming = on_regex("^角色改名", rule=auto_bot_superuser)
+weibangding = on_regex("^未绑定$", rule=auto_bot_superuser)
+feizanzhu = on_regex("^非赞助$", rule=auto_bot_superuser)
+teshubianhao = on_regex("^特殊编号$", rule=auto_bot_superuser)
+bangding = on_regex("^\d+\s*绑定$|^\d+\s+\d+\s*特绑$", rule=auto_bot_superuser)
+jiebang = on_regex("^解绑\s*\d+$", rule=auto_bot_superuser)
+zanzhu = on_regex("^赞助\s*\d+\s+[\+\-]?\d+$", rule=auto_bot_superuser)
+xiuluo = on_regex("^修罗\s*\d+\s+\d+$", rule=auto_bot_superuser)
+kuorong = on_regex("^扩容\s*\d+$|^缩容\s*\d+$", rule=auto_bot_superuser)
+chongzai = on_regex("^重载\s*\d+$", rule=auto_bot_superuser)
+baipiao = on_regex("^白嫖\s*-?\d+$|^白嫖$", rule=auto_bot_superuser)
+zanzhuzonge = on_regex("^赞助总额$", rule=auto_bot_superuser)
+
+
+#################################
+# 审查组命令
+#################################
+pojieliuyan = on_regex("^破解留言$", rule=shencha_group_check)
+gaoxiuliuyan = on_regex("^高修留言$", rule=shencha_group_check)
+liuchengtu = on_regex("^流程图$", rule=shencha_group_check)
+daishencha = on_regex("^待审查$", rule=shencha_group_check)
+chabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=shencha_group_check)
+saomiao = on_regex("^扫描$", rule=shencha_group_check)
+shencha = on_regex("^审查\s*\d{1,}$|^审查$", rule=shencha_group_check)
+jiejin = on_regex("^解禁\s*\d{1,}$", rule=shencha_group_check)
+tichu = on_regex("^踢出\s*\d+$|^永拒\s*\d+$|^踢出$", rule=shencha_group_check)
+
+
 #################################
 # 频道命令
 #################################
-
-
 @cchafang.handle()
 @handle_exception("频道查房", True)
 async def handle_cchafang():
@@ -543,8 +561,6 @@ async def handle_cchabang(event: GuildMessageEvent):
 #################################
 # 公共命令
 #################################
-
-
 @miaofu.handle()
 @handle_exception("喵服宣传")
 async def handle_miaofu(event: GroupMessageEvent):

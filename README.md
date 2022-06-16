@@ -1,4 +1,4 @@
-<div align=center><img height="200" src="https://raw.githubusercontent.com/nikissXI/nya_bot/main/logo.jpg"/></div>
+<div align=center><img width="600" src="https://raw.githubusercontent.com/nikissXI/nya_bot/main/logo.jpg"/></div>
 
 ![maven](https://img.shields.io/badge/python-3.10%2B-blue)
 ![maven](https://img.shields.io/badge/nonebot-2.0.0-yellow)
@@ -114,16 +114,25 @@ logo的图片来自 [ **[nya!](https://www.pixiv.net/artworks/74701713)** ]
   - [√] 踢出 —— 踢出群
 
 #### 被动功能
+  - [√] 支持双bot冗余 —— 如果双bot运行，命令会各负责一半，如果其中一个掉了另一个自动顶上
   - [√] 防闪照 —— 机器人检测到闪照就会把图片私发给管理员（所有群）
   - [√] 防撤回 —— 机器人检测到撤回就会把内容私发给管理员（仅支持联机群）
   - [√] 自动同意进群 —— 字面意思（仅联机群）
   - [√] 进退群提示 —— 字面意思（仅联机群）
   - [√] 自动通过好友 —— 需要赞助号身份的QQ，否则自动拒绝
   - [√] 自动清理潜水员 —— 联机群一个月不说话且没编号的就会踢出去
-  - [√] 联机编号全自动管理 —— 这个得搞联机的服主才有感觉（比如我）
 
 #### 网页
-  - [√] 自己去我官网看啦 [ **[喵服官网](http://nya.nikiss.top)** ]
+  - [√] 长啥样自己去我官网看啦 [ **[喵服官网](http://nya.nikiss.top)** ]
+  - [√] 网页里服主后台的key就是.env里面的onebot_access_token
+
+#### 战魂铭人远程联机功能介绍
+  - [√] 使用wireguard进行组网，相比其他组网软件，它能带来最稳定、最方便的联机体验
+  - [√] 安卓的wireguard客户端已进行修改，在目录www/static/cdn中（根据网页的操作就能下载），能通过服务器自动导入配置，其他的还是用官方原版客户端
+  - [√] 联机编号全自动管理 —— 这个得搞联机的服主才有感觉（比如我）
+  - [√] 能返回游戏房间列表并识别玩家使用的游戏角色
+  - [√] 支持游戏房间某些自定义，如房间名称、人数上限、版本号
+  - [√] 比较杂，不列啦！
 
 ## 部署
 
