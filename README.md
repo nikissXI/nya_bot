@@ -1,8 +1,9 @@
-<div align=center><img width="600" src="https://raw.githubusercontent.com/nikissXI/nya_bot/main/logo.jpg"/></div>
+<div align=center><img width="600" src="https://raw.githubusercontent.com/nikissXI/nya_bot/main/logo.jpg"/>
 
 ![maven](https://img.shields.io/badge/python-3.10%2B-blue)
 ![maven](https://img.shields.io/badge/nonebot-2.0.0-yellow)
 ![maven](https://img.shields.io/badge/go--cqhttp-1.0.0-red)
+</div>
 
 # nya_bot（喵服）
 ****
