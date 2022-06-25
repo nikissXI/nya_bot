@@ -122,6 +122,7 @@ logo的图片来自 [ **[nya!](https://www.pixiv.net/artworks/74701713)** ]
   - [√] 进退群提示 —— 字面意思（仅联机群）
   - [√] 自动通过好友 —— 需要赞助号身份的QQ，否则自动拒绝
   - [√] 自动清理潜水员 —— 联机群一个月不说话且没编号的就会踢出去
+  - [√] 强制新人阅读群规 —— 新人进群禁言一个月，不阅读群规不解禁
 
 #### 网页
   - [√] 长啥样自己去我官网看啦 [ **[喵服官网](http://nya.nikiss.top)** ]
@@ -139,7 +140,7 @@ logo的图片来自 [ **[nya!](https://www.pixiv.net/artworks/74701713)** ]
 
 ```
 # 前排提醒
-本bot仅支持在Linux系统上运行，因为wireguard服务器我只会在Linux上部署！
+本bot仅支持在Linux系统上运行，因为wireguard服务器我只会在Linux上部署！并且要用root权限运行，因为用到了原始套接字编程。
 
 # 下载配置go-cqhttp
 在 https://github.com/Mrs4s/go-cqhttp 下载Releases最新版本，运行后选择反向代理，
