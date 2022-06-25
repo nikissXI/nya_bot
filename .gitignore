@@ -2,3 +2,5 @@ __pycache__/
 data/
 log/
 tunnel/
+.env
+test.py
