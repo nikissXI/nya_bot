@@ -154,7 +154,7 @@ git clone https://github.com/nikissXI/nya_bot.git
 
 # 然后安装软件
 Ubuntu系统可以输入以下命令
-apt install wireguard tshark
+apt install wireguard tshark qrencode
 
 其他系统安装
 wireguard参考它的官网 https://www.wireguard.com/install/
