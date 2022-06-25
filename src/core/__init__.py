@@ -1,4 +1,4 @@
-from asyncio import create_task, sleep, get_running_loop
+from asyncio import create_task, sleep
 from datetime import datetime
 from math import sqrt
 from random import randint
