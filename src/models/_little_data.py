@@ -12,7 +12,7 @@ class Little_data(Model):
             await cls.create(key="web_visit_count", value=15151)
             await cls.create(key="play_count_yestoday", value=273)
             await cls.create(key="play_count_today", value=66)
-            await cls.create(key="miaobi_system", value=0)
+            await cls.create(key="miaobi_system", value=1)
             await cls.create(key="safe_mode", value=0)
 
     @classmethod

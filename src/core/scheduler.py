@@ -1,4 +1,4 @@
-from asyncio import sleep
+from asyncio import sleep, get_running_loop
 from copy import deepcopy
 from datetime import datetime, timedelta
 from random import choice, randint
@@ -83,7 +83,7 @@ async def send_game_message():
             except Exception:
                 gv.miaobi_system = False
                 gv.safe_mode = True
-                error_msg = f"群聊信息数组发送失败，已关闭喵币系统并开启安全模式，消息内容如下\n\n{mess[1]}"
+                error_msg = f"群聊信息数组发送失败，已临时关闭喵币系统并开启安全模式，消息内容如下\n\n{mess[1]}"
                 logger.error(error_msg)
                 await gv.admin_bot.send_private_msg(
                     user_id=gv.superuser_num, message=error_msg
@@ -106,7 +106,7 @@ async def send_tips():
 # 每天早上8点报时
 @scheduler.scheduled_job("cron", hour="8")
 async def morning():
-    gv.safe_mode = False
+    gv.safe_mode = await Little_data.update_safe_mode(0)
     await sleep(3)
     gv.group_mess.append(
         (
@@ -126,14 +126,14 @@ async def night():
         )
     )
     await sleep(3)
-    gv.safe_mode = True
+    gv.safe_mode = await Little_data.update_safe_mode(1)
 
 
 # 每天中午12点列出待审查列表
 @scheduler.scheduled_job("cron", hour="12")
 async def zhb_scan():
     shencha_list = await Shencha.get_all()
-    shencha_list_mess = "待审查列表" + shencha_list
+    shencha_list_mess = "待审查列表" + "\n".join(shencha_list)
     gv.group_mess.append((gv.shencha_group_num, shencha_list_mess))
     gv.group_mess.append((gv.shencha_group_num, await check_group_zhb()))
 
@@ -150,12 +150,15 @@ async def hongbao():
         gv.group_mess.append(
             (gv.miao_group2_num, f"随机喵币红包，数量: {gv.packet}\n3分钟内发“抢喵币”瓜分红包")
         )
-        await sleep(180)
-        if gv.packet != 0:
-            gv.group_mess.append((gv.miao_group_num, f"红包已过期，还有{gv.packet}个未瓜分"))
-            gv.group_mess.append((gv.miao_group2_num, f"红包已过期，还有{gv.packet}个未瓜分"))
-        gv.packet = 0
-        gv.packet_once.clear()
+
+        def _later():
+            if gv.packet > 0:
+                gv.group_mess.append((gv.miao_group_num, f"红包已过期，还有{gv.packet}个未瓜分"))
+                gv.group_mess.append((gv.miao_group2_num, f"红包已过期，还有{gv.packet}个未瓜分"))
+            gv.packet = 0
+            gv.packet_once.clear()
+
+        get_running_loop().call_later(180, _later)
 
 
 # 每天0点释放字典内存和回收编号
@@ -207,6 +210,15 @@ async def auto_handle():
             else:
                 await Wg.update_ttl_by_wgnum(wgnum, ttl - 1)
 
+        # 发送回收情况给服主
+        output_text = f"昨天联机人次: {await Little_data.get_play_count_today()}\n昨天联机人数: {await Wg.get_players_count_today()}\n"
+        # 联机人次更新重置
+        await Little_data.update_play_count_daily()
+        # 活跃玩家数量重置
+        await Wg.reset_play_flag()
+        # 红包发送次数重置
+        await Gold.reset_packet_count()
+
         # 回收到期编号
         hs_dict = {}  # {qq:[wgnum,numtype]}
         rows = await Wg.get_all_bind_info()
@@ -225,11 +237,7 @@ async def auto_handle():
             # 获取一群成员qq号
             for user in miao_group_1_member_data:
                 wgnum = await Wg.get_wgnum_by_qq(user["user_id"])
-                if (
-                    wgnum != 0
-                    and user["user_id"] != gv.superuser_num
-                    and user["user_id"] != 569778891
-                ):
+                if wgnum != 0 and user["user_id"] != gv.superuser_num:
                     try:
                         # 特殊编号
                         if wgnum in gv.r2f.keys():
@@ -299,27 +307,21 @@ async def auto_handle():
                         await release_wgnum(qqnum, True)
                     await sleep(2)
 
-        # 发送回收情况给服主
-        text = (
-            f"昨天联机人次: {await Little_data.get_play_count_today()}\n昨天联机人数: {await Wg.get_players_count_today()}\n玩家清理数: {kick_count}\n编号回收数: {len(hs_dict)}\n编号具体回收情况如下：\n"
-            + "\n".join(
-                [
-                    f"QQ{qqnum}-编号{hs_dict[qqnum][0]}({hs_dict[qqnum][1]})"
-                    for qqnum in list(hs_dict)
-                ]
+        if hs_dict:
+            output_text += (
+                f"玩家清理数: {kick_count}\n编号回收数: {len(hs_dict)}\n编号具体回收情况如下：\n"
+                + "\n".join(
+                    [
+                        f"QQ{qqnum}-编号{hs_dict[qqnum][0]}({hs_dict[qqnum][1]})"
+                        for qqnum in list(hs_dict)
+                    ]
+                )
             )
-        )
 
-        # 联机人次更新重置
-        await Little_data.update_play_count_daily()
-        # 活跃玩家数量重置
-        await Wg.reset_play_flag()
-        # 红包发送次数重置
-        await Gold.reset_packet_count()
         # 刷新好友列表
         await refresh_friendlist()
 
-        gv.private_mess.append((gv.superuser_num, text))
+        gv.private_mess.append((gv.superuser_num, output_text))
 
     except Exception:
         error_msg = f"自动回收函数出错!\n错误追踪:\n{format_exc()}"
@@ -444,136 +446,149 @@ async def check_outdated():
                     0,  # 紧急指针
                 )
             )
-        # 等2秒，等客户端返回数据
-        await sleep(2)
 
-        # 更新实时联机人数
-        count = 0
-        for fangzhu in list(gv.rooms):
-            count += len(list(gv.rooms[fangzhu][0])) + 1
-        gv.online = count
-
-        # 判断队友状态
-        for fangzhu in list(gv.rooms):
-            for chengyuan in list(gv.rooms[fangzhu][0]):
-                # 权值-1,如果加入者权值0就是断开了
-                if gv.rooms[fangzhu][0][chengyuan] > 0:
-                    gv.rooms[fangzhu][0][chengyuan] -= 1
-                else:
-                    gv.rooms[fangzhu][0].pop(chengyuan)
-                    if chengyuan in gv.rooms[fangzhu][1]:
-                        gv.rooms[fangzhu][1].remove(chengyuan)
-
-        # 判断房间状态
-        for fangzhu in list(gv.rooms):
-            # 每轮减一次房间ttl
-            if gv.rooms[fangzhu][3] > 0:
-                # 游戏中就-3，等待中就-1
-                if gv.room_time[fangzhu][0] == 0:
-                    gv.rooms[fangzhu][3] -= 1
-                else:
-                    gv.rooms[fangzhu][3] -= 3
-            else:
-                gv.rooms.pop(fangzhu)
-
-        # 生成房间列表图片
-        results = []
-        # { 房主IP str : [ {加入者IP : [角色, 存活]} dict , [已提醒进房提醒的IP] , 未定义 , 存活 int, 原始信息 bytes ]  }
-        for fangzhu in list(gv.rooms):
-
-            # 读取房间信息
-            room_data = gv.rooms[fangzhu][4]
-            room_info = loads(
-                bytes.fromhex(room_data[room_data.find("7b2273", 50) :]).decode()
-            )
-
-            # 判断是否为私有房
-            if fangzhu in list(gv.privacy):
-                private_stat = "[私有]"
-            else:
-                private_stat = ""
-
-            # 获取房主信息
-            fangzhu_wgnum = int(ip_to_wgnum(fangzhu))
-            # 特殊编号
-            if fangzhu_wgnum in gv.r2f.keys():
-                fangzhu_wgnum = gv.r2f[fangzhu_wgnum]
-            # 特殊编号
-            fangzhu_info = f"{fangzhu_wgnum}{gv.role_name[fangzhu]}"
-
-            # 获取成员信息
-            chengyuan_info = "暂无"
-            if gv.rooms[fangzhu][0]:
-                chengyuan_info = ""
-                for chengyuan in list(gv.rooms[fangzhu][0]):
-                    chengyuan_wgnum = int(ip_to_wgnum(chengyuan))
-
-                    # 特殊编号
-                    if chengyuan_wgnum in gv.r2f.keys():
-                        chengyuan_wgnum = gv.r2f[chengyuan_wgnum]
-                    # 特殊编号
-
-                    try:
-                        chengyuan_info += f"{chengyuan_wgnum}{gv.role_name[chengyuan]}  "
-                    except Exception:
-                        chengyuan_info += f"{chengyuan_wgnum}未知  "
-
-            # 判断游戏状态
-            if room_info["hsb"]:
-                if chengyuan_info == "暂无":
-                    # 局域网直连的房跳过
-                    if room_info["ccc"] != 1:
-                        continue
-                    else:
-                        chengyuan_info = "孤军奋战ing"
-                rooms_stat = (
-                    "已开始" + str((int(time()) - gv.room_time[fangzhu][0]) // 60) + "分钟"
-                )
-            else:
-                rooms_stat = "等待ing"
-
-            # 判断是否自定义房名
-            if fangzhu in list(gv.room_name):
-                room_name = gv.room_name[fangzhu]
-            else:
-                room_name = f"{ip_to_wgnum(fangzhu)}号的房间"
-
-            results.append(
-                f"房间: v{room_info['v']}-{room_name}"
-                + f"\n房主: {fangzhu_info}  {rooms_stat}  {private_stat}"
-                + f"\n成员: {chengyuan_info}\n"
-            )
-
-        # 输出图片文件
-        width = 300
-        font = ImageFont.truetype(f"www/static/msyh.ttc", 16)
-        now = datetime.now()
-        time_str = f"{now.hour:02d}:{now.minute:02d}:{now.second:02d}"
-        image = Image.new("RGB", (width, 80 * len(results) + 36), (255, 255, 255))
-        draw = ImageDraw.Draw(image)
-        draw.text(
-            (117, 10),
-            time_str,
-            font=font,
-            fill=(0, 0, 0),
-        )
-        if results:
+        def _later():
+            # 更新实时联机人数
             count = 0
-            for text in results:
-                if text.find("已开始") == -1:
-                    color = (0, 80, 0)  # 绿色
+            for fangzhu in list(gv.rooms):
+                count += len(list(gv.rooms[fangzhu][0])) + 1
+            gv.online = count
+
+            # 判断队友状态
+            for fangzhu in list(gv.rooms):
+                for chengyuan in list(gv.rooms[fangzhu][0]):
+                    # 权值-1,如果加入者权值0就是断开了
+                    if gv.rooms[fangzhu][0][chengyuan] > 0:
+                        gv.rooms[fangzhu][0][chengyuan] -= 1
+                    else:
+                        gv.rooms[fangzhu][0].pop(chengyuan)
+                        if chengyuan in gv.rooms[fangzhu][1]:
+                            gv.rooms[fangzhu][1].remove(chengyuan)
+
+            # 判断房间状态
+            for fangzhu in list(gv.rooms):
+                # 每轮减一次房间ttl
+                if gv.rooms[fangzhu][3] > 0:
+                    # 游戏中就-3，等待中就-1
+                    if gv.room_time[fangzhu][0] == 0:
+                        gv.rooms[fangzhu][3] -= 1
+                    else:
+                        gv.rooms[fangzhu][3] -= 3
                 else:
-                    color = (139, 0, 0)  # 红色
-                draw.text((20, (80 * count) + 36), text, font=font, fill=color)
-                count += 1
-        else:
+                    gv.rooms.pop(fangzhu)
+
+            # 生成房间列表图片
+            results = []
+            results_true = []
+            results_false = []
+            # { 房主IP str : [ {加入者IP : [角色, 存活]} dict , [已提醒进房提醒的IP] , 未定义 , 存活 int, 原始信息 str ]  }
+            for fangzhu in list(gv.rooms):
+
+                # 读取房间信息
+                room_data = gv.rooms[fangzhu][4]
+                room_info = loads(
+                    bytes.fromhex(room_data[room_data.find("7b2273", 50) :]).decode()
+                )
+
+                # 判断是否为私有房
+                if fangzhu in list(gv.privacy):
+                    private_stat = "[私有]"
+                else:
+                    private_stat = ""
+
+                # 获取房主信息
+                fangzhu_wgnum = int(ip_to_wgnum(fangzhu))
+                # 特殊编号
+                if fangzhu_wgnum in gv.r2f.keys():
+                    fangzhu_wgnum = gv.r2f[fangzhu_wgnum]
+                # 特殊编号
+                fangzhu_info = f"{fangzhu_wgnum}{gv.role_name[fangzhu]}"
+
+                # 获取成员信息
+                chengyuan_info = "暂无"
+                if gv.rooms[fangzhu][0]:
+                    chengyuan_info = ""
+                    for chengyuan in list(gv.rooms[fangzhu][0]):
+                        chengyuan_wgnum = int(ip_to_wgnum(chengyuan))
+
+                        # 特殊编号
+                        if chengyuan_wgnum in gv.r2f.keys():
+                            chengyuan_wgnum = gv.r2f[chengyuan_wgnum]
+                        # 特殊编号
+                        try:
+                            chengyuan_info += (
+                                f"{chengyuan_wgnum}{gv.role_name[chengyuan]}  "
+                            )
+                        except Exception:
+                            chengyuan_info += f"{chengyuan_wgnum}未知  "
+
+                # 判断是否自定义房名
+                if fangzhu in list(gv.room_name):
+                    room_name = gv.room_name[fangzhu]
+                else:
+                    room_name = f"{fangzhu_wgnum}号的房间"
+
+                # 判断游戏状态
+                if room_info["hsb"]:
+                    if chengyuan_info == "暂无":
+                        # 局域网直连的房跳过
+                        if room_info["ccc"] != 1:
+                            continue
+                        else:
+                            chengyuan_info = "孤军奋战ing"
+                    rooms_stat = (
+                        "已开始"
+                        + str((int(time()) - gv.room_time[fangzhu][0]) // 60)
+                        + "分钟"
+                    )
+                    results_true.append(
+                        f"房间: v{room_info['v']}-{room_name}"
+                        + f"\n房主: {fangzhu_info}  {rooms_stat}  {private_stat}"
+                        + f"\n成员: {chengyuan_info}\n"
+                    )
+                else:
+                    rooms_stat = "等待ing"
+                    results_false.append(
+                        f"房间: v{room_info['v']}-{room_name}"
+                        + f"\n房主: {fangzhu_info}  {rooms_stat}  {private_stat}"
+                        + f"\n成员: {chengyuan_info}\n"
+                    )
+
+            results = results_false + results_true
+
+            # 输出图片文件
+            width = 300
+            font = ImageFont.truetype(f"www/static/msyh.ttc", 16)
+            now = datetime.now()
+            time_str = f"{now.hour:02d}:{now.minute:02d}:{now.second:02d}"
+            image = Image.new("RGB", (width, 80 * len(results) + 36), (255, 255, 255))
+            draw = ImageDraw.Draw(image)
             draw.text(
-                (20, 10),
-                f"当前没有房间",
+                (117, 10),
+                time_str,
                 font=font,
                 fill=(0, 0, 0),
             )
-        image.save(f"www/static/roomlist.gif", "gif")
+            if results:
+                count = 0
+                for text in results:
+                    if text.find("已开始") == -1:
+                        color = (0, 80, 0)  # 绿色
+                    else:
+                        color = (139, 0, 0)  # 红色
+                    draw.text((20, (80 * count) + 36), text, font=font, fill=color)
+                    count += 1
+            else:
+                draw.text(
+                    (20, 10),
+                    f"当前没有房间",
+                    font=font,
+                    fill=(0, 0, 0),
+                )
+            image.save(f"www/static/roomlist.gif", "gif")
+
+        # 等3秒，等客户端返回数据
+        get_running_loop().call_later(3, _later)
 
     except Exception:
         error_msg = f"5s循环函数出错!\n错误追踪:\n{format_exc()}"

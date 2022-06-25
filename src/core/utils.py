@@ -38,19 +38,20 @@ def handle_exception(name: str, channel: bool = False):
                     gv.miaobi_system = False
                     gv.safe_mode = True
                     # 此为bot本身由于风控或网络问题发不出消息，并非代码本身出问题
-                    error_msg = f"{name} 处理器消息发送失败，已关闭喵币系统并开启安全模式"
+                    error_msg = f"{name} 处理器消息发送失败，已临时关闭喵币系统并开启安全模式"
                     logger.error(error_msg)
                     await gv.admin_bot.send_private_msg(
                         user_id=gv.superuser_num,
                         message=error_msg,
                     )
             except NetworkError:
-                error_msg = f"{name} 处理器执行出错!\napi响应超时"
-                logger.error(error_msg)
-                await gv.admin_bot.send_private_msg(
-                    user_id=gv.superuser_num,
-                    message=error_msg,
-                )
+                pass
+                # error_msg = f"{name} 处理器执行出错!\napi响应超时"
+                # logger.error(error_msg)
+                # await gv.admin_bot.send_private_msg(
+                #     user_id=gv.superuser_num,
+                #     message=error_msg,
+                # )
             except FinishedException:
                 # `finish` 会抛出此异常，应予以抛出而不处理
                 raise
@@ -295,7 +296,7 @@ async def get_wg_content(ip: str) -> str:
 
 
 async def get_net_io() -> tuple[int, int]:
-    code, stdout, stderr = await exec_shell(f"bash src/shell/speed.sh")
+    code, stdout, stderr = await exec_shell(f"bash src/shell/speed.sh {gv.interface_name}")
     download, upload = stdout.decode().split(" ")
     return (round(float(download)), round(float(upload)))
 
@@ -308,22 +309,12 @@ async def server_status() -> str:
     out_mess.append(
         f"已运行{str(run_time).replace(' day, ', '天').replace(' days, ', '天').split('.')[0].replace(':', '时', 1).replace(':', '分', 1)+ '秒'}"
     )
-    # 获取第一次包数量
-    pc1 = gv.p_count
     # 获取CPU和RAM使用率
     out_mess.append(
         f"CPU: {int(cpu_percent(interval=1))}%   RAM: {int(virtual_memory().percent)}%"
     )
     download, upload = await get_net_io()
     out_mess.append(f"▼: {download}KB/秒  ▲: {upload}KB/秒")
-    # 获取第二次包数量
-    pc2 = gv.p_count
-    # 如果第二次比第一次少，说明重置了，需要把两次的差值加起来，否则直接求差
-    if pc2 < pc1:
-        pc = pc2 + 1000000 - pc1
-    else:
-        pc = pc2 - pc1
-    out_mess.append(f"数据包流量: {pc}个/秒")
     out_mess.append(f"联机人数: {gv.online}")
     out_mess.append(f"喵币系统: {gv.miaobi_system}")
     out_mess.append(f"安全模式: {gv.safe_mode}")

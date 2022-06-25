@@ -61,9 +61,14 @@ async def send_room_list(fangzhu_ip_list, finder_ip, dst_port):
             )
         else:
             # 默认房名的
+            # 特殊编号
+            fangzhu_wgnum = ip_to_wgnum(i)
+            if fangzhu_wgnum in gv.r2f.keys():
+                fangzhu_wgnum = gv.r2f[fangzhu_wgnum]
+            # 特殊编号
             room_tmp = sub(
                 b'snn":"(.*)",',
-                b'snn":"' + f"{ip_to_wgnum(i)}号的房间".encode("utf-8") + b'",',
+                b'snn":"' + f"{fangzhu_wgnum}号的房间".encode("utf-8") + b'",',
                 room_tmp,
                 count=1,
                 flags=0,
@@ -125,16 +130,16 @@ async def send_room_list(fangzhu_ip_list, finder_ip, dst_port):
 
     if have_room is False:
         text = {
-            1: "现在没有可加入的房间",
-            2: "开房就直接点创建房间",
+            "1": "现在没有可加入的房间",
+            "2": "开房就直接点创建房间",
         }
         for k, v in text.items():
             # 源地址
-            src_addr = [a, b, 255, k]
+            src_addr = [a, b, 255, 1]
 
             notice_room = (
                 b"\xc4 \xb7\xe6|=%+\x17\x00tcp4://localhost:6797/\xb5\xf1\xf5\x05"
-                + str(k).encode()
+                + k.encode()
                 + b'\xff\xd8\xa9?\x00{"snn":"'
                 + v.encode()
                 + b'","mcc":1,"ccc":1,"hsb":true,"v":"1.99.6"}'
@@ -188,15 +193,6 @@ async def send_room_list(fangzhu_ip_list, finder_ip, dst_port):
 
 # 创建房间
 async def room_create(fangzhu, room_data):
-    # 获取房名
-    if fangzhu in list(gv.room_name):
-        if len(gv.room_name[fangzhu]) > 12:
-            room_name = gv.room_name[fangzhu][:10] + "..."
-        else:
-            room_name = gv.room_name[fangzhu]
-    else:
-        room_name = f"{ip_to_wgnum(fangzhu)}号的房间"
-
     # 模拟加入房间，获取房主数据
     pos = -1
     try:
@@ -205,27 +201,30 @@ async def room_create(fangzhu, room_data):
         writer.write(
             b"\x00\x00\x00\x0e\x7e\xe0\x2a\x4f\x20\xec\x64\x3f\x3c\x9d\x1d\x33\x90\xdd"
         )
-        fun_readdata = reader.readuntil(b"\x80\x00\x00\x00\x80")
-        host_data = await wait_for(fun_readdata, timeout=1)
-        writer.write_eof()
-        writer.close()
-        fun_close = writer.wait_closed()
-        await wait_for(fun_close, timeout=1)
-        # 获取角色信息的相对位置
-        pos = host_data.find(b"\x64\x40\x02\x00\x00")
-
-    # 连接拒绝或超时忽略
-    except (
-        ConnectionRefusedError,
-        ConnectionResetError,
-        TimeoutError,
-        IncompleteReadError,
-    ):
+        await writer.drain()
+    except (TimeoutError, ConnectionRefusedError):
         pass
-    except Exception:
-        error_msg = f"识别房主{fangzhu}角色错误：{format_exc()}"
-        logger.error(error_msg)
-        gv.private_mess.append((gv.superuser_num, error_msg))
+    except Exception as e:  # (ConnectionResetError)
+        gv.private_mess.append(
+            (gv.superuser_num, f"获取{fangzhu}房主角色时握手出错，错误: {repr(e)}")
+        )
+    else:
+        try:
+            fun_readdata = reader.readuntil(b"\x80\x00\x00\x00\x80")
+            host_data = await wait_for(fun_readdata, timeout=1)
+            # 获取角色信息的相对位置
+            pos = host_data.find(b"\x64\x40\x02\x00\x00")
+        except (TimeoutError, IncompleteReadError):
+            pass
+        except Exception as e:
+            gv.private_mess.append(
+                (gv.superuser_num, f"获取{fangzhu}房主角色时读取出错，错误: {repr(e)}")
+            )
+        finally:
+            writer.write_eof()
+            writer.close()
+            fun_close = writer.wait_closed()
+            await wait_for(fun_close, timeout=1)
 
     # 识别房主角色
     if pos != -1:
@@ -269,6 +268,14 @@ async def room_create(fangzhu, room_data):
                 fangzhu_wgnum = gv.r2f[fangzhu_wgnum]
             # 特殊编号
             now = datetime.now()
+            # 获取房名
+            if fangzhu in list(gv.room_name):
+                if len(gv.room_name[fangzhu]) > 12:
+                    room_name = gv.room_name[fangzhu][:10] + "..."
+                else:
+                    room_name = gv.room_name[fangzhu]
+            else:
+                room_name = f"{fangzhu_wgnum}号的房间"
             msg = f"◤{now.hour:02d}:{now.minute:02d}:{now.second:02d}◢{prim}\n{fangzhu_wgnum}号用[{gv.role_name[fangzhu]}]创建了房间\n▶ {room_name}"
             gv.group_mess.append((gv.miao_group_num, msg))
             gv.channel_mess.append((gv.channel_id, msg))
@@ -420,8 +427,8 @@ async def packet_called(p):
 
 async def read_stdout(proc: subprocess.Process):
     try:
-        # 抓够100W次就结束子进程，释放内存
-        while gv.p_count < 1000000:
+        # 抓够次数就结束子进程，释放内存
+        while gv.p_count < 500000:
             buf = await proc.stdout.readuntil(separator=b"\n")
             # 跳过分隔符
             if buf[:3] == b'{"i':
@@ -435,13 +442,17 @@ async def read_stdout(proc: subprocess.Process):
                 await packet_called(p["layers"])
 
         # 重置次数，结束子进程
-        if gv.p_count == 2000000:
+        if gv.p_count == 1000000:
             gv.p_count = -1
         else:
             gv.p_count = 0
         proc.terminate()
     except IncompleteReadError:
         pass
+    except Exception:
+        error_msg = f"tshark数据解析函数出错!\n错误追踪:\n{format_exc()}"
+        logger.error(error_msg)
+        gv.private_mess.append((gv.superuser_num, error_msg))
 
 
 async def start_sniff():

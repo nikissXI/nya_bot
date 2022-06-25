@@ -1,12 +1,14 @@
 from socket import AF_PACKET, SOCK_RAW, socket
 
-from httpx import AsyncClient
 from nonebot.log import logger
 from src.models._large_data import Large_data
 from ujson import dumps, loads
 
 
 class GV(object):
+    # 异步task强引用
+    background_tasks = set()
+
     # bot变量
     bot_1 = None
     bot_2 = None
@@ -27,6 +29,8 @@ class GV(object):
     # 加QQ群链接
     join_group_url = None
 
+    # 网卡名称
+    interface_name = None
     # tshark地址
     tshark_path = None
     # wireguard 地址和端口
@@ -62,8 +66,6 @@ class GV(object):
     ##########################
     # 运行开始时间
     start_time = 0
-    # httpx异步请求
-    aioget = AsyncClient()
     # 发送数据包用的套接字
     send_socket = socket(AF_PACKET, SOCK_RAW)
     # 编号数量总数
@@ -158,6 +160,7 @@ class GV(object):
     packet_once_s = set()
     # 手动发红包的用户名
     packet_username_s = ""
+    packet_sender_qqnum = 0
 
     async def load_some_data(self):
         tmp_host_role = loads(await Large_data.load_host_role())

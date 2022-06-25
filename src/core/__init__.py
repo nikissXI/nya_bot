@@ -1,9 +1,10 @@
-from asyncio import create_task, sleep
+from asyncio import create_task, sleep, get_running_loop
 from datetime import datetime
 from math import sqrt
 from random import randint
 from re import S, compile, sub
 
+from httpx import AsyncClient
 from nonebot import get_driver, on_message, on_notice, on_regex, on_request
 from nonebot.adapters import Bot
 from nonebot.adapters.onebot.v11.event import (
@@ -58,6 +59,7 @@ from .utils import (
     get_qqnum_nickname,
     get_room_list,
     handle_exception,
+    ip_to_wgnum,
     network_status,
     server_status,
     wgnum_to_ip,
@@ -85,6 +87,7 @@ async def do_startup():
         gv.bot_1_num = str(config.bot_1_num)
         gv.bot_2_num = str(config.bot_2_num)
         gv.superuser_num = config.superuser_num
+        gv.interface_name = config.interface_name
         gv.tshark_path = config.tshark_path
         gv.wireguard_host = config.wireguard_host
         gv.wireguard_port = config.wireguard_port
@@ -140,7 +143,7 @@ async def do_startup():
     # 0-8点开启安全模式
     if gv.safe_mode is False:
         if not 8 <= datetime.now().hour <= 23:
-            gv.safe_mode = True
+            gv.safe_mode = await Little_data.update_safe_mode(1)
 
     try:
         gv.send_socket.bind(("miao", 0))
@@ -162,12 +165,17 @@ async def do_startup():
             await exec_shell(f"bash src/shell/wg_renew.sh save")
             logger.success(f"成功从配置文件导入并加载编号{gv.get_wgnum_count}个")
 
-    # 启动定时模块
-    create_task(start_scheduler())
-    # 启动WEB模块
-    create_task(start_web_server())
+    def _create_background_task(_def, _name):
+        task = create_task(_def, name=_name)
+        gv.background_tasks.add(task)
+        task.add_done_callback(gv.background_tasks.discard)
+
+    # 启动定时任务模块
+    _create_background_task(start_scheduler(), "scheduler_task")
+    # 启动网页服务模块
+    _create_background_task(start_web_server(), "web_task")
     # 启动流量嗅探模块
-    create_task(start_sniff())
+    _create_background_task(start_sniff(), "sniff_task")
 
     logger.success(f"安全模式: {gv.safe_mode}")
     logger.success(f"喵币系统: {gv.miaobi_system}")
@@ -179,7 +187,7 @@ async def do_startup():
  |  \| |\ \_/ //  \    \n\
  | . ` | \   // /\ \   \n\
  | |\  |  | |/ ____ \  \n\
- |_| \_|  |_/_/    \_\\ V1.0.0\n\
+ |_| \_|  |_/_/    \_\ v1.1.0\n\
 Dev by nikiss <1299577815@qq.com>\n"
     )
 
@@ -187,11 +195,13 @@ Dev by nikiss <1299577815@qq.com>\n"
 # 关闭时执行
 @driver.on_shutdown
 async def do_shutdown():
-    gv.p_count = 2000000
+    gv.p_count = 1000000
+    if gv.packet_s > 0:
+        await Gold.change_money(gv.packet_sender_qqnum, gv.packet_s, True)
+        logger.success(f"{gv.packet_username_s}发的红包还有{gv.packet_s}个未分完，已返还")
     logger.success("等待世界线收缩...")
-    await sleep(2)
+    await sleep(1)
     await gv.save_some_data()
-    await gv.aioget.aclose()
     await Tortoise.close_connections()
     logger.success(
         "\n\
@@ -383,7 +393,7 @@ new_friend = on_notice(rule=bot_1_event)
 # 管理员命令
 #################################
 # 测试命令
-test = on_regex("^test", rule=auto_bot_superuser)
+test = on_regex("^测试$", rule=auto_bot_superuser)
 fasong = on_regex("^发送", rule=auto_bot_superuser)
 
 # bot系统命令
@@ -416,7 +426,7 @@ qiandao = on_regex("^签到$", rule=miaobi_check_qiandao)
 miaobi = on_regex("^喵币$", rule=miaobi_check)
 zhuanzhang = on_regex("^转账\s*\d+\s+\d+$|^转账$", rule=miaobi_check)
 fahongbao = on_regex("^发红包\s*\d+$|^发红包$", rule=miaobi_check)
-qiangjinbi = on_regex("^抢喵币$", rule=miaobi_check)
+qiangmiaobi = on_regex("^抢喵币$", rule=miaobi_check)
 miaobipaihang = on_regex("^喵币排行$", rule=miaobi_check)
 lumao = on_regex("^撸猫$", rule=miaobi_check)
 gailv = on_regex("^概率$", rule=miaobi_check)
@@ -436,7 +446,7 @@ zengjiamiaobi = on_regex("^增加喵币\s*\d+\s+\d+$|^增加喵币$", rule=auto_
 # 所有用户（群聊）
 yanzheng = on_regex("^验证$", rule=group_check_special)
 link = on_regex(
-    "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$", rule=zhanhun_group_check
+    "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$|^群规$", rule=zhanhun_group_check
 )
 chafang = on_regex("^查房$", rule=auto_bot)
 
@@ -605,7 +615,11 @@ async def handle_anti_flash(event: GroupMessageEvent):
 @handle_exception("撤回")
 async def handle_req_event(event: GroupRecallNoticeEvent):
     if (
-        (event.group_id == gv.miao_group_num or event.group_id == gv.miao_group2_num)
+        (
+            event.group_id == gv.miao_group_num
+            or event.group_id == gv.miao_group2_num
+            or event.group_id == gv.shencha_group_num
+        )
         and event.operator_id == event.user_id
         and gv.admin_bot is not None
     ):
@@ -736,20 +750,24 @@ async def handle_group_notice(event: NoticeEvent):
                     gv.join_check.pop(qqnum)
 
                 # 检查是否以前进来过
-                if await Gold.info_exist(qqnum):
+                if await Gold.get_read_flag(qqnum) == 1:
                     await group_notice.finish(
                         MessageSegment.at(qqnum)
                         + f"欢迎回来！\n来源: {come_from}\n"
                         + MessageSegment.image(f"{gv.site_url}/static/welcome.gif")
                     )
-                    pass
 
                 # 新人欢迎
                 else:
                     await Gold.create_info(qqnum)
+                    await gv.admin_bot.set_group_ban(
+                        group_id=gv.miao_group_num,
+                        user_id=qqnum,
+                        duration=60 * 60 * 24 * 29,
+                    )
                     await group_notice.finish(
                         MessageSegment.at(qqnum)
-                        + f"\n欢迎新人!\n来源: {come_from}\n联机教程和群规都在群公告"
+                        + f"\n欢迎新人!\n来源: {come_from}\n联机教程和解除禁言方法都在群公告\n请认真阅读哦~ 不看退群"
                         + MessageSegment.image(f"{gv.site_url}/static/welcome.gif")
                     )
 
@@ -778,10 +796,39 @@ async def handle_group_notice(event: NoticeEvent):
 # 管理员命令
 #####################################
 @test.handle()
-@handle_exception("test")
+@handle_exception("测试")
 async def handle_test(event: MessageEvent):
-    await test.send("wc")
-    await test.finish("hua q")
+    # await test.send("wc")
+    results = []
+    results_true = ["游戏中"]
+    results_false = ["等待中"]
+    for fangzhu in list(gv.rooms):
+        # 读取房间信息
+        room_data = gv.rooms[fangzhu][4]
+        room_info = loads(
+            bytes.fromhex(room_data[room_data.find("7b2273", 50) :]).decode()
+        )
+        chengyuan_info = ""
+        # 获取成员信息
+        for chengyuan in list(gv.rooms[fangzhu][0]):
+            chengyuan_wgnum = int(ip_to_wgnum(chengyuan))
+            # 特殊编号
+            if chengyuan_wgnum in gv.r2f.keys():
+                chengyuan_wgnum = gv.r2f[chengyuan_wgnum]
+            # 特殊编号
+            chengyuan_info += f"  {chengyuan_wgnum}"
+
+        # 判断游戏状态
+        if room_info["hsb"]:
+            results_true.append(
+                f"房主{ip_to_wgnum(fangzhu)} 人数{room_info['ccc']}\n成员{chengyuan_info}"
+            )
+        else:
+            results_false.append(
+                f"房主{ip_to_wgnum(fangzhu)} 人数{room_info['ccc']}\n成员{chengyuan_info}"
+            )
+    results = results_false + results_true
+    await test.finish("\n".join(results))
 
 
 @juesegaiming.handle()
@@ -849,9 +896,10 @@ async def handle_fasong(event: MessageEvent):
 @handle_exception("中译英")
 async def handle_zhongyiying(event: MessageEvent):
     in_mess = str(event.get_message())[3:].strip()
-    res = await gv.aioget.get(
-        "http://fanyi.youdao.com/translate?&doctype=json&type=ZH_CN2EN&i=" + in_mess
-    )
+    async with AsyncClient() as c:
+        res = await c.get(
+            "http://fanyi.youdao.com/translate?&doctype=json&type=ZH_CN2EN&i=" + in_mess
+        )
     res_json = loads(res.text)
     out_mess = res_json["translateResult"][0][0]["tgt"]
     await zhongyiying.finish(out_mess)
@@ -861,9 +909,10 @@ async def handle_zhongyiying(event: MessageEvent):
 @handle_exception("英译中")
 async def handle_yingyizhong(event: MessageEvent):
     in_mess = str(event.get_message())[3:].strip()
-    res = await gv.aioget.get(
-        "http://fanyi.youdao.com/translate?&doctype=json&type=EN2ZH_CN&i=" + in_mess
-    )
+    async with AsyncClient() as c:
+        res = await c.get(
+            "http://fanyi.youdao.com/translate?&doctype=json&type=EN2ZH_CN&i=" + in_mess
+        )
     res_json = loads(res.text)
     out_mess = res_json["translateResult"][0][0]["tgt"]
     await yingyizhong.finish(out_mess)
@@ -1159,8 +1208,6 @@ async def handle_zengjiamiaobi(event: MessageEvent):
 #####################################
 # 审查组命令
 #####################################
-
-
 @pojieliuyan.handle()
 @handle_exception("破解留言")
 async def handle_pojieliuyan():
@@ -1210,11 +1257,9 @@ async def handle_shencha(event: GroupMessageEvent):
             await gv.admin_bot.set_group_ban(
                 group_id=gv.miao_group_num, user_id=qqnum, duration=60 * 60 * 24 * 7
             )
-            gv.group_mess.append(
-                (
-                    gv.shencha_group_num,
-                    f"{shencha_name}审查了{nickname} ({qqnum}) 编号 {wgnum}",
-                )
+            await gv.admin_bot.send_group_msg(
+                group_id=gv.shencha_group_num,
+                message=f"{shencha_name}审查了{nickname} ({qqnum}) 编号 {wgnum}",
             )
 
         else:
@@ -1246,7 +1291,7 @@ async def handle_jiejin(event: GroupMessageEvent):
 @handle_exception("待审查")
 async def handle_daishencha():
     shencha_list = await Shencha.get_all()
-    await daishencha.finish("待审查列表" + shencha_list)
+    await daishencha.finish("待审查列表" + "\n".join(shencha_list))
 
 
 @tichu.handle()
@@ -1334,8 +1379,6 @@ async def handle_saomiao():
 #####################################
 # 喵服群聊命令
 #####################################
-
-
 @jinyan.handle()
 @handle_exception("禁言")
 async def handle_jinyan(event: GroupMessageEvent):
@@ -1405,68 +1448,10 @@ async def handle_link(event: GroupMessageEvent):
         "黑名单": f"黑名单：{gv.site_url}/zhb",
         "文章": f"文章列表：{gv.site_url}/guide",
         "频道": f"QQ频道：{gv.site_url}/channel",
+        "群规": f"喵服群规&联机守则：{gv.site_url}/rule",
     }
     kw = str(event.get_message()).replace("\n", "")
     await link.finish(mess_dict[kw])
-
-
-# @chabang.handle()
-# @handle_exception("群查绑")
-# async def handle_chabang(event: GroupMessageEvent):
-#     if str(event.get_message()) == "查绑":
-#         await chabang.finish("查绑+编号或Q号")
-#     else:
-#         num = int(str(event.get_message())[2:].strip())
-#         msg = await check_num(num)
-#         msg = msg.replace("<br />", "\n")
-#         await chabang.finish(msg)
-
-
-# @dizhi.handle()
-# @handle_exception("地址")
-# async def handle_dizhi(event: GroupMessageEvent):
-#     if str(event.get_message()) == "地址":
-#         await dizhi.finish("地址 [编号]")
-#     wgnum = int(str(event.get_message())[2:].strip())
-#     # 特殊编号
-#     if wgnum in gv.f2r.keys():
-#         wgnum = gv.f2r[wgnum]
-#     # 特殊编号
-#     if wgnum > gv.get_wgnum_count:
-#         await dizhi.finish("超过现有最大编号")
-#     elif wgnum == 0:
-#         await dizhi.finish("脑子有病吧")
-#     else:
-#         ip = wgnum_to_ip(wgnum)
-#         await dizhi.finish(f"{wgnum}号的IP地址是{ip}")
-
-
-# @jiance.handle()
-# @handle_exception("检测")
-# async def handle_jiance(event: GroupMessageEvent):
-#     if str(event.get_message()) == "检测":
-#         await jiance.finish("检测+编号")
-#     else:
-#         wgnum = int(str(event.get_message())[2:].strip())
-#         msg = await network_status(wgnum, 1)
-#         if msg.find("ms") == -1:
-#             await jiance.finish(msg)
-#         else:
-#             await jiance.send(msg.replace("<br />", "\n"))
-#         msg = await network_status(wgnum, 2)
-#         await jiance.finish(msg.replace("<br />", "\n"))
-
-
-# @zhaokabi.handle()
-# @handle_exception("找卡比")
-# async def handle_zhaokabi(event: GroupMessageEvent):
-#     if str(event.get_message()) == "找卡比":
-#         await zhaokabi.finish("找卡比+编号")
-#     else:
-#         wgnum = int(str(event.get_message())[3:].strip())
-#         await zhaokabi.send("查询中，请稍后...")
-#         msg = await network_status(wgnum, 3)
-#         await zhaokabi.finish(msg.replace("<br />", "\n"))
 
 
 @chafang.handle()
@@ -1639,8 +1624,6 @@ async def handle_banben(event: PrivateMessageEvent):
 #####################################
 # 喵币相关命令
 #####################################
-
-
 @miaobi.handle()
 @handle_exception("喵币")
 async def handle_jinbi(event: GroupMessageEvent):
@@ -1755,7 +1738,7 @@ async def handle_fahongbao(event: GroupMessageEvent):
 
             # 记录红包信息
             gv.packet_log_s = gv.packet_s = packet_num
-
+            gv.packet_sender_qqnum = event.user_id
             if event.sender.card:
                 gv.packet_username_s = event.sender.card
             else:
@@ -1774,13 +1757,7 @@ async def handle_fahongbao(event: GroupMessageEvent):
                 )
             )
 
-            time_count = 0
-            while gv.packet_s > 0:
-                await sleep(1)
-                time_count += 1
-                if time_count == 180:
-                    break
-
+            await sleep(180)
             if gv.packet_s > 0:
                 await Gold.change_money(event.user_id, gv.packet_s, True)
                 gv.group_mess.append(
@@ -1795,7 +1772,6 @@ async def handle_fahongbao(event: GroupMessageEvent):
                         f"{gv.packet_username_s}的红包已过期，还有{gv.packet_s}个未瓜分，已返还",
                     )
                 )
-
             gv.packet_s = 0
             gv.packet_once_s.clear()
 
@@ -1805,9 +1781,9 @@ async def handle_fahongbao(event: GroupMessageEvent):
         await fahongbao.finish(MessageSegment.at(event.user_id) + "钱都没有还发红包？")
 
 
-@qiangjinbi.handle()
-@handle_exception("抢金币")
-async def handle_qiangjinbi(event: GroupMessageEvent):
+@qiangmiaobi.handle()
+@handle_exception("抢喵币")
+async def handle_qiangmiaobi(event: GroupMessageEvent):
     grab = 0
     if gv.packet > 0 and event.user_id not in gv.packet_once:
         gv.packet_once.add(event.user_id)
@@ -1833,7 +1809,9 @@ async def handle_qiangjinbi(event: GroupMessageEvent):
     grab_sum = grab + grab_s
     if grab_sum > 0:
         await Gold.change_money(event.user_id, grab_sum, True)
-        await qiangjinbi.finish(MessageSegment.at(event.user_id) + f"你抢到了{grab_sum}个喵币")
+        await qiangmiaobi.finish(
+            MessageSegment.at(event.user_id) + f"你抢到了{grab_sum}个喵币"
+        )
 
 
 @gailv.handle()

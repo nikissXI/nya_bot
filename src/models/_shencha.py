@@ -12,7 +12,7 @@ class Shencha(Model):
         if rows:
             return [f"\n{row[0]}" for row in rows]
         else:
-            return "  空"
+            return ["  空"]
 
     @classmethod
     async def get_one(cls, qqnum: int) -> str:

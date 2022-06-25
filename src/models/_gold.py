@@ -9,6 +9,7 @@ class Gold(Model):
     date = fields.TextField()
     con = fields.IntField()
     packet = fields.IntField()
+    read = fields.IntField()
 
     ########################
     # 增加
@@ -16,7 +17,9 @@ class Gold(Model):
     # 创建用户
     @classmethod
     async def create_info(cls, qqnum: int):
-        await cls.create(qqnum=qqnum, money=0, date="2022-01-01", con=0, packet=0)
+        await cls.create(
+            qqnum=qqnum, money=0, date="2022-01-01", con=0, packet=0, read=0
+        )
 
     ########################
     # 删除
@@ -78,6 +81,15 @@ class Gold(Model):
         row = await cls.filter(qqnum=qqnum).limit(1).values_list("packet")
         return row[0][0]
 
+    # 获取阅读情况
+    @classmethod
+    async def get_read_flag(cls, qqnum: int) -> int:
+        row = await cls.filter(qqnum=qqnum).limit(1).values_list("read")
+        if row:
+            return row[0][0]
+        else:
+            return -1
+
     ########################
     # 修改
     ########################
@@ -110,6 +122,16 @@ class Gold(Model):
             await cls.filter(qqnum=qqnum).limit(1).update(money=old_money + money)
         else:
             await cls.filter(qqnum=qqnum).limit(1).update(money=old_money - money)
+
+    # 确认阅读
+    @classmethod
+    async def update_read_flag(cls, qqnum: int):
+        await cls.filter(qqnum=qqnum).limit(1).update(read=1)
+
+    # 重置阅读
+    @classmethod
+    async def reset_read_flag(cls, qqnum: int):
+        await cls.filter(qqnum=qqnum).limit(1).update(read=0)
 
     # 更新签到信息
     @classmethod

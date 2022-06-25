@@ -61,6 +61,9 @@ Endpoint = ${2}:${3}
 AllowedIPs = ${4}.0.0/16
 PersistentKeepalive = 30" > ${FILE}
 
+# 生成配置二维码
+qrencode -t PNG -o tunnel/png/${5}.png < ${FILE}
+
 #把新配置写入wg
 wg set miao peer ${PUBKEY} allowed-ips ${5}/32
 

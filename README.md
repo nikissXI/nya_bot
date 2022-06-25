@@ -182,6 +182,13 @@ python bot.py 或 nb run
 
 ## 更新
 
+### 2022/6/25 \[v1.1.0]
+
+* 增加新人进群禁言功能，需要阅读群规才能解除禁言
+* asyncio.create_task改为强引用
+* 解决关闭bot时有个await sleep的报错（用asyncio.call_later解决了）
+* 其他局部小优化
+
 ### 2022/6/15 \[v1.0.0]
 
 * 将机器人开源，发布到github

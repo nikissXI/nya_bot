@@ -105,6 +105,18 @@ async def get_new_key(wgnum: int) -> str:
     else:
         logger.success(f"{wgnum}号配置刷新")
 
+    # 合成四向二维码，防止wg不识别二维码
+    dst_img = Image.new("RGBA", (390, 390), (255, 255, 255))
+    src_img = Image.open(f"tunnel/png/{ip}.png")
+    dst_img.paste(src_img, (0, 0))
+    src_img = src_img.rotate(90)
+    dst_img.paste(src_img, (195, 0))
+    src_img = src_img.rotate(90)
+    dst_img.paste(src_img, (0, 195))
+    src_img = src_img.rotate(90)
+    dst_img.paste(src_img, (195, 195))
+    dst_img.save(f"tunnel/png/{ip}.png")
+
     # 生成随机码
     base_str = "abcdefghigklmnopqrstuvwxyz0123456789"
     length = len(base_str) - 1

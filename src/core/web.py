@@ -6,6 +6,7 @@ from src.models._little_data import Little_data
 from src.models._nofree import Nofree
 from src.models._sponsor import Sponsor
 from src.models._visit import Visit
+from src.models._gold import Gold
 from src.models._wg import Wg
 from src.models._xl import XLboard
 from src.models._zhb_list import Zhb_list
@@ -55,7 +56,7 @@ async def start_web_server():
     app.mount("/cdn", StaticFiles(directory=f"www/static/cdn"), name="cdn")
     # 后台api允许跨域
     app.add_middleware(CORSMiddleware, allow_origins=["*"])
-    logger.success("WEB模块加载成功")
+    logger.success("网页服务模块加载成功")
 
 
 ###################################
@@ -69,6 +70,40 @@ async def channel(request: Request):
 @app.get("/robots.txt")
 async def channel(request: Request):
     return templates.TemplateResponse("robots.txt", {"request": request})
+
+
+###################################
+# 规则阅读
+###################################
+@app.get("/rule")
+async def rule(request: Request):
+    return templates.TemplateResponse(
+        "rule.html", {"request": request, "cdn_url": gv.cdn_url}
+    )
+
+
+@app.get("/rule_read")
+async def rule_read(qqnum):
+    if gv.admin_bot is None:
+        return {"code": -2}
+    try:
+        qqnum = int(qqnum)
+        c = await Gold.get_read_flag(qqnum)
+        # 确认
+        if c == 0:
+            await Gold.update_read_flag(qqnum)
+            await gv.admin_bot.set_group_ban(
+                group_id=gv.miao_group_num, user_id=qqnum, duration=0
+            )
+            return {"code": 0}
+        # 阅读过了
+        elif c == 1:
+            return {"code": 1}
+        else:
+            return {"code": -1}
+    except Exception:
+        # 不存在或非数字
+        return {"code": -1}
 
 
 ###################################
@@ -387,6 +422,13 @@ async def d(request: Request, k=None, t=None):
                     wgnum = gv.r2f[wgnum]
                 # 特殊编号
                 return FileResponse(file, filename=f"{wgnum}.conf")
+            elif t == "png":
+                file = f"tunnel/png/{wgnum_to_ip(wgnum)}.png"
+                # 特殊编号
+                if wgnum in gv.r2f.keys():
+                    wgnum = gv.r2f[wgnum]
+                # 特殊编号
+                return FileResponse(file, filename=f"{wgnum}.png")
             else:
                 return RedirectResponse(url="/")
         else:
