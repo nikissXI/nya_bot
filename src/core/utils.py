@@ -307,7 +307,7 @@ async def server_status() -> str:
     now = datetime.now()
     run_time = now - gv.start_time
     out_mess.append(
-        f"已运行{str(run_time).replace(' day, ', '天').replace(' days, ', '天').split('.')[0].replace(':', '时', 1).replace(':', '分', 1)+ '秒'}"
+        f"已运行{str(run_time).replace(' days, ', '天').replace(' day, ', '天').split('.')[0].replace(':', '时', 1).replace(':', '分', 1)+ '秒'}"
     )
     # 获取CPU和RAM使用率
     out_mess.append(
