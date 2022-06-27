@@ -254,7 +254,7 @@ async def why_data(qqnum=None):
             qqnum, time, why, path = await Zhb_list.get_why(qqnum)
             return {"qqnum": qqnum, "time": time, "why": why, "path": path}
         else:
-            return {"qqnum": 0}
+            return RedirectResponse(url="/zhb")
     else:
         return
 
