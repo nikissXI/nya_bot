@@ -210,6 +210,7 @@ async def write_bd_log(qqnum: int, wgnum: int):
 
 async def write_ip_log(qqnum: int, ip: str):
     now = datetime.now()
+    ip = ip.split(",")[0]
     try:
         async with AsyncClient(verify=False) as client:
             user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.41"
@@ -231,7 +232,9 @@ async def write_ip_log(qqnum: int, ip: str):
             user_id=gv.superuser_num,
             message=error_msg,
         )
-    text = f"{now.month}-{now.day} {now.hour}:{now.minute:02d} {qqnum} 使用{ip}\({asn}\)访问"
+    text = (
+        f"{now.month}-{now.day} {now.hour}:{now.minute:02d} {qqnum} 使用{ip}\({asn}\)访问"
+    )
     await exec_shell(f"echo {text} >> log/ip_log/{now.year}-{now.month}.txt")
 
 
