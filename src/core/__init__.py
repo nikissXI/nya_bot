@@ -689,6 +689,8 @@ async def handle_group_notice(event: NoticeEvent):
         qqnum = event.user_id
         # 退出联机群
         if event.group_id == gv.miao_group_num:
+            if qqnum in gv.qq_verified.keys():
+                gv.qq_verified.pop(qqnum)
             if await Shencha.qqnum_exist(qqnum):
                 gv.group_mess.append(
                     (
@@ -937,7 +939,10 @@ async def handle_baipiao(event: MessageEvent):
                 else:
                     await baipiao.finish(f"删除失败，目标不存在")
             else:
-                if await Nofree.add_qqnum(int(qqnum)):
+                qqnum = int(qqnum)
+                if await Nofree.add_qqnum(qqnum):
+                    if qqnum in gv.qq_verified.keys():
+                        gv.qq_verified.pop(qqnum)
                     await baipiao.finish(f"增加{qqnum}成功")
                 else:
                     await baipiao.finish(f"增加失败，目标已存在")
@@ -1310,6 +1315,9 @@ async def handle_shencha(event: GroupMessageEvent):
         qqnum = await Wg.get_qq_by_wgnum(num)
         if qqnum == 0:
             qqnum = num
+        
+        if qqnum in gv.qq_verified.keys():
+            gv.qq_verified.pop(qqnum)
 
         # 判断是否在群里
         if await check_in_group(qqnum):
@@ -1787,9 +1795,13 @@ async def handle_qiangmiaobi(event: GroupMessageEvent):
     grab = 0
     if gv.packet > 0 and event.user_id not in gv.packet_once:
         gv.packet_once.add(event.user_id)
-        grab = randint(1, gv.packet)
-        while grab > gv.packet_log / 4:
+        lucky = randint(1, 100)
+        if lucky == 100:
             grab = randint(1, gv.packet)
+            while grab > gv.packet_log / 4:
+                grab = randint(1, gv.packet)
+        else:
+            grab = gv.packet
         gv.packet -= grab
         if gv.packet == 0:
             gv.group_mess.append((gv.miao_group_num, "随机红包被抢完了"))
@@ -1798,9 +1810,13 @@ async def handle_qiangmiaobi(event: GroupMessageEvent):
     grab_s = 0
     if gv.packet_s > 0 and event.user_id not in gv.packet_once_s:
         gv.packet_once_s.add(event.user_id)
-        grab_s = randint(1, gv.packet_s)
-        while grab_s > gv.packet_log_s / 4:
+        lucky = randint(1, 100)
+        if lucky == 100:
             grab_s = randint(1, gv.packet_s)
+            while grab_s > gv.packet_log_s / 4:
+                grab_s = randint(1, gv.packet_s)
+        else:
+            grab_s = gv.packet_s
         gv.packet_s -= grab_s
         if gv.packet_s == 0:
             gv.group_mess.append((gv.miao_group_num, f"{gv.packet_username_s}的红包被抢完了"))

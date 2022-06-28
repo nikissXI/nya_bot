@@ -17,10 +17,6 @@ if [ ! -d "tunnel/conf" ]; then
 sudo mkdir -p tunnel/conf
 fi
 
-if [ ! -d "tunnel/png" ]; then
-sudo mkdir -p tunnel/png
-fi
-
 if [ ! -d "data" ]; then
 sudo mkdir -p data
 fi

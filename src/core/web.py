@@ -281,7 +281,7 @@ async def submit_qq(request: Request, qq=None, app=None):
         try:
             qq = int(qq)
         except Exception:
-            return {"code": -1, "msg": "请正确填写QQ号"}
+            return {"code": 0, "msg": "请正确填写QQ号"}
 
         # 判断是否在黑名单
         if qq in await Zhb_list.get_all_qq():
@@ -422,13 +422,6 @@ async def d(request: Request, k=None, t=None):
                     wgnum = gv.r2f[wgnum]
                 # 特殊编号
                 return FileResponse(file, filename=f"{wgnum}.conf")
-            elif t == "png":
-                file = f"tunnel/png/{wgnum_to_ip(wgnum)}.png"
-                # 特殊编号
-                if wgnum in gv.r2f.keys():
-                    wgnum = gv.r2f[wgnum]
-                # 特殊编号
-                return FileResponse(file, filename=f"{wgnum}.png")
             else:
                 return RedirectResponse(url="/")
         else:

@@ -8,7 +8,7 @@ from src.models._zhb_list import Zhb_list
 from src.models._zhb_user import Zhb_user
 
 from .global_var import gv
-from .utils import check_in_group, ip_to_wgnum, wgnum_to_ip
+from .utils import check_in_group, ip_to_wgnum, wgnum_to_ip, exec_shell
 from .wgnum import (
     bd_wgnum,
     check_num,
@@ -370,6 +370,9 @@ async def krsr_api(num: int) -> str:
         else:
             for i in range(num + 1, gv.get_wgnum_count + 1):
                 await Wg.delete_wgnum(i)
+                code, stdout, stderr = await exec_shell(
+                    f"bash src/shell/wg_del.sh {wgnum_to_ip(i)}"
+                )
             diff = gv.get_wgnum_count - num
             gv.get_wgnum_count = num
             await get_wgnum_count()
