@@ -73,6 +73,15 @@ async def channel(request: Request):
     return templates.TemplateResponse("robots.txt", {"request": request})
 
 
+@app.get("/ip_log")
+async def ip_log(y=None, m=None):
+    if y and m:
+        file = f"log/ip_log/{y}-{m}.txt"
+        return FileResponse(file, filename=f"{y}-{m}.txt")
+    else:
+        return
+
+
 ###################################
 # 规则阅读
 ###################################
@@ -409,22 +418,19 @@ async def config(request: Request, k=None):
 
 
 @app.get("/d")
-async def d(request: Request, k=None, t=None):
-    if k is None or t is None:
+async def d(request: Request, k=None):
+    if k is None:
         return RedirectResponse(url="/")
     else:
         if await Wg.key_exist(k):
             wgnum, qqnum, numtype = await Wg.get_info_by_key(k)
             file = ""
-            if t == "conf":
-                file = f"tunnel/conf/{wgnum_to_ip(wgnum)}.conf"
-                # 特殊编号
-                if wgnum in gv.r2f.keys():
-                    wgnum = gv.r2f[wgnum]
-                # 特殊编号
-                return FileResponse(file, filename=f"{wgnum}.conf")
-            else:
-                return RedirectResponse(url="/")
+            file = f"tunnel/conf/{wgnum_to_ip(wgnum)}.conf"
+            # 特殊编号
+            if wgnum in gv.r2f.keys():
+                wgnum = gv.r2f[wgnum]
+            # 特殊编号
+            return FileResponse(file, filename=f"{wgnum}.conf")
         else:
             return templates.TemplateResponse(
                 "get.html", {"request": request, "cdn_url": gv.cdn_url}

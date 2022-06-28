@@ -302,15 +302,11 @@
                     var str = url.substr(1);
                     var strs = str.split("&");
                     if (strs[0].split("=")[0] == 'k') {
-                        $("#png_download").text('点击下载二维码')
                         $("#conf_download*").text('点击下载conf')
-                        $("#png_download").attr("onclick", "window.location.href='/d?k=" + unescape(strs[0].split("=")[1]) + "&t=png&r=" + Math.random() + "'")
-                        $("#conf_download*").attr("onclick", "window.location.href='/d?k=" + unescape(strs[0].split("=")[1]) + "&t=conf&r=" + Math.random() + "'")
+                        $("#conf_download*").attr("onclick", "window.location.href='/d?k=" + unescape(strs[0].split("=")[1]) + "&r=" + Math.random() + "'")
                     }
                 } else {
-                    $("#png_download").text('点我领号')
                     $("#conf_download*").text('点我领号')
-                    $("#png_download").attr("onclick", "window.location.href='/get'")
                     $("#conf_download*").attr("onclick", "window.location.href='/get'")
                 }
             }
