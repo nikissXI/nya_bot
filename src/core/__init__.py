@@ -1797,11 +1797,11 @@ async def handle_qiangmiaobi(event: GroupMessageEvent):
         gv.packet_once.add(event.user_id)
         lucky = randint(1, 100)
         if lucky == 100:
+            grab = gv.packet
+        else:
             grab = randint(1, gv.packet)
             while grab > gv.packet_log / 4:
                 grab = randint(1, gv.packet)
-        else:
-            grab = gv.packet
         gv.packet -= grab
         if gv.packet == 0:
             gv.group_mess.append((gv.miao_group_num, "随机红包被抢完了"))
@@ -1812,11 +1812,11 @@ async def handle_qiangmiaobi(event: GroupMessageEvent):
         gv.packet_once_s.add(event.user_id)
         lucky = randint(1, 100)
         if lucky == 100:
+            grab_s = gv.packet_s
+        else:
             grab_s = randint(1, gv.packet_s)
             while grab_s > gv.packet_log_s / 4:
                 grab_s = randint(1, gv.packet_s)
-        else:
-            grab_s = gv.packet_s
         gv.packet_s -= grab_s
         if gv.packet_s == 0:
             gv.group_mess.append((gv.miao_group_num, f"{gv.packet_username_s}的红包被抢完了"))
