@@ -1,9 +1,10 @@
 from asyncio import create_subprocess_shell, gather, subprocess
 from datetime import datetime
 from functools import wraps
-from re import search
+from re import search, findall
 from struct import unpack
 from traceback import format_exc
+from httpx import AsyncClient
 
 from nonebot import get_bots
 from nonebot.adapters.onebot.v11 import ActionFailed, NetworkError
@@ -209,7 +210,28 @@ async def write_bd_log(qqnum: int, wgnum: int):
 
 async def write_ip_log(qqnum: int, ip: str):
     now = datetime.now()
-    text = f"{now.month}-{now.day} {now.hour}:{now.minute:02d} {qqnum} 使用{ip}访问"
+    try:
+        async with AsyncClient(verify=False) as client:
+            user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.41"
+            res = await client.get(
+                url=f"https://ipchaxun.com/{ip}/",
+                headers={"User-Agent": user_agent},
+                timeout=3,
+            )
+            content = res.content.decode("utf-8")
+            a = findall('归属地：</span><span class="value">(.+)</span>', content)
+            b = findall('运营商：</span><span class="value">(.+)</span>', content)
+            asn = a[0] + b[0]
+    except Exception:
+        asn = "查询归属地失败"
+        # 代码本身出问题
+        error_msg = f"查询IP归属地执行出错!\n错误追踪:\n{format_exc()}"
+        logger.error(error_msg)
+        await gv.admin_bot.send_private_msg(
+            user_id=gv.superuser_num,
+            message=error_msg,
+        )
+    text = f"{now.month}-{now.day} {now.hour}:{now.minute:02d} {qqnum} 使用{ip}\({asn}\)访问"
     await exec_shell(f"echo {text} >> log/ip_log/{now.year}-{now.month}.txt")
 
 
@@ -296,7 +318,9 @@ async def get_wg_content(ip: str) -> str:
 
 
 async def get_net_io() -> tuple[int, int]:
-    code, stdout, stderr = await exec_shell(f"bash src/shell/speed.sh {gv.interface_name}")
+    code, stdout, stderr = await exec_shell(
+        f"bash src/shell/speed.sh {gv.interface_name}"
+    )
     download, upload = stdout.decode().split(" ")
     return (round(float(download)), round(float(upload)))
 

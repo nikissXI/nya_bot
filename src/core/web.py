@@ -1,3 +1,4 @@
+from asyncio import create_task
 from fastapi.middleware.cors import CORSMiddleware
 from nonebot import get_asgi
 from nonebot.log import logger
@@ -294,7 +295,7 @@ async def submit_qq(request: Request, qq=None, app=None):
             and gv.qq_verified[qq][1] == True
         ):
             # 记录IP
-            await write_ip_log(qq, ip)
+            create_task(write_ip_log(qq, ip))
 
             # 体验号,状态码1
             if gv.qq_verified[qq][2] == "体验号":
