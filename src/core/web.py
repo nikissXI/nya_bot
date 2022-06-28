@@ -74,8 +74,8 @@ async def channel(request: Request):
 
 
 @app.get("/ip_log")
-async def ip_log(y=None, m=None):
-    if y and m:
+async def ip_log(y=None, m=None, k=None):
+    if y and m and k == gv.secret_key:
         file = f"log/ip_log/{y}-{m}.txt"
         return FileResponse(file, filename=f"{y}-{m}.txt")
     else:
