@@ -297,6 +297,10 @@ async def submit_qq(request: Request, qq=None, app=None):
         if qq in await Zhb_list.get_all_qq():
             return {"code": -1}
 
+        # 判断是否在白嫖列表中
+        if await Nofree.qqnum_exist(qq):
+            return {"code": -2}
+
         # 提交了qq并发送了确认，状态码1-4
         if (
             qq in gv.qq_verified.keys()
@@ -366,13 +370,12 @@ async def submit_qq(request: Request, qq=None, app=None):
         if await Wg.num_bind(qq):
             gv.qq_verified[qq] = [ip, False, "拿链接"]
             return {"code": 6}
+
         # 判断是否为赞助号,状态码7
         elif await Sponsor.sponsor_exist(qq):
             gv.qq_verified[qq] = [ip, False, "赞助号"]
             return {"code": 7}
-        # 判断是否在白嫖列表中
-        if await Nofree.qqnum_exist(qq):
-            return {"code": -2}
+
         # 都不符合就给体验号
         else:
             # 判断QQ等级是否为10级以上
@@ -380,6 +383,7 @@ async def submit_qq(request: Request, qq=None, app=None):
             # QQ等级不够，状态码-3
             if user_data["level"] <= 10:
                 return {"code": -3}
+
             # 够等级就给体验号,状态码7
             else:
                 gv.qq_verified[qq] = [ip, False, "体验号"]
@@ -723,7 +727,7 @@ async def admin_api(
 
             qqnum = value
             if qqnum == "":
-            #     return {"msg": "QQ号未填写"}
+                #     return {"msg": "QQ号未填写"}
                 qqnum = "*"
             code, stdout, stderr = await exec_shell(
                 f"grep -E ' {qqnum} ' log/bd_log/{date}.txt"
@@ -758,7 +762,7 @@ async def admin_api(
                 return {"msg": "日期格式错误"}
             qqnum = value
             if qqnum == "":
-            #     return {"msg": "QQ号未填写"}
+                #     return {"msg": "QQ号未填写"}
                 qqnum = "*"
             code, stdout, stderr = await exec_shell(
                 f"grep -E ' {qqnum} ' log/ip_log/{date}.txt"

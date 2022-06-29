@@ -10,6 +10,7 @@ class Gold(Model):
     con = fields.IntField()
     packet = fields.IntField()
     read = fields.IntField()
+    expday = fields.IntField()
 
     ########################
     # 增加
@@ -18,7 +19,7 @@ class Gold(Model):
     @classmethod
     async def create_info(cls, qqnum: int):
         await cls.create(
-            qqnum=qqnum, money=0, date="2022-01-01", con=0, packet=0, read=0
+            qqnum=qqnum, money=0, date="2022-01-01", con=0, packet=0, read=0, expday=0
         )
 
     ########################
@@ -90,6 +91,15 @@ class Gold(Model):
         else:
             return -1
 
+    # 获取体验天数情况
+    @classmethod
+    async def get_expday(cls, qqnum: int) -> int:
+        row = await cls.filter(qqnum=qqnum).limit(1).values_list("expday")
+        if row:
+            return row[0][0]
+        else:
+            return -1
+
     ########################
     # 修改
     ########################
@@ -148,6 +158,12 @@ class Gold(Model):
     @classmethod
     async def reset_packet_count(cls):
         await cls.filter(Q(packet__not=0)).update(packet=0)
+
+    # 更新体验天数
+    @classmethod
+    async def update_expday(cls, qqnum: int):
+        d = await cls.get_expday(qqnum)
+        await cls.filter(qqnum=qqnum).limit(1).update(expday=d + 1)
 
     class Meta:
         table = "gold"

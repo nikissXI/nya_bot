@@ -1,7 +1,7 @@
 from random import randint
 
 from nonebot.log import logger
-from PIL import Image
+from src.models._gold import Gold
 from src.models._sponsor import Sponsor
 from src.models._wg import Wg
 from src.models._xl import XLboard
@@ -253,6 +253,8 @@ async def check_num(num: int) -> str:
         elif numtype == "普通":
             re_tip = f"<br />当日联机后次日0点<br />剩余天数会变成30天"
         else:
+            expday = await Gold.get_expday(qqnum)
+            numtype = f"已白嫖{expday}天"
             re_tip = f"<br />当日联机后次日0点<br />剩余天数会变成7天"
 
         return f"QQ: {qqnum}<br />编号: {wgnum} ({numtype})<br />剩余天数: {ttl}天{re_tip}"

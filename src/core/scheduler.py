@@ -201,6 +201,7 @@ async def auto_handle():
                 await Wg.update_ttl_by_wgnum(wgnum, 999)
             elif played:
                 if numtype == "体验":
+                    await Gold.update_expday(qqnum)
                     ttl = 7
                 elif numtype == "普通":
                     ttl = 30
