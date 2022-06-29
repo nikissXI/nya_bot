@@ -3,6 +3,7 @@
 ![maven](https://img.shields.io/badge/python-3.10%2B-blue)
 ![maven](https://img.shields.io/badge/nonebot-2.0.0-yellow)
 ![maven](https://img.shields.io/badge/go--cqhttp-1.0.0-red)
+[![OSCS Status](https://www.oscs1024.com/platform/badge/nikissXI/nya_bot.svg?size=small)](https://www.oscs1024.com/project/nikissXI/nya_bot?ref=badge_small)
 </div>
 
 # nya_bot（喵服）
