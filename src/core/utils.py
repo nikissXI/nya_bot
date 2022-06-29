@@ -222,11 +222,16 @@ async def write_ip_log(qqnum: int, ip: str):
             content = res.content.decode("utf-8")
             a = findall('归属地：</span><span class="value">(.+)</span>', content)
             b = findall('运营商：</span><span class="value">(.+)</span>', content)
-            asn = a[0] + b[0]
+            # 国外地址没有运营商
+            if b:
+                b = b[0]
+            else:
+                b = ""
+            asn = a[0] + b
     except Exception:
         asn = "查询归属地失败"
         # 代码本身出问题
-        error_msg = f"查询IP归属地执行出错!\n错误追踪:\n{format_exc()}"
+        error_msg = f"查询IP归属地执行出错!\n错误追踪:\n{format_exc()}\n{content}"
         logger.error(error_msg)
         await gv.admin_bot.send_private_msg(
             user_id=gv.superuser_num,

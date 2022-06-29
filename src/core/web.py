@@ -17,7 +17,7 @@ from starlette.responses import FileResponse, RedirectResponse
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 from ujson import loads
-
+from re import match
 from .config import (
     bd_api,
     black_api,
@@ -73,13 +73,13 @@ async def channel(request: Request):
     return templates.TemplateResponse("robots.txt", {"request": request})
 
 
-@app.get("/ip_log")
-async def ip_log(y=None, m=None, k=None):
-    if y and m and k == gv.secret_key:
-        file = f"log/ip_log/{y}-{m}.txt"
-        return FileResponse(file, filename=f"{y}-{m}.txt")
-    else:
-        return
+# @app.get("/ip_log")
+# async def ip_log(y=None, m=None, k=None):
+#     if y and m and k == gv.secret_key:
+#         file = f"log/ip_log/{y}-{m}.txt"
+#         return FileResponse(file, filename=f"{y}-{m}.txt")
+#     else:
+#         return
 
 
 ###################################
@@ -717,9 +717,14 @@ async def admin_api(
     if await Zhb_user.get_nick_by_pass(key) is not None:
         if op_type == "绑定记录":
             date = num
+            c = match(r"\d{4}-\d{1,2}", date)
+            if c is None:
+                return {"msg": "日期格式错误"}
+
             qqnum = value
             if qqnum == "":
-                return {"msg": "QQ号未填写"}
+            #     return {"msg": "QQ号未填写"}
+                qqnum = "*"
             code, stdout, stderr = await exec_shell(
                 f"grep -E ' {qqnum} ' log/bd_log/{date}.txt"
             )
@@ -730,9 +735,13 @@ async def admin_api(
 
         elif op_type == "游戏记录":
             date = num
+            c = match(r"\d{4}-\d{1,2}-\d{1,2}", date)
+            if c is None:
+                return {"msg": "日期格式错误"}
             wgnum = value
             if wgnum == "":
-                return {"msg": "编号未填写"}
+                # return {"msg": "编号未填写"}
+                wgnum = "*"
             code, stdout, stderr = await exec_shell(
                 f"grep -E ' {wgnum}号|入{wgnum}号' log/room_log/{date}.txt"
             )
@@ -744,9 +753,13 @@ async def admin_api(
     if key == gv.secret_key:
         if op_type == "IP记录":
             date = num
+            c = match(r"\d{4}-\d{1,2}", date)
+            if c is None:
+                return {"msg": "日期格式错误"}
             qqnum = value
             if qqnum == "":
-                return {"msg": "QQ号未填写"}
+            #     return {"msg": "QQ号未填写"}
+                qqnum = "*"
             code, stdout, stderr = await exec_shell(
                 f"grep -E ' {qqnum} ' log/ip_log/{date}.txt"
             )
