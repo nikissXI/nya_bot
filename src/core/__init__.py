@@ -445,10 +445,12 @@ zengjiamiaobi = on_regex("^增加喵币\s*\d+\s+\d+$|^增加喵币$", rule=auto_
 #################################
 # 所有用户（群聊）
 yanzheng = on_regex("^验证$", rule=group_check_special)
-link = on_regex(
+glink = on_regex(
     "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$|^群规$", rule=zhanhun_group_check
 )
-chafang = on_regex("^查房$", rule=auto_bot)
+gchabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=zhanhun_group_check)
+gchafang = on_regex("^查房$", rule=auto_bot)
+
 
 # 所有用户（频道）
 cchafang = on_regex("^查房$", rule=guild_check)
@@ -493,7 +495,7 @@ pojieliuyan = on_regex("^破解留言$", rule=shencha_group_check)
 gaoxiuliuyan = on_regex("^高修留言$", rule=shencha_group_check)
 liuchengtu = on_regex("^流程图$", rule=shencha_group_check)
 daishencha = on_regex("^待审查$", rule=shencha_group_check)
-chabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=shencha_group_check)
+schabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=shencha_group_check)
 saomiao = on_regex("^扫描$", rule=shencha_group_check)
 shencha = on_regex("^审查\s*\d{1,}$|^审查$", rule=shencha_group_check)
 jiejin = on_regex("^解禁\s*\d{1,}$", rule=shencha_group_check)
@@ -525,7 +527,7 @@ async def handle_clink(event: GuildMessageEvent):
         "升级": f"升级编号：{gv.site_url}/get?x",
     }
     kw = str(event.get_message()).replace("\n", "")
-    await link.finish(mess_dict[kw])
+    await clink.finish(mess_dict[kw])
 
 
 @cjiance.handle()
@@ -1361,19 +1363,19 @@ async def handle_shencha(event: GroupMessageEvent):
             await tichu.finish("目标不在群内")
 
 
-@chabang.handle()
+@schabang.handle()
 @handle_exception("审查群查绑")
 async def handle_chabang(event: GroupMessageEvent):
     if event.group_id != gv.shencha_group_num:
-        await chabang.finish()
+        await schabang.finish()
     elif str(event.get_message()) == "查绑":
-        await chabang.finish("查绑+编号或Q号")
+        await schabang.finish("查绑+编号或Q号")
     else:
         num = int(str(event.get_message())[2:].strip())
         msg = await check_num(num)
         msg = sub("\(.*", "", msg)
         msg = msg.replace("<br />", "\n")
-        await chabang.finish(msg)
+        await schabang.finish(msg)
 
 
 @saomiao.handle()
@@ -1442,9 +1444,9 @@ async def handle_yanzheng(event: GroupMessageEvent):
         gv.qq_verified[event.user_id][1] = True
 
 
-@link.handle()
-@handle_exception("link")
-async def handle_link(event: GroupMessageEvent):
+@glink.handle()
+@handle_exception("glink")
+async def handle_glink(event: GroupMessageEvent):
     mess_dict = {
         "帮助": f"【支持的命令有以下】\n官网|教程|升级|排行\n后台|查房|频道|黑名单",
         "官网": f"喵服官网：{gv.site_url}",
@@ -1459,13 +1461,23 @@ async def handle_link(event: GroupMessageEvent):
         "群规": f"喵服群规&联机守则：{gv.site_url}/rule",
     }
     kw = str(event.get_message()).replace("\n", "")
-    await link.finish(mess_dict[kw])
+    await glink.finish(mess_dict[kw])
 
+@gchabang.handle()
+@handle_exception("群查绑")
+async def handle_gchabang(event: GroupMessageEvent):
+    if str(event.get_message()) == "查绑":
+        await gchabang.finish("查绑+编号或Q号")
+    else:
+        num = int(str(event.get_message())[2:].strip())
+        msg = await check_num(num)
+        msg = msg.replace("<br />", "\n")
+        await gchabang.finish(msg)
 
-@chafang.handle()
+@gchafang.handle()
 @handle_exception("群查房")
 async def handle_chafang(event: GroupMessageEvent):
-    await chafang.finish(await get_room_list())
+    await gchafang.finish(await get_room_list())
 
 
 #####################################
@@ -1503,7 +1515,7 @@ async def handle_plink(event: PrivateMessageEvent):
             "升级": f"升级编号：{gv.site_url}/get?x",
         }
         kw = str(event.get_message()).replace("\n", "")
-        await link.finish(mess_dict[kw])
+        await plink.finish(mess_dict[kw])
 
 
 @pchabang.handle()

@@ -242,20 +242,16 @@ async def check_num(num: int) -> str:
             wgnum = gv.r2f[wgnum]
         # 特殊编号
 
+        re_tip = f"<br />联机后次日刷新天数"
         if numtype == "赞助":
             money = await Sponsor.get_money(qqnum)
             numtype = f"赞助{money}元"
-            if money < 200:
-                re_tip = f"<br />当日联机后次日0点<br />剩余天数会变成60天"
-            else:
+            if money >= 200:
                 ttl = "∞"
                 re_tip = ""
-        elif numtype == "普通":
-            re_tip = f"<br />当日联机后次日0点<br />剩余天数会变成30天"
-        else:
+        elif numtype == "体验":
             expday = await Gold.get_expday(qqnum)
             numtype = f"已白嫖{expday}天"
-            re_tip = f"<br />当日联机后次日0点<br />剩余天数会变成7天"
 
         return f"QQ: {qqnum}<br />编号: {wgnum} ({numtype})<br />剩余天数: {ttl}天{re_tip}"
 
