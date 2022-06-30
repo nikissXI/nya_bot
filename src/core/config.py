@@ -331,12 +331,16 @@ async def xl_api(wgnum: int, xlnum: int) -> str:
             return f"{wgnum}号更新成功-修罗{xlnum}"
     else:
         if await Wg.num_bind(wgnum):
-            await XLboard.create_xl_info(wgnum, xlnum)
-            # 特殊编号
-            if wgnum in gv.r2f.keys():
-                wgnum = gv.r2f[wgnum]
-            # 特殊编号
-            return f"{wgnum}号上榜成功-修罗{xlnum}"
+            wgnum, qqnum, ttl, numtype = await Wg.get_info_by_wgnum(wgnum)
+            if numtype == "体验":
+                return f"体验号没得上榜"
+            else:
+                await XLboard.create_xl_info(wgnum, xlnum)
+                # 特殊编号
+                if wgnum in gv.r2f.keys():
+                    wgnum = gv.r2f[wgnum]
+                # 特殊编号
+                return f"{wgnum}号上榜成功-修罗{xlnum}"
         else:
             return "编号未绑定或不存在"
 

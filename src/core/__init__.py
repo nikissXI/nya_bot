@@ -29,6 +29,7 @@ from src.models._shencha import Shencha
 from src.models._sponsor import Sponsor
 from src.models._tips import Tips
 from src.models._wg import Wg
+from src.models._xl import XLboard
 from src.models._zhb_list import Zhb_list
 from src.models._zhb_user import Zhb_user
 from tortoise import Tortoise
@@ -803,36 +804,43 @@ async def handle_group_notice(event: NoticeEvent):
 @handle_exception("测试")
 async def handle_test(event: MessageEvent):
     # await test.send("wc")
-    results = []
-    results_true = ["游戏中"]
-    results_false = ["等待中"]
-    for fangzhu in list(gv.rooms):
-        # 读取房间信息
-        room_data = gv.rooms[fangzhu][4]
-        room_info = loads(
-            bytes.fromhex(room_data[room_data.find("7b2273", 50) :]).decode()
-        )
-        chengyuan_info = ""
-        # 获取成员信息
-        for chengyuan in list(gv.rooms[fangzhu][0]):
-            chengyuan_wgnum = int(ip_to_wgnum(chengyuan))
-            # 特殊编号
-            if chengyuan_wgnum in gv.r2f.keys():
-                chengyuan_wgnum = gv.r2f[chengyuan_wgnum]
-            # 特殊编号
-            chengyuan_info += f"  {chengyuan_wgnum}"
+    # results = []
+    # results_true = ["游戏中"]
+    # results_false = ["等待中"]
+    # for fangzhu in list(gv.rooms):
+    #     # 读取房间信息
+    #     room_data = gv.rooms[fangzhu][4]
+    #     room_info = loads(
+    #         bytes.fromhex(room_data[room_data.find("7b2273", 50) :]).decode()
+    #     )
+    #     chengyuan_info = ""
+    #     # 获取成员信息
+    #     for chengyuan in list(gv.rooms[fangzhu][0]):
+    #         chengyuan_wgnum = int(ip_to_wgnum(chengyuan))
+    #         # 特殊编号
+    #         if chengyuan_wgnum in gv.r2f.keys():
+    #             chengyuan_wgnum = gv.r2f[chengyuan_wgnum]
+    #         # 特殊编号
+    #         chengyuan_info += f"  {chengyuan_wgnum}"
 
-        # 判断游戏状态
-        if room_info["hsb"]:
-            results_true.append(
-                f"房主{ip_to_wgnum(fangzhu)} 人数{room_info['ccc']}\n成员{chengyuan_info}"
-            )
-        else:
-            results_false.append(
-                f"房主{ip_to_wgnum(fangzhu)} 人数{room_info['ccc']}\n成员{chengyuan_info}"
-            )
-    results = results_false + results_true
-    await test.finish("\n".join(results))
+    #     # 判断游戏状态
+    #     if room_info["hsb"]:
+    #         results_true.append(
+    #             f"房主{ip_to_wgnum(fangzhu)} 人数{room_info['ccc']}\n成员{chengyuan_info}"
+    #         )
+    #     else:
+    #         results_false.append(
+    #             f"房主{ip_to_wgnum(fangzhu)} 人数{room_info['ccc']}\n成员{chengyuan_info}"
+    #         )
+    # results = results_false + results_true
+    # await test.finish("\n".join(results))
+    rows = await XLboard.get_all_info()
+    for row in rows:
+        wgnum = row[0]
+        wgnum, qqnum, ttl, numtype = await Wg.get_info_by_wgnum(wgnum)
+        if numtype == "体验":
+            await XLboard.delete_xl_info(wgnum)
+    await test.finish("yes")
 
 
 @juesegaiming.handle()
