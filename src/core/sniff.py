@@ -313,18 +313,19 @@ async def room_join(data, fangzhu, chengyuan):
 
     await write_room_log(chengyuan_wgnum, fangzhu_wgnum, gv.role_name[chengyuan])
 
-    if fangzhu in gv.vip_ip.keys():
-        if fangzhu in gv.rooms.keys():
-            if chengyuan not in gv.rooms[fangzhu][1]:
-                gv.rooms[fangzhu][1].append(chengyuan)
-                now = datetime.now()
-
-                gv.private_mess.append(
-                    (
-                        gv.vip_ip[fangzhu],
-                        f"◤{now.hour:02d}:{now.minute:02d}:{now.second:02d}◢\n{chengyuan_wgnum}号用[{gv.role_name[chengyuan]}]加入了你的房间",
-                    )
-                )
+    if (
+        fangzhu in gv.vip_ip.keys()
+        and fangzhu in gv.rooms.keys()
+        and chengyuan not in gv.rooms[fangzhu][1]
+    ):
+        gv.rooms[fangzhu][1].append(chengyuan)
+        now = datetime.now()
+        gv.private_mess.append(
+            (
+                gv.vip_ip[fangzhu],
+                f"◤{now.hour:02d}:{now.minute:02d}:{now.second:02d}◢\n{chengyuan_wgnum}号用[{gv.role_name[chengyuan]}]加入了你的房间",
+            )
+        )
 
 
 # 房间开始游戏
@@ -366,7 +367,6 @@ async def packet_called(p):
                 and p["ip_len"][0] != "52"
                 and p["ip_len"][0] != "40"
                 and "data" in p.keys()
-                # and p["data"][0][24:38] in gv.join_role.keys()
             ):
                 await room_join(p["data"][0][24:38], fangzhu, chengyuan)
 
