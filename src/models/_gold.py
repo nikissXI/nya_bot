@@ -181,10 +181,13 @@ class Gold(Model):
 
     # 禁止领体验号
     @classmethod
-    async def ban_qqnum(cls, qqnum: int):
-        if not await cls.info_exist(qqnum):
-            await cls.create_info(qqnum)
-        await cls.filter(qqnum=qqnum).limit(1).update(expday=99999)
+    async def ban_qqnum(cls, qqnum: int) -> bool:
+        d = await cls.get_expday(qqnum)
+        if d != 99999:
+            await cls.filter(qqnum=qqnum).limit(1).update(expday=99999)
+            return True
+        else:
+            return False
 
     # 取消禁止领体验号
     @classmethod

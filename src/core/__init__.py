@@ -484,7 +484,7 @@ zanzhu = on_regex("^赞助\s*\d+\s+[\+\-]?\d+$", rule=auto_bot_superuser)
 xiuluo = on_regex("^修罗\s*\d+\s+\d+$", rule=auto_bot_superuser)
 kuorong = on_regex("^扩容\s*\d+$|^缩容\s*\d+$", rule=auto_bot_superuser)
 chongzai = on_regex("^重载\s*\d+$", rule=auto_bot_superuser)
-ban = on_regex("^ban\s*-?\d+$|^ban$", rule=auto_bot_superuser)
+ban = on_regex("^ban\s*\d+$|^unban\s*\d+$|^ban$", rule=auto_bot_superuser)
 zanzhuzonge = on_regex("^赞助总额$", rule=auto_bot_superuser)
 
 
@@ -960,21 +960,22 @@ async def handle_ban(event: MessageEvent):
             await ban.finish(
                 "被ban的QQ号列表如下\n"
                 + "\n".join(await Gold.get_ban_qqnum_list())
-                + "\nban [Q号]，unban就在Q号前加“-”"
+                + "\nban [Q号]，删除就unban [Q号]"
             )
-        else:
-            qqnum = msg[3:].strip()
-            if qqnum[:1] == "-":
-                if await Gold.unban_qqnum(int(qqnum[1:])):
-                    await ban.finish(f"unban{qqnum[1:]}成功")
-                else:
-                    await ban.finish(f"{qqnum[1:]}没被ban")
+        elif msg[:5] == "unban":
+            qqnum = int(msg[5:])
+            if await Gold.unban_qqnum(qqnum):
+                await ban.finish(f"unban{qqnum}成功")
             else:
-                qqnum = int(qqnum)
-                await Gold.ban_qqnum(qqnum)
+                await ban.finish(f"{qqnum}没被ban")
+        else:
+            qqnum = int(msg[3:])
+            if await Gold.ban_qqnum(qqnum):
                 if qqnum in gv.qq_verified.keys():
                     gv.qq_verified.pop(qqnum)
                 await ban.finish(f"ban{qqnum}成功")
+            else:
+                await ban.finish(f"{qqnum}已经被ban了")
 
 
 @sousuo.handle()
