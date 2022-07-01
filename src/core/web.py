@@ -285,9 +285,18 @@ async def get(request: Request):
 
 
 @app.get("/submit_qq")
-async def submit_qq(request: Request, qq=None, app=None):
+async def submit_qq(request: Request, qq=None, app=None, version=None):
     if qq:
         ip = request.headers["x-forwarded-for"]
+
+        # 判断喵服APP是否需要更新
+        if app and (version is None or version != "1.04"):
+            return {"code": -9}
+
+        # 判断机器人是否离线
+        if gv.admin_bot is None:
+            return {"code": -10}
+
         try:
             qq = int(qq)
         except Exception:
@@ -301,7 +310,11 @@ async def submit_qq(request: Request, qq=None, app=None):
         if await Nofree.qqnum_exist(qq):
             return {"code": -2}
 
-        # 提交了qq并发送了确认，状态码1-4
+        # 判断是否白嫖时间过长
+        # if await Nofree.qqnum_exist(qq):
+        #     return {"code": -4}
+
+        # 提交了qq并发送了确认，状态码1
         if (
             qq in gv.qq_verified.keys()
             and gv.qq_verified[qq][0] == ip
@@ -354,11 +367,7 @@ async def submit_qq(request: Request, qq=None, app=None):
         ):
             return {"code": 4}
 
-        # 判断机器人是否离线
-        if gv.admin_bot is None:
-            return {"code": -4}
-
-        # 判断是否在群里
+        # 判断是否在群里，状态码5
         if not await check_in_group(qq):
             return {"code": 5}
 
@@ -384,7 +393,7 @@ async def submit_qq(request: Request, qq=None, app=None):
             if user_data["level"] <= 10:
                 return {"code": -3}
 
-            # 够等级就给体验号,状态码7
+            # 够等级就给体验号,状态码8
             else:
                 gv.qq_verified[qq] = [ip, False, "体验号"]
                 return {"code": 8}

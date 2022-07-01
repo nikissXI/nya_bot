@@ -16,7 +16,7 @@ from .utils import get_checksum, ip_to_wgnum, write_room_log
 
 
 # 发送房间列表
-async def send_room_list(fangzhu_ip_list, finder_ip, dst_port):
+def send_room_list(fangzhu_ip_list, finder_ip, dst_port):
     # 目标地址
     a, b, c, d = [int(x) for x in finder_ip.split(".")]
     dst_addr = [a, b, c, d]
@@ -418,7 +418,7 @@ async def packet_called(p):
                 else:
                     gv.forward_once[finder_ip] = src_port
                 # 返回房间列表
-                await send_room_list(list(gv.rooms), finder_ip, int(src_port))
+                send_room_list(list(gv.rooms), finder_ip, int(src_port))
     except Exception:
         error_msg = f"数据包回调函数出错!\n错误追踪:\n{format_exc()}\n数据包:{p}"
         logger.error(error_msg)
