@@ -4,7 +4,6 @@ from nonebot import get_asgi
 from nonebot.log import logger
 from src.models._guide import Guide
 from src.models._little_data import Little_data
-from src.models._nofree import Nofree
 from src.models._sponsor import Sponsor
 from src.models._visit import Visit
 from src.models._gold import Gold
@@ -109,8 +108,6 @@ async def rule_read(qqnum):
         # 阅读过了
         elif c == 1:
             return {"code": 1}
-        else:
-            return {"code": -1}
     except Exception:
         # 不存在或非数字
         return {"code": -1}
@@ -302,18 +299,6 @@ async def submit_qq(request: Request, qq=None, app=None, version=None):
         except Exception:
             return {"code": 0, "msg": "请正确填写QQ号"}
 
-        # 判断是否在黑名单
-        if qq in await Zhb_list.get_all_qq():
-            return {"code": -1}
-
-        # 判断是否在白嫖列表中
-        if await Nofree.qqnum_exist(qq):
-            return {"code": -2}
-
-        # 判断是否白嫖时间过长
-        # if await Nofree.qqnum_exist(qq):
-        #     return {"code": -4}
-
         # 提交了qq并发送了确认，状态码1
         if (
             qq in gv.qq_verified.keys()
@@ -359,6 +344,10 @@ async def submit_qq(request: Request, qq=None, app=None, version=None):
             else:
                 return {"code": 1, "link": f"{gv.site_url}/config?k={key}"}
 
+        # 提交了qq但IP地址不同，重置
+        if qq in gv.qq_verified.keys() and gv.qq_verified[qq][0] != ip:
+            gv.qq_verified.pop(qq)
+
         # 提交了qq还没发送确认,状态码4
         elif (
             qq in gv.qq_verified.keys()
@@ -371,10 +360,6 @@ async def submit_qq(request: Request, qq=None, app=None, version=None):
         if not await check_in_group(qq):
             return {"code": 5}
 
-        # 提交了qq但IP地址不同，重置
-        if qq in gv.qq_verified.keys() and gv.qq_verified[qq][0] != ip:
-            gv.qq_verified.pop(qq)
-
         # 判断是否有编号,状态码6
         if await Wg.num_bind(qq):
             gv.qq_verified[qq] = [ip, False, "拿链接"]
@@ -384,6 +369,18 @@ async def submit_qq(request: Request, qq=None, app=None, version=None):
         elif await Sponsor.sponsor_exist(qq):
             gv.qq_verified[qq] = [ip, False, "赞助号"]
             return {"code": 7}
+
+        # 判断是否在黑名单
+        elif qq in await Zhb_list.get_all_qq():
+            return {"code": -1}
+
+        # 判断是否在白嫖列表中
+        elif await Gold.ban_or_not(qq):
+            return {"code": -2}
+
+        # 判断是否白嫖时间过长
+        # elif await Nofree.qqnum_exist(qq):
+        #     return {"code": -4}
 
         # 都不符合就给体验号
         else:

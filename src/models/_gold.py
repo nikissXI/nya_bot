@@ -89,7 +89,8 @@ class Gold(Model):
         if row:
             return row[0][0]
         else:
-            return -1
+            await cls.create_info(qqnum)
+            return 0
 
     # 获取体验天数情况
     @classmethod
@@ -98,7 +99,23 @@ class Gold(Model):
         if row:
             return row[0][0]
         else:
-            return -1
+            await cls.create_info(qqnum)
+            return 0
+
+    # 获取禁止领体验号的qq
+    @classmethod
+    async def get_ban_qqnum_list(cls) -> list:
+        rows = await cls.filter(expday=99999).values_list("qqnum")
+        return [str(row[0]) for row in rows]
+
+    # 获取qq号是否被ban
+    @classmethod
+    async def ban_or_not(cls, qqnum: int) -> bool:
+        d = await cls.get_expday(qqnum)
+        if d == 99999:
+            return True
+        else:
+            return False
 
     ########################
     # 修改
@@ -108,12 +125,9 @@ class Gold(Model):
     async def transfer(cls, f: int, t: int, money: int) -> int:
         f_money = await cls.get_money(f)
         if f_money >= money:
-            if await cls.info_exist(t):
-                await cls.change_money(f, money, False)
-                await cls.change_money(t, money, True)
-                return 1
-            else:
-                return -1
+            await cls.change_money(f, money, False)
+            await cls.change_money(t, money, True)
+            return 1
         else:
             return 0
 
@@ -161,9 +175,26 @@ class Gold(Model):
 
     # 更新体验天数
     @classmethod
-    async def update_expday(cls, qqnum: int):
+    async def update_expday(cls, qqnum: int, _add: int = 1):
         d = await cls.get_expday(qqnum)
-        await cls.filter(qqnum=qqnum).limit(1).update(expday=d + 1)
+        await cls.filter(qqnum=qqnum).limit(1).update(expday=d + _add)
+
+    # 禁止领体验号
+    @classmethod
+    async def ban_qqnum(cls, qqnum: int):
+        if not await cls.info_exist(qqnum):
+            await cls.create_info(qqnum)
+        await cls.filter(qqnum=qqnum).limit(1).update(expday=99999)
+
+    # 取消禁止领体验号
+    @classmethod
+    async def unban_qqnum(cls, qqnum: int) -> bool:
+        d = await cls.get_expday(qqnum)
+        if d == 99999:
+            await cls.filter(qqnum=qqnum).limit(1).update(expday=0)
+            return True
+        else:
+            return False
 
     class Meta:
         table = "gold"

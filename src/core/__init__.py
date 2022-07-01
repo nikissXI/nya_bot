@@ -1,5 +1,5 @@
 from asyncio import create_task, sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 from math import sqrt
 from random import randint
 from re import S, compile, sub
@@ -24,7 +24,6 @@ from nonebot.log import logger
 from src.models._gold import Gold
 from src.models._large_data import Large_data
 from src.models._little_data import Little_data
-from src.models._nofree import Nofree
 from src.models._shencha import Shencha
 from src.models._sponsor import Sponsor
 from src.models._tips import Tips
@@ -121,7 +120,6 @@ async def do_startup():
         "src.models._zhb_list",
         "src.models._zhb_user",
         "src.models._guide",
-        "src.models._nofree",
         "src.models._large_data",
         "src.models._little_data",
         "src.models._shencha",
@@ -475,6 +473,7 @@ renshu = on_regex("^人数", rule=bot_1_event)
 banben = on_regex("^版本", rule=bot_1_event)
 
 # 管理员
+qunyuanxinxi = on_regex("^群员信息$|^群员信息\s*\d+$", rule=auto_bot_superuser)
 juesegaiming = on_regex("^角色改名", rule=auto_bot_superuser)
 weibangding = on_regex("^未绑定$", rule=auto_bot_superuser)
 feizanzhu = on_regex("^非赞助$", rule=auto_bot_superuser)
@@ -485,7 +484,7 @@ zanzhu = on_regex("^赞助\s*\d+\s+[\+\-]?\d+$", rule=auto_bot_superuser)
 xiuluo = on_regex("^修罗\s*\d+\s+\d+$", rule=auto_bot_superuser)
 kuorong = on_regex("^扩容\s*\d+$|^缩容\s*\d+$", rule=auto_bot_superuser)
 chongzai = on_regex("^重载\s*\d+$", rule=auto_bot_superuser)
-baipiao = on_regex("^白嫖\s*-?\d+$|^白嫖$", rule=auto_bot_superuser)
+ban = on_regex("^ban\s*-?\d+$|^ban$", rule=auto_bot_superuser)
 zanzhuzonge = on_regex("^赞助总额$", rule=auto_bot_superuser)
 
 
@@ -843,6 +842,28 @@ async def handle_test(event: MessageEvent):
     await test.finish("yes")
 
 
+@qunyuanxinxi.handle()
+@handle_exception("群员信息")
+async def handle_qunyuanxinxi(event: MessageEvent):
+    in_mess = str(event.get_message())
+    if in_mess == "群员信息":
+        await qunyuanxinxi.finish("群员信息 [QQ]")
+    qqnum = int(in_mess[4:].strip())
+    info = await gv.admin_bot.get_group_member_info(
+        group_id=gv.miao_group_num, user_id=qqnum, no_cache=True
+    )
+    dateArray = datetime.utcfromtimestamp(info["last_sent_time"]) + timedelta(hours=8)
+    last_sent_time = dateArray.strftime("%Y-%m-%d %H:%M:%S")
+    dateArray = datetime.utcfromtimestamp(info["join_time"]) + timedelta(hours=8)
+    join_time = dateArray.strftime("%Y-%m-%d %H:%M:%S")
+    wgnum = await Wg.get_wgnum_by_qq(qqnum)
+    wgnum_info = await check_num(wgnum)
+    wgnum_info = wgnum_info.replace("<br />", "\n")
+    await qunyuanxinxi.finish(
+        f"QQ：{qqnum}\n昵称：{info['nickname']}\n群名片：{info['card']}\n进群时间：{join_time}\n最后发言时间：{last_sent_time}\n{wgnum_info}"
+    )
+
+
 @juesegaiming.handle()
 @handle_exception("角色改名")
 async def handle_juesegaiming(event: MessageEvent):
@@ -930,32 +951,30 @@ async def handle_yingyizhong(event: MessageEvent):
     await yingyizhong.finish(out_mess)
 
 
-@baipiao.handle()
-@handle_exception("白嫖")
-async def handle_baipiao(event: MessageEvent):
+@ban.handle()
+@handle_exception("ban")
+async def handle_ban(event: MessageEvent):
     if await Zhb_user.qq_exist(event.user_id):
         msg = str(event.get_message())
-        if msg == "白嫖":
-            await baipiao.finish(
-                "QQ号列表如下\n"
-                + "\n".join(await Nofree.get_all_qqnum())
-                + "\n白嫖 [Q号]，删除在Q号前加“-”"
+        if msg == "ban":
+            await ban.finish(
+                "被ban的QQ号列表如下\n"
+                + "\n".join(await Gold.get_ban_qqnum_list())
+                + "\nban [Q号]，unban就在Q号前加“-”"
             )
         else:
-            qqnum = msg[2:].strip()
+            qqnum = msg[3:].strip()
             if qqnum[:1] == "-":
-                if await Nofree.delete_qqnum(int(qqnum[1:])):
-                    await baipiao.finish(f"删除{qqnum[1:]}成功")
+                if await Gold.unban_qqnum(int(qqnum[1:])):
+                    await ban.finish(f"unban{qqnum[1:]}成功")
                 else:
-                    await baipiao.finish(f"删除失败，目标不存在")
+                    await ban.finish(f"{qqnum[1:]}没被ban")
             else:
                 qqnum = int(qqnum)
-                if await Nofree.add_qqnum(qqnum):
-                    if qqnum in gv.qq_verified.keys():
-                        gv.qq_verified.pop(qqnum)
-                    await baipiao.finish(f"增加{qqnum}成功")
-                else:
-                    await baipiao.finish(f"增加失败，目标已存在")
+                await Gold.ban_qqnum(qqnum)
+                if qqnum in gv.qq_verified.keys():
+                    gv.qq_verified.pop(qqnum)
+                await ban.finish(f"ban{qqnum}成功")
 
 
 @sousuo.handle()
@@ -1325,7 +1344,7 @@ async def handle_shencha(event: GroupMessageEvent):
         qqnum = await Wg.get_qq_by_wgnum(num)
         if qqnum == 0:
             qqnum = num
-        
+
         if qqnum in gv.qq_verified.keys():
             gv.qq_verified.pop(qqnum)
 
@@ -1417,7 +1436,7 @@ async def handle_jinyan(event: GroupMessageEvent):
         await sleep(1)
         if await Wg.num_bind(qqnum):
             await release_wgnum(qqnum, True)
-        await Nofree.add_qqnum(qqnum)
+        await Gold.ban_qqnum(qqnum)
         await sleep(1)
         await jinyan.finish(
             f"{nickname}({qqnum})获得奖励"
@@ -1471,6 +1490,7 @@ async def handle_glink(event: GroupMessageEvent):
     kw = str(event.get_message()).replace("\n", "")
     await glink.finish(mess_dict[kw])
 
+
 @gchabang.handle()
 @handle_exception("群查绑")
 async def handle_gchabang(event: GroupMessageEvent):
@@ -1481,6 +1501,7 @@ async def handle_gchabang(event: GroupMessageEvent):
         msg = await check_num(num)
         msg = msg.replace("<br />", "\n")
         await gchabang.finish(msg)
+
 
 @gchafang.handle()
 @handle_exception("群查房")
