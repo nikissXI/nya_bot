@@ -14,6 +14,7 @@ class Little_data(Model):
             await cls.create(key="play_count_today", value=66)
             await cls.create(key="miaobi_system", value=1)
             await cls.create(key="safe_mode", value=0)
+            await cls.create(key="price", value=3)
 
     @classmethod
     async def get_miaobi_system(cls) -> bool:
@@ -77,6 +78,15 @@ class Little_data(Model):
     async def update_play_count_today(cls):
         c = await cls.get_play_count_today()
         await cls.filter(key="play_count_today").limit(1).update(value=c + 1)
+
+    @classmethod
+    async def get_price(cls) -> int:
+        rows = await cls.filter(key="price").limit(1).values_list("value")
+        return rows[0][0]
+
+    @classmethod
+    async def update_price(cls, p: int):
+        await cls.filter(key="price").limit(1).update(value=p)
 
     class Meta:
         table = "little_data"

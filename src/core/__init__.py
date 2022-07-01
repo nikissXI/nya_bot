@@ -483,9 +483,9 @@ jiebang = on_regex("^解绑\s*\d+$", rule=auto_bot_superuser)
 zanzhu = on_regex("^赞助\s*\d+\s+[\+\-]?\d+$", rule=auto_bot_superuser)
 xiuluo = on_regex("^修罗\s*\d+\s+\d+$", rule=auto_bot_superuser)
 kuorong = on_regex("^扩容\s*\d+$|^缩容\s*\d+$", rule=auto_bot_superuser)
-chongzai = on_regex("^重载\s*\d+$", rule=auto_bot_superuser)
 ban = on_regex("^ban\s*\d+$|^unban\s*\d+$|^ban$", rule=auto_bot_superuser)
 zanzhuzonge = on_regex("^赞助总额$", rule=auto_bot_superuser)
+jiage = on_regex("^价格$|^价格\s*\d+$", rule=auto_bot_superuser)
 
 
 #################################
@@ -1112,19 +1112,6 @@ async def handle_kuorong(event: MessageEvent):
     await kuorong.finish(res)
 
 
-@chongzai.handle()
-@handle_exception("重载")
-async def handle_chongzai(event: MessageEvent):
-    wgnum = int(str(event.get_message())[2:].strip())
-    code, stdout, stderr = await exec_shell(
-        f"bash src/shell/wg_renew.sh readd {wgnum_to_ip(wgnum)}"
-    )
-    if code:
-        await chongzai.finish(f"{wgnum}号配置重载失败")
-    else:
-        await chongzai.finish(f"{wgnum}号配置重载成功")
-
-
 @wangluo.handle()
 @handle_exception("网络")
 async def handle_wangluo():
@@ -1185,6 +1172,18 @@ async def handle_zengjiagonggao(event: MessageEvent):
 async def handle_zanzhuzonge():
     smoney = await Sponsor.get_money_sum()
     await zanzhuzonge.finish(f"当前赞助总金额: {smoney}")
+
+
+@jiage.handle()
+@handle_exception("价格")
+async def handle_jiage(event: MessageEvent):
+    if str(event.get_message()) == "价格":
+        p = await Little_data.get_price()
+        await jiage.finish(f"当前普通号的价格为{p}元")
+
+    p = str(event.get_message())[2:].strip()
+    await Little_data.update_price(int(p))
+    await jiage.finish(f"普通号的价格设置为{p}元")
 
 
 @miaobizonge.handle()

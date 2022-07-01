@@ -137,6 +137,7 @@ async def index(request: Request):
             "online_count": gv.online,
             "video_url": gv.video_url,
             "cdn_url": gv.cdn_url,
+            "price": await Little_data.get_price(),
         },
     )
 
@@ -277,6 +278,7 @@ async def get(request: Request):
             "request": request,
             "cdn_url": gv.cdn_url,
             "join_group_url": gv.join_group_url,
+            "price": await Little_data.get_price(),
         },
     )
 
@@ -287,7 +289,7 @@ async def submit_qq(request: Request, qq=None, app=None, version=None):
         ip = request.headers["x-forwarded-for"]
 
         # 判断喵服APP是否需要更新
-        if app and (version is None or version != "1.04"):
+        if app and (version is None or version != "1.05"):
             return {"code": -9}
 
         # 判断机器人是否离线
@@ -423,6 +425,7 @@ async def config(request: Request, k=None):
             "qqnum": qqnum,
             "video_url": gv.video_url,
             "cdn_url": gv.cdn_url,
+            "price": await Little_data.get_price(),
         },
     )
 
