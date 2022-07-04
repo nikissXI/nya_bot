@@ -2,10 +2,13 @@ from asyncio import create_task, sleep
 from datetime import datetime, timedelta
 from math import sqrt
 from random import randint
-from re import S, compile, sub
+from re import S, compile, sub, findall
+from time import time
 
 from httpx import AsyncClient
 from nonebot import get_driver, on_message, on_notice, on_regex, on_request
+from nonebot.utils import run_sync
+from socket import gethostbyname
 from nonebot.adapters import Bot
 from nonebot.adapters.onebot.v11.event import (
     FriendAddNoticeEvent,
@@ -402,6 +405,7 @@ miaobixitong = on_regex("^喵币系统打开$|^喵币系统关闭$", rule=auto_b
 anquanmoshi = on_regex("^安全模式打开$|^安全模式关闭$", rule=auto_bot_superuser)
 zhongyiying = on_regex("^中译英", rule=auto_bot_superuser)
 yingyizhong = on_regex("^英译中", rule=auto_bot_superuser)
+chaxun = on_regex("^查询", rule=auto_bot_superuser)
 
 #################################
 # 群管命令
@@ -934,7 +938,7 @@ async def handle_fasong(event: MessageEvent):
 @handle_exception("中译英")
 async def handle_zhongyiying(event: MessageEvent):
     in_mess = str(event.get_message())[3:].strip()
-    async with AsyncClient() as c:
+    async with AsyncClient(verify=False) as c:
         res = await c.get(
             "http://fanyi.youdao.com/translate?&doctype=json&type=ZH_CN2EN&i=" + in_mess
         )
@@ -947,13 +951,52 @@ async def handle_zhongyiying(event: MessageEvent):
 @handle_exception("英译中")
 async def handle_yingyizhong(event: MessageEvent):
     in_mess = str(event.get_message())[3:].strip()
-    async with AsyncClient() as c:
+    async with AsyncClient(verify=False) as c:
         res = await c.get(
             "http://fanyi.youdao.com/translate?&doctype=json&type=EN2ZH_CN&i=" + in_mess
         )
     res_json = loads(res.text)
     out_mess = res_json["translateResult"][0][0]["tgt"]
     await yingyizhong.finish(out_mess)
+
+
+@chaxun.handle()
+@handle_exception("查询")
+async def handle_chaxun(event: MessageEvent):
+    in_mess = str(event.get_message())[2:].strip().replace("\n", "")
+    ip = in_mess.split("://")
+    if len(ip) > 1:
+        ip = ip[1].split("/")[0]
+    else:
+        ip = ip[0]
+
+    @run_sync
+    def _check_ip(_in) -> str:
+        tmp = _in
+        _in = _in.replace(".", "")
+        try:
+            int(_in)
+            return _in
+        except Exception:
+            return gethostbyname(tmp)
+
+    ip = await _check_ip(ip)
+    async with AsyncClient(verify=False) as client:
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.41"
+        res = await client.get(
+            url=f"https://ipchaxun.com/{ip}/",
+            headers={"User-Agent": user_agent},
+            timeout=3,
+        )
+        content = res.content.decode("utf-8")
+        a = findall('归属地：</span><span class="value">(.+)</span>', content)
+        b = findall('运营商：</span><span class="value">(.+)</span>', content)
+        if b:
+            b = b[0]
+        else:
+            b = ""
+
+    await chaxun.finish(f"{in_mess}查询结果如下\n{ip} {a[0]} {b}")
 
 
 @ban.handle()
