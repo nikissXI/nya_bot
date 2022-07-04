@@ -63,8 +63,10 @@ async def start_web_server():
 # 其他
 ###################################
 @app.get("/channel")
-async def channel(request: Request):
-    return templates.TemplateResponse("channel.html", {"request": request})
+async def channel():
+    return RedirectResponse(
+        url="https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=myaha&appChannel=share&businessType=9&from=246610&biz=ka"
+    )
 
 
 @app.get("/robots.txt")
@@ -431,13 +433,12 @@ async def config(request: Request, k=None):
 
 
 @app.get("/d")
-async def d(request: Request, k=None):
+async def d(k=None):
     if k is None:
         return RedirectResponse(url="/")
     else:
         if await Wg.key_exist(k):
             wgnum, qqnum, numtype = await Wg.get_info_by_key(k)
-            file = ""
             file = f"tunnel/conf/{wgnum_to_ip(wgnum)}.conf"
             # 特殊编号
             if wgnum in gv.r2f.keys():
@@ -445,9 +446,13 @@ async def d(request: Request, k=None):
             # 特殊编号
             return FileResponse(file, filename=f"{wgnum}.conf")
         else:
-            return templates.TemplateResponse(
-                "get.html", {"request": request, "cdn_url": gv.cdn_url}
-            )
+            return RedirectResponse(url="/get")
+
+
+@app.get("/apk")
+async def apk():
+    return RedirectResponse(url="http://mc.nikiss.top:11110/public/cdn/miaofu.apk")
+    return RedirectResponse(url=f"{gv.cdn_url}/cdn/miaofu.apk")
 
 
 @app.get("/num_check")
