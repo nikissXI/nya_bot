@@ -493,7 +493,12 @@ jiage = on_regex("^价格$|^价格\s*\d+$", rule=auto_bot_superuser)
 #################################
 pojieliuyan = on_regex("^破解留言$", rule=shencha_group_check)
 gaoxiuliuyan = on_regex("^高修留言$", rule=shencha_group_check)
-liuchengtu = on_regex("^流程图$", rule=shencha_group_check)
+diyibu = on_regex("^第一步$", rule=shencha_group_check)
+dierbu = on_regex("^第二步$", rule=shencha_group_check)
+disanbu = on_regex("^第三步$", rule=shencha_group_check)
+disibu = on_regex("^第四步$", rule=shencha_group_check)
+diwubu = on_regex("^第五步$", rule=shencha_group_check)
+diliubu = on_regex("^第六步$", rule=shencha_group_check)
 daishencha = on_regex("^待审查$", rule=shencha_group_check)
 schabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=shencha_group_check)
 saomiao = on_regex("^扫描$", rule=shencha_group_check)
@@ -1258,10 +1263,44 @@ async def handle_gaoxiuliuyan():
     )
 
 
-@liuchengtu.handle()
-@handle_exception("流程图")
-async def handle_liuchengtu():
-    await liuchengtu.finish(MessageSegment.image(f"{gv.site_url}/static/shencha.jpg"))
+@diyibu.handle()
+@handle_exception("第一步")
+async def handle_diyibu():
+    await diyibu.finish("自证流程（1/6），不懂怎么操作就问\n在游戏开始界面右下角点感叹号，把设备码截图发出来，有手机号可以打码")
+
+
+@dierbu.handle()
+@handle_exception("第二步")
+async def handle_dierbu():
+    await dierbu.finish("自证流程（2/6），不懂怎么操作就问\n点开云存档，点其他，截图或录屏然后发出来")
+
+
+@disanbu.handle()
+@handle_exception("第三步")
+async def handle_disanbu():
+    await disanbu.finish("自证流程（3/6），不懂怎么操作就问\n进入游戏，跟阿修罗对话，点修罗之力，截图发出来")
+
+
+@disibu.handle()
+@handle_exception("第四步")
+async def handle_disibu():
+    await disibu.finish("自证流程（4/6），不懂怎么操作就问\n入坑时间和游戏时长发出来，如TAP的游戏时长截图，如果没有就自己估算")
+
+
+@diwubu.handle()
+@handle_exception("第五步")
+async def handle_diwubu():
+    await diwubu.finish(
+        "自证流程（5/6），不懂怎么操作就问\n把成就列表、第一个10级成就、各角色获取时间以及图鉴里阿修罗的击杀次数，通过截图或录屏发出来"
+    )
+
+
+@diliubu.handle()
+@handle_exception("第六步")
+async def handle_diliubu():
+    await diliubu.finish(
+        '自证流程（6/6），不懂怎么操作就问\n打开支付软件，如微信、支付宝，找到最近的凉屋付费订单，点进去，点"此商户所有订单"，然后截图或录屏发出来'
+    )
 
 
 @shencha.handle()
