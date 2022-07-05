@@ -273,7 +273,7 @@ async def on_bot_disconnect_handle(bot: Bot):
 # QQ消息类型过滤器
 #################################
 # 喵服验证
-async def group_check_special(event: GroupMessageEvent, bot: Bot) -> bool:
+async def zhanhun_check_only_group(event: GroupMessageEvent, bot: Bot) -> bool:
     if event.group_id == gv.miao_group_num or event.group_id == gv.miao_group2_num:
         if gv.bot_1 is not None:
             return bot.self_id == gv.bot_1_num
@@ -284,14 +284,56 @@ async def group_check_special(event: GroupMessageEvent, bot: Bot) -> bool:
 
 
 # 战魂联机群消息
-async def zhanhun_group_check(event: GroupMessageEvent, bot: Bot) -> bool:
-    if gv.safe_mode:
-        return False
-    elif event.group_id == gv.miao_group_num:
-        if gv.bot_2 is not None:
-            return bot.self_id == gv.bot_2_num
+async def zhanhun_check(event: MessageEvent, bot: Bot) -> bool:
+    # 如果是私聊要进行判断私聊
+    if isinstance(event, PrivateMessageEvent) and (
+        event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num
+    ):
+        return True
+
+    elif isinstance(event, GuildMessageEvent):
+        if event.guild_id == gv.guild_id and event.channel_id == gv.channel_id:
+            if gv.bot_2 is not None:
+                return bot.self_id == gv.bot_2_num
+            else:
+                return bot.self_id == gv.bot_1_num
         else:
-            return bot.self_id == gv.bot_1_num
+            return False
+
+    elif isinstance(event, GroupMessageEvent):
+        if gv.safe_mode:
+            return False
+        elif (
+            event.group_id == gv.miao_group_num or event.group_id == gv.miao_group2_num
+        ):
+            if gv.bot_2 is not None:
+                return bot.self_id == gv.bot_2_num
+            else:
+                return bot.self_id == gv.bot_1_num
+        else:
+            return False
+
+    else:
+        return False
+
+
+# 战魂联机群消息2
+async def zhanhun_check_no_group(event: MessageEvent, bot: Bot) -> bool:
+    # 如果是私聊要进行判断私聊
+    if isinstance(event, PrivateMessageEvent) and (
+        event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num
+    ):
+        return True
+
+    elif isinstance(event, GuildMessageEvent):
+        if event.guild_id == gv.guild_id and event.channel_id == gv.channel_id:
+            if gv.bot_2 is not None:
+                return bot.self_id == gv.bot_2_num
+            else:
+                return bot.self_id == gv.bot_1_num
+        else:
+            return False
+
     else:
         return False
 
@@ -396,7 +438,6 @@ new_friend = on_notice(rule=bot_1_event)
 #################################
 # 测试命令
 test = on_regex("^测试$", rule=auto_bot_superuser)
-fasong = on_regex("^发送", rule=auto_bot_superuser)
 
 # bot系统命令
 zhuangtai = on_regex("^状态$", rule=auto_bot_superuser)
@@ -410,10 +451,6 @@ chaxun = on_regex("^查询", rule=auto_bot_superuser)
 #################################
 # 群管命令
 #################################
-# 所有用户
-miaofu = on_regex("^喵服$", rule=auto_bot)
-jinyan = on_regex("^禁言\s*\d{1,}$|^禁言$", rule=group_check_special)
-
 # 管理员
 sousuo = on_regex("^搜索\s*\d+$", rule=auto_bot_superuser)
 touxian = on_regex("^头衔\s*\d+\s+", rule=auto_bot_superuser)
@@ -444,31 +481,22 @@ shezhimiaobi = on_regex("^设置喵币\s*\d+\s+\d+$|^设置喵币$", rule=auto_b
 zengjiamiaobi = on_regex("^增加喵币\s*\d+\s+\d+$|^增加喵币$", rule=auto_bot_superuser)
 
 #################################
-# 联机服务器命令
+# 战魂命令
 #################################
-# 所有用户（群聊）
-yanzheng = on_regex("^验证$", rule=group_check_special)
-glink = on_regex(
-    "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$|^群规$", rule=zhanhun_group_check
+# 公共命令
+miaofu = on_regex("^喵服$", rule=auto_bot)
+jinyan = on_regex("^禁言\s*\d{1,}$|^禁言$", rule=zhanhun_check_only_group)
+yanzheng = on_regex("^验证$", rule=zhanhun_check_only_group)
+chafang = on_regex("^查房$", rule=zhanhun_check)
+lianjie = on_regex(
+    "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$|^群规$", rule=zhanhun_check
 )
-gchabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=zhanhun_group_check)
-gchafang = on_regex("^查房$", rule=auto_bot)
+chabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=zhanhun_check)
+jiance = on_regex("^检测\s*\d+$|^检测$", rule=zhanhun_check_no_group)
+zhaokabi = on_regex("^找卡比\s*\d+$|^找卡比$", rule=zhanhun_check_no_group)
 
-
-# 所有用户（频道）
-cchafang = on_regex("^查房$", rule=guild_check)
-clink = on_regex("^帮助$|^官网$|^后台$|^排行$|^赞助$|^黑名单$|^教程$|^文章$|^升级$|^领号$", rule=guild_check)
-cjiance = on_regex("^检测\s*\d+$|^检测$", rule=guild_check)
-czhaokabi = on_regex("^找卡比\s*\d+$|^找卡比$", rule=guild_check)
-cchabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=guild_check)
-
-# 所有用户（好友私聊）
-pbangzhu = on_regex("^帮助$", rule=bot_1_event)
-pchafang = on_regex("^查房$", rule=bot_1_event)
-plink = on_regex("^官网$|^后台$|^排行$|^赞助$|^黑名单$|^教程$|^文章$|^升级$|^领号$", rule=bot_1_event)
-pchabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=bot_1_event)
-pjiance = on_regex("^检测\s*\d+$|^检测$", rule=bot_1_event)
-pzhaokabi = on_regex("^找卡比\s*\d+$|^找卡比$", rule=bot_1_event)
+# 赞助者私聊命令
+bangzhu = on_regex("^帮助$", rule=bot_1_event)
 peizhi = on_regex("^配置$|^配置\s*\d+$", rule=bot_1_event)
 fangming = on_regex("^房名", rule=bot_1_event)
 siyou = on_regex("^私有", rule=bot_1_event)
@@ -509,89 +537,6 @@ saomiao = on_regex("^扫描$", rule=shencha_group_check)
 shencha = on_regex("^审查\s*\d{1,}$|^审查$", rule=shencha_group_check)
 jiejin = on_regex("^解禁\s*\d{1,}$", rule=shencha_group_check)
 tichu = on_regex("^踢出\s*\d+$|^永拒\s*\d+$|^踢出$", rule=shencha_group_check)
-
-
-#################################
-# 频道命令
-#################################
-@cchafang.handle()
-@handle_exception("频道查房", True)
-async def handle_cchafang():
-    await cchafang.finish(await get_room_list())
-
-
-@clink.handle()
-@handle_exception("频道link", True)
-async def handle_clink(event: GuildMessageEvent):
-    mess_dict = {
-        "帮助": f"【支持的命令有以下】\n领号|升级|赞助|排行|黑名单\n教程|后台|查绑|查房|找卡比",
-        "官网": f"喵服官网(联机教程)：{gv.site_url}",
-        "教程": f"文字教程：{gv.site_url}/config\n视频教程：{gv.video_url}",
-        "后台": f"玩家后台：{gv.site_url}/bk",
-        "排行": f"喵服修罗之力排行榜：{gv.site_url}/xl",
-        "赞助": f"喵服赞助名单：{gv.site_url}/sponsor",
-        "黑名单": f"黑名单：{gv.site_url}/zhb",
-        "文章": f"文章列表：{gv.site_url}/guide",
-        "领号": f"领号页面：{gv.site_url}/get",
-        "升级": f"升级编号：{gv.site_url}/get?x",
-    }
-    kw = str(event.get_message()).replace("\n", "")
-    await clink.finish(mess_dict[kw])
-
-
-@cjiance.handle()
-@handle_exception("频道检测", True)
-async def handle_cjiance(event: GuildMessageEvent):
-    if str(event.get_message()) == "检测":
-        await cjiance.finish("检测+编号")
-    else:
-        wgnum = int(str(event.get_message())[2:].strip())
-        msg = await network_status(wgnum, 1)
-        if msg.find("ms") == -1:
-            await cjiance.finish(msg)
-        else:
-            await cjiance.send(msg.replace("<br />", "\n"))
-        msg = await network_status(wgnum, 2)
-        await cjiance.finish(msg.replace("<br />", "\n"))
-
-
-@czhaokabi.handle()
-@handle_exception("频道找卡比", True)
-async def handle_czhaokabi(event: GuildMessageEvent):
-    if str(event.get_message()) == "找卡比":
-        await czhaokabi.finish("找卡比+编号")
-    else:
-        wgnum = int(str(event.get_message())[3:].strip())
-        await czhaokabi.send("查询中，请稍后...")
-        msg = await network_status(wgnum, 3)
-        await czhaokabi.finish(msg.replace("<br />", "\n"))
-
-
-@cchabang.handle()
-@handle_exception("频道查绑", True)
-async def handle_cchabang(event: GuildMessageEvent):
-    if str(event.get_message()) == "查绑":
-        await cchabang.finish("查绑+编号或Q号")
-    else:
-        num = int(str(event.get_message())[2:].strip())
-        msg = await check_num(num)
-        msg = msg.replace("<br />", "\n")
-        await cchabang.finish(msg)
-
-
-#################################
-# 公共命令
-#################################
-@miaofu.handle()
-@handle_exception("喵服宣传")
-async def handle_miaofu(event: GroupMessageEvent):
-    if gv.safe_mode is False:
-        await miaofu.finish(
-            f"战魂铭人远程联机平台-喵服\n教程: {gv.video_url}\n"
-            + MessageSegment.image(
-                "https://img2.tapimg.com/bbcode/etag/lnxAi1YkbinAy4wLuiM207lWODp-.gif"
-            )
-        )
 
 
 #################################
@@ -811,43 +756,6 @@ async def handle_group_notice(event: NoticeEvent):
 @test.handle()
 @handle_exception("测试")
 async def handle_test(event: MessageEvent):
-    # await test.send("wc")
-    # results = []
-    # results_true = ["游戏中"]
-    # results_false = ["等待中"]
-    # for fangzhu in list(gv.rooms):
-    #     # 读取房间信息
-    #     room_data = gv.rooms[fangzhu][4]
-    #     room_info = loads(
-    #         bytes.fromhex(room_data[room_data.find("7b2273", 50) :]).decode()
-    #     )
-    #     chengyuan_info = ""
-    #     # 获取成员信息
-    #     for chengyuan in list(gv.rooms[fangzhu][0]):
-    #         chengyuan_wgnum = int(ip_to_wgnum(chengyuan))
-    #         # 特殊编号
-    #         if chengyuan_wgnum in gv.r2f.keys():
-    #             chengyuan_wgnum = gv.r2f[chengyuan_wgnum]
-    #         # 特殊编号
-    #         chengyuan_info += f"  {chengyuan_wgnum}"
-
-    #     # 判断游戏状态
-    #     if room_info["hsb"]:
-    #         results_true.append(
-    #             f"房主{ip_to_wgnum(fangzhu)} 人数{room_info['ccc']}\n成员{chengyuan_info}"
-    #         )
-    #     else:
-    #         results_false.append(
-    #             f"房主{ip_to_wgnum(fangzhu)} 人数{room_info['ccc']}\n成员{chengyuan_info}"
-    #         )
-    # results = results_false + results_true
-    # await test.finish("\n".join(results))
-    rows = await XLboard.get_all_info()
-    for row in rows:
-        wgnum = row[0]
-        wgnum, qqnum, ttl, numtype = await Wg.get_info_by_wgnum(wgnum)
-        if numtype == "体验":
-            await XLboard.delete_xl_info(wgnum)
     await test.finish("yes")
 
 
@@ -925,13 +833,6 @@ async def handle_touxian(event: MessageEvent):
             await touxian.finish("目标不在群里")
     else:
         await touxian.finish("超级管理员bot未连接，设置失败")
-
-
-@fasong.handle()
-@handle_exception("发送")
-async def handle_fasong(event: MessageEvent):
-    in_mess = str(event.get_message())[2:].strip()
-    await fasong.finish(in_mess)
 
 
 @zhongyiying.handle()
@@ -1498,6 +1399,18 @@ async def handle_saomiao():
 #####################################
 # 喵服群聊命令
 #####################################
+@miaofu.handle()
+@handle_exception("喵服宣传")
+async def handle_miaofu():
+    if gv.safe_mode is False:
+        await miaofu.finish(
+            f"战魂铭人远程联机平台-喵服\n教程: {gv.video_url}\n"
+            + MessageSegment.image(
+                "https://img2.tapimg.com/bbcode/etag/lnxAi1YkbinAy4wLuiM207lWODp-.gif"
+            )
+        )
+
+
 @jinyan.handle()
 @handle_exception("禁言")
 async def handle_jinyan(event: GroupMessageEvent):
@@ -1546,6 +1459,9 @@ async def handle_jinyan(event: GroupMessageEvent):
         await jinyan.finish("目标不在群内")
 
 
+#####################################
+# 战魂命令
+#####################################
 @yanzheng.handle()
 @handle_exception("验证")
 async def handle_yanzheng(event: GroupMessageEvent):
@@ -1553,11 +1469,17 @@ async def handle_yanzheng(event: GroupMessageEvent):
         gv.qq_verified[event.user_id][1] = True
 
 
-@glink.handle()
-@handle_exception("glink")
-async def handle_glink(event: GroupMessageEvent):
+@chafang.handle()
+@handle_exception("查房")
+async def handle_chafang():
+    await chafang.finish(await get_room_list())
+
+
+@lianjie.handle()
+@handle_exception("链接")
+async def handle_lianjie(event: MessageEvent):
     mess_dict = {
-        "帮助": f"【支持的命令有以下】\n官网|教程|升级|排行\n后台|查房|频道|黑名单",
+        "帮助": f"【支持的命令有以下】\n官网|教程|升级|赞助|排行\n后台|查绑|查房|频道|黑名单",
         "官网": f"喵服官网：{gv.site_url}",
         "教程": f"文字教程：{gv.site_url}/config\n视频教程：{gv.video_url}",
         "升级": f"升级编号：{gv.site_url}/get?x",
@@ -1570,105 +1492,59 @@ async def handle_glink(event: GroupMessageEvent):
         "群规": f"喵服群规&联机守则：{gv.site_url}/rule",
     }
     kw = str(event.get_message()).replace("\n", "")
-    await glink.finish(mess_dict[kw])
+    await lianjie.finish(mess_dict[kw])
 
 
-@gchabang.handle()
-@handle_exception("群查绑")
-async def handle_gchabang(event: GroupMessageEvent):
+@chabang.handle()
+@handle_exception("查绑")
+async def handle_chabang(event: MessageEvent):
     if str(event.get_message()) == "查绑":
-        await gchabang.finish("查绑+编号或Q号")
+        await chabang.finish("查绑+编号或Q号")
     else:
         num = int(str(event.get_message())[2:].strip())
         msg = await check_num(num)
         msg = msg.replace("<br />", "\n")
-        await gchabang.finish(msg)
+        await chabang.finish(msg)
 
 
-@gchafang.handle()
-@handle_exception("群查房")
-async def handle_chafang(event: GroupMessageEvent):
-    await gchafang.finish(await get_room_list())
+@jiance.handle()
+@handle_exception("检测")
+async def handle_jiance(event: MessageEvent):
+    if str(event.get_message()) == "检测":
+        await jiance.finish("检测+编号")
+    else:
+        wgnum = int(str(event.get_message())[2:].strip())
+        msg = await network_status(wgnum, 1)
+        if msg.find("ms") == -1:
+            await jiance.finish(msg)
+        else:
+            await jiance.send(msg.replace("<br />", "\n"))
+        msg = await network_status(wgnum, 2)
+        await jiance.finish(msg.replace("<br />", "\n"))
+
+
+@zhaokabi.handle()
+@handle_exception("找卡比")
+async def handle_zhaokabi(event: MessageEvent):
+    if str(event.get_message()) == "找卡比":
+        await zhaokabi.finish("找卡比+编号")
+    else:
+        wgnum = int(str(event.get_message())[3:].strip())
+        await zhaokabi.send("查询中，请稍后...")
+        msg = await network_status(wgnum, 3)
+        await zhaokabi.finish(msg.replace("<br />", "\n"))
 
 
 #####################################
 # 私聊命令
 #####################################
-@pbangzhu.handle()
+@bangzhu.handle()
 @handle_exception("私聊帮助")
-async def handle_pbangzhu(event: PrivateMessageEvent):
+async def handle_bangzhu(event: PrivateMessageEvent):
     if event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num:
-        await pbangzhu.finish(
+        await bangzhu.finish(
             "检测 -- 检测你是否连上服务器，接上编号可以测其他人的\n查绑 -- 查询绑定信息，接上编号可以查其他人的\n查房 -- 查看房间列表\n配置 -- 获取配置文件下载链接\n后台 -- 返回后台网页链接\n房名 房间名称 -- 自定义房间名称，取消直接发“房名”\n私有 目标编号 -- 只允许目标编号进入你的房间，多个编号用空格分开，取消直接发“私有”\n拉黑 目标编号 -- 禁止目标编号进入你的房间，多个编号用空格分开，取消直接发“拉黑”\n人数 人数上限 -- 设置你的房间人数上限，取消直接发“人数”\n版本 你游戏版本 -- 设置跨版本进房，比如你的版本是1.12.1，要进入其他版本的房间，就发送“版本 1.12.1”，取消直接发“版本”\n与网页设置同步，设置时不需要连着服务器"
         )
-
-
-@pchafang.handle()
-@handle_exception("私聊查房")
-async def handle_pchafang(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num:
-        await pchafang.finish(await get_room_list())
-
-
-@plink.handle()
-@handle_exception("私聊链接")
-async def handle_plink(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num:
-        mess_dict = {
-            "官网": f"喵服官网(联机教程)：{gv.site_url}",
-            "教程": f"文字教程：{gv.site_url}/config\n视频教程：{gv.video_url}",
-            "后台": f"玩家后台：{gv.site_url}/bk",
-            "排行": f"喵服修罗之力排行榜：{gv.site_url}/xl",
-            "赞助": f"喵服赞助名单：{gv.site_url}/sponsor",
-            "黑名单": f"黑名单：{gv.site_url}/zhb",
-            "文章": f"文章列表：{gv.site_url}/guide",
-            "领号": f"领号页面：{gv.site_url}/get",
-            "升级": f"升级编号：{gv.site_url}/get?x",
-        }
-        kw = str(event.get_message()).replace("\n", "")
-        await plink.finish(mess_dict[kw])
-
-
-@pchabang.handle()
-@handle_exception("私聊查绑")
-async def handle_pchabang(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num:
-        if str(event.get_message()) == "查绑":
-            await pchabang.finish("查绑+编号或Q号")
-        else:
-            num = int(str(event.get_message())[2:].strip())
-            msg = await check_num(num)
-            msg = msg.replace("<br />", "\n")
-            await pchabang.finish(msg)
-
-
-@pjiance.handle()
-@handle_exception("私聊检测")
-async def handle_pjiance(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num:
-        if str(event.get_message()) == "检测":
-            await pjiance.finish("检测+编号")
-        else:
-            wgnum = int(str(event.get_message())[2:].strip())
-            msg = await network_status(wgnum, 1)
-            if msg.find("ms") == -1:
-                await pjiance.finish(msg)
-            else:
-                await pjiance.send(msg.replace("<br />", "\n"))
-            msg = await network_status(wgnum, 2)
-            await pjiance.finish(msg.replace("<br />", "\n"))
-
-
-@pzhaokabi.handle()
-@handle_exception("私聊找卡比")
-async def handle_pjiance(event: PrivateMessageEvent):
-    if str(event.get_message()) == "找卡比":
-        await pzhaokabi.finish("找卡比+编号")
-    else:
-        wgnum = int(str(event.get_message())[3:].strip())
-        await pzhaokabi.send("查询中，请稍后...")
-        msg = await network_status(wgnum, 3)
-        await pzhaokabi.finish(msg.replace("<br />", "\n"))
 
 
 @peizhi.handle()
