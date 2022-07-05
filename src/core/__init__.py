@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from math import sqrt
 from random import randint
 from re import S, compile, sub, findall
-from time import time
 
 from httpx import AsyncClient
 from nonebot import get_driver, on_message, on_notice, on_regex, on_request
@@ -31,7 +30,6 @@ from src.models._shencha import Shencha
 from src.models._sponsor import Sponsor
 from src.models._tips import Tips
 from src.models._wg import Wg
-from src.models._xl import XLboard
 from src.models._zhb_list import Zhb_list
 from src.models._zhb_user import Zhb_user
 from tortoise import Tortoise
@@ -62,7 +60,6 @@ from .utils import (
     get_qqnum_nickname,
     get_room_list,
     handle_exception,
-    ip_to_wgnum,
     network_status,
     server_status,
     wgnum_to_ip,
@@ -189,7 +186,7 @@ async def do_startup():
  |  \| |\ \_/ //  \    \n\
  | . ` | \   // /\ \   \n\
  | |\  |  | |/ ____ \  \n\
- |_| \_|  |_/_/    \_\ v1.1.0\n\
+ |_| \_|  |_/_/    \_\ v1.2.0\n\
 Dev by nikiss <1299577815@qq.com>\n"
     )
 
@@ -485,6 +482,7 @@ zengjiamiaobi = on_regex("^增加喵币\s*\d+\s+\d+$|^增加喵币$", rule=auto_
 #################################
 # 公共命令
 miaofu = on_regex("^喵服$", rule=auto_bot)
+baipiaopaihang = on_regex("^白嫖排行$", rule=zhanhun_check_only_group)
 jinyan = on_regex("^禁言\s*\d{1,}$|^禁言$", rule=zhanhun_check_only_group)
 yanzheng = on_regex("^验证$", rule=zhanhun_check_only_group)
 chafang = on_regex("^查房$", rule=zhanhun_check)
@@ -1133,6 +1131,21 @@ async def handle_jiage(event: MessageEvent):
     p = str(event.get_message())[2:].strip()
     await Little_data.update_price(int(p))
     await jiage.finish(f"普通号的价格设置为{p}元")
+
+
+@baipiaopaihang.handle()
+@handle_exception("白嫖排行")
+async def handle_baipiaopaihang():
+    rows = await Gold.get_expday_rank()
+    out_mess = []
+    count = 1
+    index = {1: "壹", 2: "贰", 3: "叁", 4: "肆", 5: "伍", 6: "陆"}
+    for row in rows:
+        out_mess.append(f"{index[count]} > {row[0]} > {row[1]}天")
+        count += 1
+
+    out_mess = "\n".join(out_mess)
+    await baipiaopaihang.finish(out_mess)
 
 
 @miaobizonge.handle()

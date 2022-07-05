@@ -108,6 +108,17 @@ class Gold(Model):
         rows = await cls.filter(expday=99999).values_list("qqnum")
         return [str(row[0]) for row in rows]
 
+    # 获取白嫖排行
+    @classmethod
+    async def get_expday_rank(cls) -> list:
+        rows = (
+            await cls.filter(Q(qqnum__not=99999))
+            .order_by("-expday")
+            .limit(6)
+            .values_list("qqnum", "expday")
+        )
+        return rows
+
     # 获取qq号是否被ban
     @classmethod
     async def ban_or_not(cls, qqnum: int) -> bool:
