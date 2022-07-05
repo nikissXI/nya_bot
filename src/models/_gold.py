@@ -112,7 +112,7 @@ class Gold(Model):
     @classmethod
     async def get_expday_rank(cls) -> list:
         rows = (
-            await cls.filter(Q(qqnum__not=99999))
+            await cls.filter(Q(expday__not=99999))
             .order_by("-expday")
             .limit(6)
             .values_list("qqnum", "expday")
