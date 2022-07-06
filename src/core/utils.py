@@ -91,7 +91,7 @@ async def check_group_zhb() -> str:
     # 结果输出
     out_mess = []
     # 获取黑名单列表
-    zhb_list = await Zhb_list.get_all_qq()
+    zhb_list = await Zhb_list.get_qq_list()
     # 获取群列表
     group_list = await gv.admin_bot.get_group_list(no_cache=True)
     # 遍历群

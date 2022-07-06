@@ -215,8 +215,8 @@ async def zhb_data(qqnum=None):
 
 
 @app.get("/zhb_check")
-async def zhb_check(qqnum):
-    if await Zhb_list.qq_exist(int(qqnum)):
+async def zhb_check(qqnum: int = 0):
+    if await Zhb_list.qq_exist(qqnum):
         return {"code": 1}
     else:
         return {"code": 0}
@@ -258,7 +258,7 @@ async def why(request: Request):
 
 
 @app.get("/why_data")
-async def why_data(qqnum=None):
+async def why_data(qqnum: int = None):
     if qqnum is not None:
         if await Zhb_list.qq_exist(qqnum):
             qqnum, time, why, path = await Zhb_list.get_why(qqnum)
@@ -375,7 +375,7 @@ async def submit_qq(request: Request, qq=None, app=None, version=None):
             return {"code": 7}
 
         # 判断是否在黑名单
-        elif qq in await Zhb_list.get_all_qq():
+        elif await Zhb_list.qq_exist(qq):
             return {"code": -1}
 
         # 判断是否在白嫖列表中

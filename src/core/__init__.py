@@ -271,7 +271,11 @@ async def on_bot_disconnect_handle(bot: Bot):
 #################################
 # 喵服验证
 async def zhanhun_check_only_group(event: GroupMessageEvent, bot: Bot) -> bool:
-    if event.group_id == gv.miao_group_num or event.group_id == gv.miao_group2_num:
+    if (
+        event.group_id == gv.miao_group_num
+        or event.group_id == gv.miao_group2_num
+        or event.group_id == gv.shencha_group_num
+    ):
         if gv.bot_1 is not None:
             return bot.self_id == gv.bot_1_num
         else:
@@ -301,7 +305,9 @@ async def zhanhun_check(event: MessageEvent, bot: Bot) -> bool:
         if gv.safe_mode:
             return False
         elif (
-            event.group_id == gv.miao_group_num or event.group_id == gv.miao_group2_num
+            event.group_id == gv.miao_group_num
+            or event.group_id == gv.miao_group2_num
+            or event.group_id == gv.shencha_group_num
         ):
             if gv.bot_2 is not None:
                 return bot.self_id == gv.bot_2_num
@@ -484,7 +490,6 @@ zengjiamiaobi = on_regex("^增加喵币\s*\d+\s+\d+$|^增加喵币$", rule=auto_
 miaofu = on_regex("^喵服$", rule=auto_bot)
 jinyan = on_regex("^禁言\s*\d{1,}$|^禁言$", rule=zhanhun_check_only_group)
 yanzheng = on_regex("^验证$", rule=zhanhun_check_only_group)
-baipiaopaihang = on_regex("^白嫖排行$", rule=zhanhun_check)
 chafang = on_regex("^查房$", rule=zhanhun_check)
 lianjie = on_regex(
     "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$|^群规$", rule=zhanhun_check
@@ -516,6 +521,7 @@ kuorong = on_regex("^扩容\s*\d+$|^缩容\s*\d+$", rule=auto_bot_superuser)
 ban = on_regex("^ban\s*\d+$|^unban\s*\d+$|^ban$", rule=auto_bot_superuser)
 zanzhuzonge = on_regex("^赞助总额$", rule=auto_bot_superuser)
 jiage = on_regex("^价格$|^价格\s*\d+$", rule=auto_bot_superuser)
+baipiaopaihang = on_regex("^白嫖排行$", rule=auto_bot_superuser)
 
 
 #################################
@@ -530,7 +536,6 @@ disibu = on_regex("^第四步$", rule=shencha_group_check)
 diwubu = on_regex("^第五步$", rule=shencha_group_check)
 diliubu = on_regex("^第六步$", rule=shencha_group_check)
 daishencha = on_regex("^待审查$", rule=shencha_group_check)
-schabang = on_regex("^查绑\s*\d{1,}$|^查绑$", rule=shencha_group_check)
 saomiao = on_regex("^扫描$", rule=shencha_group_check)
 shencha = on_regex("^审查\s*\d{1,}$|^审查$", rule=shencha_group_check)
 jiejin = on_regex("^解禁\s*\d{1,}$", rule=shencha_group_check)
@@ -639,8 +644,8 @@ async def handle_new_friend(event: FriendAddNoticeEvent):
 @handle_exception("群通知")
 async def handle_group_notice(event: NoticeEvent):
     await sleep(3)
+    qqnum = event.user_id
     if isinstance(event, GroupDecreaseNoticeEvent):
-        qqnum = event.user_id
         # 退出联机群
         if event.group_id == gv.miao_group_num:
             if qqnum in gv.qq_verified.keys():
@@ -673,7 +678,7 @@ async def handle_group_notice(event: NoticeEvent):
         elif (
             event.group_id != gv.miao_group2_num
             and event.group_id != gv.shencha_group_num
-            and qqnum in await Zhb_list.get_all_qq()
+            and await Zhb_list.qq_exist(qqnum)
         ):
             nickname = await get_qqnum_nickname(qqnum)
             groupname = await get_group_name(event.group_id)
@@ -685,12 +690,10 @@ async def handle_group_notice(event: NoticeEvent):
             )
 
     elif isinstance(event, GroupIncreaseNoticeEvent):
-        qqnum = event.user_id
         ######## 喵服群 ###########
         if event.group_id == gv.miao_group_num:
-
             # 判断是否在黑名单
-            if qqnum in await Zhb_list.get_all_qq():
+            if await Zhb_list.qq_exist(qqnum):
                 await group_notice.finish(
                     MessageSegment.at(qqnum)
                     + f"黑名单中有你份，原因请看\n{gv.site_url}/why?qq={qqnum}"
@@ -737,7 +740,7 @@ async def handle_group_notice(event: NoticeEvent):
         ######## 其他 ###########
         elif event.group_id == gv.shencha_group_num:
             # 判断是否在黑名单
-            if event.user_id in await Zhb_list.get_all_qq():
+            if await Zhb_list.qq_exist(qqnum):
                 nickname = await get_qqnum_nickname(qqnum)
                 groupname = await get_group_name(event.group_id)
                 gv.group_mess.append(
@@ -774,8 +777,14 @@ async def handle_qunyuanxinxi(event: MessageEvent):
     wgnum = await Wg.get_wgnum_by_qq(qqnum)
     wgnum_info = await check_num(wgnum)
     wgnum_info = wgnum_info.replace("<br />", "\n")
+    exp_day = await Gold.get_expday(qqnum)
+    ext_mess = f"白嫖了{exp_day}天"
+    if await Gold.ban_or_not(qqnum):
+        ext_mess += "\nban √"
+    if await Zhb_list.qq_exist(qqnum):
+        ext_mess += "\n黑名单 √"
     await qunyuanxinxi.finish(
-        f"QQ：{qqnum}\n昵称：{info['nickname']}\n群名片：{info['card']}\n进群时间：{join_time}\n最后发言时间：{last_sent_time}\n{wgnum_info}"
+        f"QQ：{qqnum}\n昵称：{info['nickname']}\n群名片：{info['card']}\n进群时间：{join_time}\n最后发言时间：{last_sent_time}\n{wgnum_info}{ext_mess}"
     )
 
 
@@ -1010,7 +1019,7 @@ async def handle_bangding(event: MessageEvent):
         qqnum, wgnum = [int(x) for x in str(event.get_message())[:-2].strip().split()]
 
     # 判断是否在黑名单
-    if qqnum in await Zhb_list.get_all_qq():
+    if await Zhb_list.qq_exist(qqnum):
         await bangding.finish(f"{event.user_id}在黑名单中，禁止绑定")
 
     # 判断是否在群里
@@ -1386,21 +1395,6 @@ async def handle_shencha(event: GroupMessageEvent):
             await tichu.finish("目标不在群内")
 
 
-@schabang.handle()
-@handle_exception("审查群查绑")
-async def handle_chabang(event: GroupMessageEvent):
-    if event.group_id != gv.shencha_group_num:
-        await schabang.finish()
-    elif str(event.get_message()) == "查绑":
-        await schabang.finish("查绑+编号或Q号")
-    else:
-        num = int(str(event.get_message())[2:].strip())
-        msg = await check_num(num)
-        msg = sub("\(.*", "", msg)
-        msg = msg.replace("<br />", "\n")
-        await schabang.finish(msg)
-
-
 @saomiao.handle()
 @handle_exception("扫描")
 async def handle_saomiao():
@@ -1556,7 +1550,7 @@ async def handle_zhaokabi(event: MessageEvent):
 async def handle_bangzhu(event: PrivateMessageEvent):
     if event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num:
         await bangzhu.finish(
-            "检测 -- 检测你是否连上服务器，接上编号可以测其他人的\n查绑 -- 查询绑定信息，接上编号可以查其他人的\n查房 -- 查看房间列表\n配置 -- 获取配置文件下载链接\n后台 -- 返回后台网页链接\n房名 房间名称 -- 自定义房间名称，取消直接发“房名”\n私有 目标编号 -- 只允许目标编号进入你的房间，多个编号用空格分开，取消直接发“私有”\n拉黑 目标编号 -- 禁止目标编号进入你的房间，多个编号用空格分开，取消直接发“拉黑”\n人数 人数上限 -- 设置你的房间人数上限，取消直接发“人数”\n版本 你游戏版本 -- 设置跨版本进房，比如你的版本是1.12.1，要进入其他版本的房间，就发送“版本 1.12.1”，取消直接发“版本”\n与网页设置同步，设置时不需要连着服务器"
+            "检测 -- 检测你是否连上服务器，接上编号可以测其他人的\n配置 -- 获取配置文件下载链接\n房名 房间名称 -- 自定义房间名称，取消直接发“房名”\n私有 目标编号 -- 只允许目标编号进入你的房间，多个编号用空格分开，取消直接发“私有”\n拉黑 目标编号 -- 禁止目标编号进入你的房间，多个编号用空格分开，取消直接发“拉黑”\n人数 人数上限 -- 设置你的房间人数上限，取消直接发“人数”\n版本 你游戏版本 -- 设置跨版本进房，比如你的版本是1.12.1，要进入其他版本的房间，就发送“版本 1.12.1”，取消直接发“版本”\n与网页设置同步，设置时不需要连着服务器"
         )
 
 

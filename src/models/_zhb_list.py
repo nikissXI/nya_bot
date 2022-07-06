@@ -28,7 +28,7 @@ class Zhb_list(Model):
         return rows
 
     @classmethod
-    async def get_all_qq(cls) -> list:
+    async def get_qq_list(cls) -> list:
         rows = await cls.filter().values_list("qqnum")
         qqnum_list = [row[0] for row in rows]
         return qqnum_list
