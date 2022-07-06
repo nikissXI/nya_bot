@@ -88,11 +88,11 @@
                                 <h5 id="time" style="text-align:center;color: #5fffac;">时间: </h5>
                                 <h5 id="qqnum" style="text-align:center;color: #5fffac;">QQ: </h5>
                                 <h5 style="text-align:center;color: #5fffac;">原因如下</h5>
-                                <div id="why"></div>
+                                <div id="why_content"></div>
                                 <br />
 
                                 <h5 style="text-align:center;color: #5fffac;">证据图片</h5>
-                                <div id="path"></div>
+                                <div id="img_path"></div>
 
                             </div>
                         </article>
@@ -141,16 +141,16 @@
                 $.get("/why_data", data, function (r) {
                     $("#time").append(r.time)
                     $("#qqnum").append(r.qqnum)
-                    $("#why").append(r.why)
+                    $("#why_content").append(r.why)
                     if (r.qqnum == 0) {
                         window.location.href = "/zhb";
                     }
                     else if (r.path.length != 0)
                         $.each(r.path, function (x, row) {
-                            $("#path").append("<img alt='" + r.qqnum + "' src='" + row + "' style='width:400px' /><br />");
+                            $("#img_path").append("<img alt='" + r.qqnum + "' src='" + row + "' style='width:400px' /><br />");
                         });
                     else
-                        $("#path").append("人跑太快，没留下证据");
+                        $("#img_path").append("人跑太快，没留下证据");
 
                 }, 'json');
             }
