@@ -766,26 +766,35 @@ async def handle_qunyuanxinxi(event: MessageEvent):
     in_mess = str(event.get_message())
     if in_mess == "群员信息":
         await qunyuanxinxi.finish("群员信息 [QQ]")
+
     qqnum = int(in_mess[4:].strip())
-    info = await gv.admin_bot.get_group_member_info(
-        group_id=gv.miao_group_num, user_id=qqnum, no_cache=True
-    )
-    dateArray = datetime.utcfromtimestamp(info["last_sent_time"]) + timedelta(hours=8)
-    last_sent_time = dateArray.strftime("%Y-%m-%d %H:%M:%S")
-    dateArray = datetime.utcfromtimestamp(info["join_time"]) + timedelta(hours=8)
-    join_time = dateArray.strftime("%Y-%m-%d %H:%M:%S")
-    wgnum = await Wg.get_wgnum_by_qq(qqnum)
-    wgnum_info = await check_num(wgnum)
-    wgnum_info = wgnum_info.replace("<br />", "\n")
-    exp_day = await Gold.get_expday(qqnum)
-    ext_mess = f"白嫖了{exp_day}天"
-    if await Gold.ban_or_not(qqnum):
-        ext_mess += "\nban √"
-    if await Zhb_list.qq_exist(qqnum):
-        ext_mess += "\n黑名单 √"
-    await qunyuanxinxi.finish(
-        f"QQ：{qqnum}\n昵称：{info['nickname']}\n群名片：{info['card']}\n进群时间：{join_time}\n最后发言时间：{last_sent_time}\n{wgnum_info}{ext_mess}"
-    )
+    out_mess = f"{qqnum}不在群里"
+    try:
+        info = await gv.admin_bot.get_group_member_info(
+            group_id=gv.miao_group_num, user_id=qqnum, no_cache=True
+        )
+        dateArray = datetime.utcfromtimestamp(info["last_sent_time"]) + timedelta(
+            hours=8
+        )
+        last_sent_time = dateArray.strftime("%Y-%m-%d %H:%M:%S")
+        dateArray = datetime.utcfromtimestamp(info["join_time"]) + timedelta(hours=8)
+        join_time = dateArray.strftime("%Y-%m-%d %H:%M:%S")
+        wgnum = await Wg.get_wgnum_by_qq(qqnum)
+        wgnum_info = await check_num(wgnum)
+        wgnum_info = wgnum_info.replace("<br />", "\n")
+        ext_mess = ""
+        if wgnum_info == "无绑定信息":
+            exp_day = await Gold.get_expday(qqnum)
+            if exp_day > 0 and exp_day != 99999:
+                ext_mess += f"\n白嫖了{exp_day}天"
+        if await Gold.ban_or_not(qqnum):
+            ext_mess += "\nban √"
+        if await Zhb_list.qq_exist(qqnum):
+            ext_mess += "\n黑名单 √"
+        out_mess = f"昵称：{info['nickname']}\n群名片：{info['card']}\n进群时间：{join_time}\n最后发言时间：{last_sent_time}\n{wgnum_info}{ext_mess}"
+    except Exception:
+        pass
+    await qunyuanxinxi.finish(out_mess)
 
 
 @juesegaiming.handle()
