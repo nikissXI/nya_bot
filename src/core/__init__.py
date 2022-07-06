@@ -482,9 +482,9 @@ zengjiamiaobi = on_regex("^增加喵币\s*\d+\s+\d+$|^增加喵币$", rule=auto_
 #################################
 # 公共命令
 miaofu = on_regex("^喵服$", rule=auto_bot)
-baipiaopaihang = on_regex("^白嫖排行$", rule=zhanhun_check_only_group)
 jinyan = on_regex("^禁言\s*\d{1,}$|^禁言$", rule=zhanhun_check_only_group)
 yanzheng = on_regex("^验证$", rule=zhanhun_check_only_group)
+baipiaopaihang = on_regex("^白嫖排行$", rule=zhanhun_check)
 chafang = on_regex("^查房$", rule=zhanhun_check)
 lianjie = on_regex(
     "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$|^群规$", rule=zhanhun_check
