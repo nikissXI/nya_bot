@@ -12,6 +12,7 @@ from nonebot.adapters.onebot.v11.message import MessageSegment
 from nonebot.exception import FinishedException
 from nonebot.log import logger
 from psutil import cpu_percent, virtual_memory
+from src.models._wg import Wg
 from src.models._little_data import Little_data
 from src.models._zhb_list import Zhb_list
 
@@ -269,6 +270,9 @@ async def network_status(wgnum: int, op_type: int) -> str:
     if wgnum in gv.f2r.keys():
         wgnum = gv.f2r[wgnum]
     # 特殊编号
+
+    if not await Wg.num_bind(wgnum):
+        return f"{wgnum}号不存在或未绑定"
 
     ip_addr = wgnum_to_ip(wgnum)
 

@@ -287,8 +287,10 @@ async def zhanhun_check_only_group(event: GroupMessageEvent, bot: Bot) -> bool:
 # 战魂联机群消息
 async def zhanhun_check(event: MessageEvent, bot: Bot) -> bool:
     # 如果是私聊要进行判断私聊
-    if isinstance(event, PrivateMessageEvent) and (
-        event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num
+    if (
+        isinstance(event, PrivateMessageEvent)
+        and event.sub_type == "friend"
+        and (event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num)
     ):
         return True
 
@@ -323,8 +325,10 @@ async def zhanhun_check(event: MessageEvent, bot: Bot) -> bool:
 # 战魂联机群消息2
 async def zhanhun_check_no_group(event: MessageEvent, bot: Bot) -> bool:
     # 如果是私聊要进行判断私聊
-    if isinstance(event, PrivateMessageEvent) and (
-        event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num
+    if (
+        isinstance(event, PrivateMessageEvent)
+        and event.sub_type == "friend"
+        and (event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num)
     ):
         return True
 
@@ -726,7 +730,7 @@ async def handle_group_notice(event: NoticeEvent):
                     )
                     await group_notice.finish(
                         MessageSegment.at(qqnum)
-                        + f"\n欢迎新人!\n来源: {come_from}\n联机教程和解除禁言方法都在群公告\n请认真阅读哦~ 不看退群"
+                        + f"\n欢迎新人!\n来源: {come_from}\n联机教程和群规都在群公告\n阅读群规后解除禁言\n群规链接http://nya.nikiss.top/rule"
                         + MessageSegment.image(f"{gv.site_url}/static/welcome.gif")
                     )
 
@@ -1209,12 +1213,7 @@ async def handle_zengjiamiaobi(event: MessageEvent):
         num, money = [int(x) for x in str(event.get_message())[4:].strip().split()]
         if await check_in_group(num):
             await Gold.change_money(num, money, True)
-            if isinstance(event, GroupMessageEvent):
-                await zengjiamiaobi.finish(
-                    MessageSegment.at(event.user_id) + f"{num}的喵币增加了: {money}"
-                )
-            elif isinstance(event, PrivateMessageEvent):
-                await zengjiamiaobi.finish(f"{num}的喵币增加了: {money}")
+            await zengjiamiaobi.finish(f"{num}的喵币增加了: {money}")
         else:
             await zengjiamiaobi.finish("目标不在群里")
 
@@ -1557,7 +1556,9 @@ async def handle_zhaokabi(event: MessageEvent):
 @bangzhu.handle()
 @handle_exception("私聊帮助")
 async def handle_bangzhu(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys() or event.user_id == gv.superuser_num:
+    if (
+        event.user_id in gv.friendlist.keys() and event.sub_type == "friend"
+    ) or event.user_id == gv.superuser_num:
         await bangzhu.finish(
             "检测 -- 检测你是否连上服务器，接上编号可以测其他人的\n配置 -- 获取配置文件下载链接\n房名 房间名称 -- 自定义房间名称，取消直接发“房名”\n私有 目标编号 -- 只允许目标编号进入你的房间，多个编号用空格分开，取消直接发“私有”\n拉黑 目标编号 -- 禁止目标编号进入你的房间，多个编号用空格分开，取消直接发“拉黑”\n人数 人数上限 -- 设置你的房间人数上限，取消直接发“人数”\n版本 你游戏版本 -- 设置跨版本进房，比如你的版本是1.12.1，要进入其他版本的房间，就发送“版本 1.12.1”，取消直接发“版本”\n与网页设置同步，设置时不需要连着服务器"
         )
@@ -1566,7 +1567,7 @@ async def handle_bangzhu(event: PrivateMessageEvent):
 @peizhi.handle()
 @handle_exception("私聊配置")
 async def handle_peizhi(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys():
+    if event.user_id in gv.friendlist.keys() and event.sub_type == "friend":
         link = gv.site_url + "/config?k=" + await Wg.get_key_by_wgnum(event.user_id)
         await peizhi.finish(f"配置文件下载链接，请复制链接到浏览器打开\n{link}")
     elif event.user_id == gv.superuser_num:
@@ -1587,7 +1588,7 @@ async def handle_peizhi(event: PrivateMessageEvent):
 @fangming.handle()
 @handle_exception("私聊房名")
 async def handle_fangming(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys():
+    if event.user_id in gv.friendlist.keys() and event.sub_type == "friend":
         fm = str(event.get_message())[2:].strip()
         res = await room_name_api(fm, gv.friendlist[event.user_id])
         if res:
@@ -1599,7 +1600,7 @@ async def handle_fangming(event: PrivateMessageEvent):
 @siyou.handle()
 @handle_exception("私聊私有")
 async def handle_siyou(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys():
+    if event.user_id in gv.friendlist.keys() and event.sub_type == "friend":
         sy = str(event.get_message())[2:].strip()
         res = await privacy_api(sy, gv.friendlist[event.user_id])
         if res:
@@ -1611,7 +1612,7 @@ async def handle_siyou(event: PrivateMessageEvent):
 @lahei.handle()
 @handle_exception("私聊拉黑")
 async def handle_lahei(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys():
+    if event.user_id in gv.friendlist.keys() and event.sub_type == "friend":
         lh = str(event.get_message())[2:].strip()
         res = await black_api(lh, gv.friendlist[event.user_id])
         if res:
@@ -1623,7 +1624,7 @@ async def handle_lahei(event: PrivateMessageEvent):
 @renshu.handle()
 @handle_exception("私聊人数")
 async def handle_renshu(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys():
+    if event.user_id in gv.friendlist.keys() and event.sub_type == "friend":
         rs = str(event.get_message())[2:].strip()
         res = await join_limit_api(rs, gv.friendlist[event.user_id])
         if res:
@@ -1635,7 +1636,7 @@ async def handle_renshu(event: PrivateMessageEvent):
 @banben.handle()
 @handle_exception("私聊版本")
 async def handle_banben(event: PrivateMessageEvent):
-    if event.user_id in gv.friendlist.keys():
+    if event.user_id in gv.friendlist.keys() and event.sub_type == "friend":
         bb = str(event.get_message())[2:].strip()
         res = await version_set_api(bb, gv.friendlist[event.user_id])
         if res:
