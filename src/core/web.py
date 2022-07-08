@@ -518,6 +518,9 @@ async def bk_data(request: Request):
         ip = request.client.host
         wgnum = int(ip_to_wgnum(ip))
 
+        if not await Wg.num_bind(wgnum):
+            return
+
         wgnum, qqnum, ttl, numtype = await Wg.get_info_by_wgnum(wgnum)
 
         if numtype == "体验":
@@ -682,15 +685,6 @@ async def http_ping(request: Request, wgnum=None):
             return {"self": False}
     else:
         return
-
-
-@app.get("/force_ping")
-async def force_ping(request: Request):
-    if request.client.host.find(gv.wireguard_sub_gateway) != -1:
-        ip = request.client.host
-        return f"{ip_to_wgnum(ip)}已连接服务器"
-    else:
-        return "请连上服务器再访问"
 
 
 ###################################

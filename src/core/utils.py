@@ -37,7 +37,6 @@ def handle_exception(name: str, channel: bool = False):
                         user_id=gv.superuser_num, message=error_msg
                     )
                 else:
-                    gv.miaobi_system = False
                     gv.safe_mode = True
                     # 此为bot本身由于风控或网络问题发不出消息，并非代码本身出问题
                     error_msg = f"{name} 处理器消息发送失败，已临时关闭喵币系统并开启安全模式"

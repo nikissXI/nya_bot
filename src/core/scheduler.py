@@ -81,7 +81,6 @@ async def send_game_message():
             try:
                 await gv.handle_bot.send_group_msg(group_id=mess[0], message=mess[1])
             except Exception:
-                gv.miaobi_system = False
                 gv.safe_mode = True
                 error_msg = f"群聊信息数组发送失败，已临时关闭喵币系统并开启安全模式，消息内容如下\n\n{mess[1]}"
                 logger.error(error_msg)
