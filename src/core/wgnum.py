@@ -3,6 +3,7 @@ from random import randint
 from nonebot.log import logger
 from src.models._gold import Gold
 from src.models._sponsor import Sponsor
+from src.models._zhb_list import Zhb_list
 from src.models._wg import Wg
 from src.models._xl import XLboard
 
@@ -269,7 +270,9 @@ async def check_num(num: int) -> str:
 
     # 无绑定信息，就判断是否来过
     else:
+        if await Zhb_list.qq_exist(num):
+            return "在黑名单中"
         if await Gold.info_exist(num):
-            return "退群了"
+            return "来过，退群了"
         else:
             return "无信息"
