@@ -492,9 +492,9 @@ zengjiamiaobi = on_regex("^增加喵币\s*\d+\s+\d+$|^增加喵币$", rule=auto_
 #################################
 # 公共命令
 miaofu = on_regex("^喵服$", rule=auto_bot)
+chafang = on_regex("^查房$", rule=auto_bot)
 jinyan = on_regex("^禁言\s*\d{1,}$|^禁言$", rule=zhanhun_check_only_group)
 yanzheng = on_regex("^验证$", rule=zhanhun_check_only_group)
-chafang = on_regex("^查房$", rule=zhanhun_check)
 lianjie = on_regex(
     "^帮助$|^官网$|^教程$|^升级$|^后台$|^排行$|^黑名单$|^频道$|^文章$|^赞助$|^群规$", rule=zhanhun_check
 )
@@ -885,6 +885,7 @@ async def handle_yingyizhong(event: MessageEvent):
 @handle_exception("查询")
 async def handle_chaxun(event: MessageEvent):
     in_mess = str(event.get_message())[2:].strip().replace("\n", "")
+    # 如果是url，就提取host
     ip = in_mess.split("://")
     if len(ip) > 1:
         ip = ip[1].split("/")[0]
@@ -893,15 +894,21 @@ async def handle_chaxun(event: MessageEvent):
 
     @run_sync
     def _check_ip(_in) -> str:
-        tmp = _in
+        _out = _in
         _in = _in.replace(".", "")
         try:
             int(_in)
-            return _in
+            return _out
         except Exception:
-            return gethostbyname(tmp)
+            try:
+                return gethostbyname(_out)
+            except Exception:
+                return 0
 
     ip = await _check_ip(ip)
+    if ip == 0:
+        await chaxun.finish(f"域名解析失败")
+
     async with AsyncClient(verify=False) as client:
         user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.41"
         res = await client.get(
@@ -912,6 +919,8 @@ async def handle_chaxun(event: MessageEvent):
         content = res.content.decode("utf-8")
         a = findall('归属地：</span><span class="value">(.+)</span>', content)
         b = findall('运营商：</span><span class="value">(.+)</span>', content)
+        if not a:
+            await chaxun.finish(f"IP解析失败")
         if b:
             b = b[0]
         else:
@@ -1240,7 +1249,7 @@ async def handle_gaoxiuliuyan():
 @diyibu.handle()
 @handle_exception("第一步")
 async def handle_diyibu():
-    await diyibu.finish("自证流程（1/6），不懂怎么操作就问\n在游戏开始界面右下角点感叹号，把设备码截图发出来，有手机号可以打码")
+    await diyibu.finish("自证流程（1/6），不懂怎么操作就问\n在游戏开始界面左下角齿轮，点感叹号，把设备码截图发出来，有手机号可以打码")
 
 
 @dierbu.handle()
