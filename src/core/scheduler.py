@@ -260,9 +260,9 @@ async def auto_handle():
             miao_group_1_member_data = await gv.admin_bot.get_group_member_list(
                 group_id=gv.miao_group_num, no_cache=True
             )
-            # 30天前的时间戳
+            # 60天前的时间戳
             thirty_days_ago = int(
-                datetime.timestamp(datetime.now() - timedelta(days=30))
+                datetime.timestamp(datetime.now() - timedelta(days=60))
             )
             for user in miao_group_1_member_data:
                 if user["last_sent_time"] < thirty_days_ago and not await Wg.num_bind(

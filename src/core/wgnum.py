@@ -267,6 +267,9 @@ async def check_num(num: int) -> str:
 
         return f"QQ: {num}<br />编号: 无<br />赞助金额: {money}{ex}"
 
-    # 无绑定信息
+    # 无绑定信息，就判断是否来过
     else:
-        return "无绑定信息"
+        if await Gold.info_exist(num):
+            return "退群了"
+        else:
+            return "无信息"
