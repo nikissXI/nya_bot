@@ -272,7 +272,7 @@ async def check_num(num: int) -> str:
     else:
         if await Zhb_list.qq_exist(num):
             return "在黑名单中"
-        if await Gold.info_exist(num) and await check_in_group(num):
+        if await Gold.info_exist(num) and not await check_in_group(num):
             return "来过，退群了"
         else:
             return "无信息"
