@@ -142,7 +142,7 @@ def send_room_list(fangzhu_ip_list, finder_ip, dst_port):
                 + k.encode()
                 + b'\xff\xd8\xa9?\x00{"snn":"'
                 + v.encode()
-                + b'","mcc":1,"ccc":1,"hsb":true,"v":"1.99.6"}'
+                + b'","mcc":1,"ccc":1,"hsb":true,"v":"1.12.7"}'
             )
             # 重新计算房间json字符串长度
             notice_room = sub(

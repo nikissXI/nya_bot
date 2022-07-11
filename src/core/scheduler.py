@@ -520,8 +520,8 @@ async def check_outdated():
                                 f"{chengyuan_wgnum}{gv.role_name[chengyuan]}  "
                             )
                         except Exception:
-                            pass
-                            # chengyuan_info += f"{chengyuan_wgnum}未知  "
+                            # pass
+                            chengyuan_info += f"{chengyuan_wgnum}未知  "
 
                 # 判断是否自定义房名
                 if fangzhu in list(gv.room_name):

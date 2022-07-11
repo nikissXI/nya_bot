@@ -132,11 +132,11 @@ async def exec_shell(shell: str) -> tuple[int, bytes, bytes]:
     )
     stdout, stderr = await proc.communicate()
     if stderr:
-        error_msg = (
-            f"shell子进程执行有错误信息（也可能是警告）\n被执行的命令: {shell}\n错误信息:\n{stderr.decode()}"
-        )
-        logger.error(error_msg)
-        gv.private_mess.append((gv.superuser_num, error_msg))
+        stderr = stderr.decode()
+        if stderr.find("No such file or directory") == -1:
+            error_msg = f"shell子进程执行有错误信息（也可能是警告）\n被执行的命令: {shell}\n错误信息:\n{stderr}"
+            logger.error(error_msg)
+            gv.private_mess.append((gv.superuser_num, error_msg))
     return (proc.returncode, stdout, stderr)
 
 
