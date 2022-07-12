@@ -148,6 +148,11 @@ class Wg(Model):
     async def wgnum_in_range(cls, wgnum: int) -> bool:
         return await cls.filter(Q(wgnum__gt=wgnum), Q(qqnum__not=0)).limit(1).exists()
 
+    # 判断该编号是否存在
+    @classmethod
+    async def wgnum_exist(cls, wgnum: int) -> bool:
+        return await cls.filter(wgnum=wgnum).limit(1).exists()
+
     ########################
     # 修改
     ########################

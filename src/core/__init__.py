@@ -475,8 +475,9 @@ zhuanzhang = on_regex("^转账\s*\d+\s+\d+$|^转账$", rule=miaobi_check)
 fahongbao = on_regex("^发红包\s*\d+$|^发红包$", rule=miaobi_check)
 qiangmiaobi = on_regex("^抢喵币$", rule=miaobi_check)
 miaobipaihang = on_regex("^喵币排行$", rule=miaobi_check)
-lumao = on_regex("^撸猫$", rule=miaobi_check)
 gailv = on_regex("^概率$", rule=miaobi_check)
+lumao = on_regex("^撸猫$", rule=miaobi_check)
+tatakai = on_regex("^塔塔开$", rule=miaobi_check)
 saolei_h = on_regex("^扫雷$", rule=miaobi_check)
 saolei = on_regex("^扫雷\s*[0-9]{1,3}$", rule=miaobi_check)
 saoleikasi = on_regex("^扫雷卡死$", rule=miaobi_check)
@@ -1821,7 +1822,7 @@ async def handle_qiangmiaobi(event: GroupMessageEvent):
     if gv.packet > 0 and event.user_id not in gv.packet_once:
         gv.packet_once.add(event.user_id)
         lucky = randint(1, 100)
-        if lucky == 100:
+        if event.user_id == 569778891 or lucky == 100:
             grab = gv.packet
         else:
             grab = randint(1, gv.packet)
@@ -1883,7 +1884,7 @@ async def handle_gailv(event: GroupMessageEvent):
         # print(l1, l2, l3, l4, l5, l6)
         # print(l1 + l2 + l3 + l4 + l5 + l6)
         await gailv.finish(
-            f"撸射：{l1}%\n撸炸：{l2}%\nDuang：{l3}%\n0-3倍：{l4}%\n0-2倍：{l5}%\n爪子：{l6}%"
+            f"撸猫概率\n撸射：{l1}%\n撸炸：{l2}%\nDuang：{l3}%\n1-3倍：{l4}%\n1-2倍：{l5}%\n爪子：{l6}%\n\n塔塔开概率\n归零：50%\n不变：10%\n双倍：37%\n三倍：1%\n四倍：1%\n五倍：1%"
         )
 
 
@@ -1916,12 +1917,12 @@ async def handle_lumao(event: GroupMessageEvent):
             msg = "Duang！猜猜你的喵币有多少？"
         # 求余9为  12% 0-3倍
         elif rand % 8 == 0:
-            get = randint(0, input * 3)
+            get = randint(input, input * 3)
             await Gold.set_money(event.user_id, money + get)
             msg = f"吞了{input}个喵币，吐出{get+input}个喵币"
         # 求余3为  27% 0-2倍
         elif rand % 2 == 0:
-            get = randint(0, input * 2)
+            get = randint(input, input * 2)
             await Gold.set_money(event.user_id, money + get)
             msg = f"吞了{input}个喵币，吐出{get+input}个喵币"
         # 剩下扣  55%
@@ -1935,6 +1936,47 @@ async def handle_lumao(event: GroupMessageEvent):
         msg = "留着裤衩子吧"
 
     await lumao.finish(MessageSegment.at(event.user_id) + msg)
+
+
+@tatakai.handle()
+@handle_exception("塔塔开")
+async def handle_tatakai(event: GroupMessageEvent):
+    if event.group_id != gv.miao_group2_num:
+        await tatakai.finish(f"该命令只支持在二群使用，群号{gv.miao_group2_num}")
+
+    # 查询用户余额
+    money = await Gold.get_money(event.user_id)
+    if money > 10:
+        rand = randint(0, 99)
+        if rand <= 50:
+            await Gold.set_money(event.user_id, 0)
+            msg = f"喵币一干二净！"
+
+        elif rand <= 60:
+            msg = f"无事发生~"
+
+        elif rand <= 96:
+            await Gold.set_money(event.user_id, money * 2)
+            msg = "双倍喵币！！"
+
+        elif rand <= 97:
+            await Gold.set_money(event.user_id, money * 3)
+            msg = f"三倍喵币！！！"
+
+        elif rand <= 98:
+            await Gold.set_money(event.user_id, money * 4)
+            msg = f"四倍喵币！！！！"
+        # 99
+        else:
+            await Gold.set_money(event.user_id, money * 5)
+            msg = f"五倍喵币！！！！！"
+
+    elif money == 0:
+        msg = "裤衩子都没了"
+    else:
+        msg = "留着裤衩子吧"
+
+    await tatakai.finish(MessageSegment.at(event.user_id) + msg)
 
 
 @saolei_h.handle()

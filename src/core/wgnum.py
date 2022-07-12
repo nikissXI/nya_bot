@@ -256,6 +256,10 @@ async def check_num(num: int) -> str:
 
         return f"QQ: {qqnum}<br />编号: {wgnum} ({numtype})<br />剩余天数: {ttl}天{re_tip}"
 
+    # 判断这个是不是编号并且是否存在
+    elif await Wg.wgnum_exist(num):
+        return f"编号{num}目前没人绑定"
+
     # 如果没编号就查询是否有赞助信息
     elif await Sponsor.sponsor_exist(num):
         money = await Sponsor.get_money(num)
@@ -270,9 +274,14 @@ async def check_num(num: int) -> str:
 
     # 无绑定信息，就判断是否来过
     else:
+        # 判断黑名单
         if await Zhb_list.qq_exist(num):
             return "在黑名单中"
-        if await Gold.info_exist(num) and not await check_in_group(num):
-            return "来过，退群了"
+        # 判断来没来过
+        if await Gold.info_exist(num):
+            if await check_in_group(num):
+                return "无绑定信息"
+            else:
+                return "来过，退群了"
         else:
-            return "无信息"
+            return "没来过"
