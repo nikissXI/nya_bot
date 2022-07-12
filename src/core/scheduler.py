@@ -255,7 +255,21 @@ async def auto_handle():
 
         # 将长期不说话的人踢掉
         kick_count = 0
+
         if gv.admin_bot is not None:
+            # 没看群规的ddd
+            rows = await Gold.get_unread_qqnum_list()
+            for qq, read in rows:
+                # 7天不解禁就踢出去
+                if read <= -7:
+                    await gv.admin_bot.set_group_kick(
+                        group_id=gv.miao_group_num, user_id=qq
+                    )
+                    kick_count += 1
+                    await sleep(2)
+                else:
+                    await Gold.update_read_flag(qq, read - 1)
+
             # 一群群员数据
             miao_group_1_member_data = await gv.admin_bot.get_group_member_list(
                 group_id=gv.miao_group_num, no_cache=True

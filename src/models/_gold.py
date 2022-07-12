@@ -92,6 +92,12 @@ class Gold(Model):
             await cls.create_info(qqnum)
             return 0
 
+    # 获取没阅读群规解禁的qq
+    @classmethod
+    async def get_unread_qqnum_list(cls) -> list:
+        rows = await cls.filter(Q(read__lte=0)).values_list("qqnum", "read")
+        return rows
+
     # 获取体验天数情况
     @classmethod
     async def get_expday(cls, qqnum: int) -> int:
@@ -160,8 +166,8 @@ class Gold(Model):
 
     # 确认阅读
     @classmethod
-    async def update_read_flag(cls, qqnum: int):
-        await cls.filter(qqnum=qqnum).limit(1).update(read=1)
+    async def update_read_flag(cls, qqnum: int, read: int = 1):
+        await cls.filter(qqnum=qqnum).limit(1).update(read=read)
 
     # 重置阅读
     @classmethod
